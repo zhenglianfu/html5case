@@ -1,0 +1,59 @@
+/* reset css */
+html, body, div, span, object, iframe, table, caption,
+tbody, tfoot, thead, tr, th, td, del, dfn, em, font, img, ins,
+kbd, q, s, samp, small, strike, strong, sub, sup, tt, var,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr,
+acronym, address, big, cite, code, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,header,nav,footer,section,article,aside,
+input,textarea,button,select{
+    margin: 0;
+    padding: 0;
+    font-family: inherit;
+}
+/*html5*/
+header,nav,footer,section,article,aside{
+    display: block;
+    position: relative;
+}
+ul,ol{
+    list-style: none;
+}
+input,select,textarea,button{
+    outline: none;
+}
+button{
+    background: #fff;
+    border: 0px none;
+}
+body{
+    font-size: 12px;
+    font-family: "Microsoft YaHei","MicrosoftJhengHei",STHeiti,MingLiu,Helvetica,Arial,Geneva,sans-serif;
+}
+h1,h2,h3,h4,h5,h6{
+    font-size: 1em;
+    margin-bottom: 15px;
+    font-weight: 800;
+}
+h1{
+    font-size: 2.5em;
+}
+h2{
+    font-size: 2em;
+}
+h3{
+    font-size: 1.8em;
+}
+h4{
+    font-size: 1.5em;
+}
+h5{
+    font-size: 1.333em;
+}
+h6{
+    font-size: 1.13em;
+    text-transform: uppercase;
+}
+.box{
+    padding: 10px;
+    border: 1px solid #ccc;
+}
