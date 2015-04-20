@@ -1,0 +1,29 @@
+@charset "UTF-8";
+@import "/stylesheets/font-awesome/css/font-awesome.min.css";
+body{
+    font-size: 14px;
+}
+.padding,.box{
+    padding: 10px;
+}
+.box{
+    border: 1px solid #ccc;
+}
+.list:after{
+    overflow: hidden;
+    content: "";
+    display: block;
+    clear: both;
+    height: 0px;
+    width: 0px;
+}
+.list{
+    display: block;
+    clear: both;
+}
+.list .item{
+    float: left;
+}
+.list.vertical-list .item{
+    float: none;
+}
