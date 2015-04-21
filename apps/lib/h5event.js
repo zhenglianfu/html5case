@@ -140,6 +140,7 @@
             this.clearPressTimer();
         },
         motionProxy : function(e){
+            var delta;
             var timestamp = new Date().getTime();
             if (this.acceleratorTimestamp == 0) {
                 this.acceleratorTimestamp = timestamp;
@@ -149,13 +150,13 @@
             var x = acceleration.x,
                 y = acceleration.y,
                 z = acceleration.z;
-            // 间隔20ms处理一次
-            if (diffTime > 20) {
-                if (this.isRotateLeft(x)) {
-                    this.opts.rotateLeft(e, Math.abs(x));
+            // 间隔2帧处理一次
+            if (diffTime > 100 / 3) {
+                if ((delta = this.isRotateLeft(x, y, z)) > 0) {
+                    this.opts.rotateLeft(e, Math.abs(delta));
                 }
-                if (this.isRotateRight(x)) {
-                    this.opts.rotateRight(e, Math.abs(x));
+                if ((delta = this.isRotateRight(x, y, z)) > 0) {
+                    this.opts.rotateRight(e, Math.abs(delta));
                 }
             }
             // 间隔100ms处理一次
@@ -229,11 +230,30 @@
         isShake : function(speed){
             return speed > 10;
         },
-        isRotateLeft: function(x){
-            return x > 0;
+        isRotateLeft: function(x, y, z){
+            var angle = window.orientation || 0;
+            if (angle == 0 && x > 0) {
+                return x;
+            } else if (angle == 90 && y < 0) {
+                return Math.abs(y);
+            } else if (angle == -90 && y > 0) {
+                return  y;
+            }
+            return 0;
         },
-        isRotateRight: function(x){
-            return x < 0;
+        isRotateRight: function(x, y, z){
+            var angle = window.orientation || 0;
+            if (angle == 0 && x < 0) {
+                return Math.abs(x);
+            } else if (angle == 90 && y > 0) {
+                return y;
+            } else if (angle == -90 && y < 0) {
+                return Math.abs(y);
+            }
+            return 0;
+        },
+        flip : function () {
+            var angle = window.orientation || 0;
         },
         setHandler : function(type, handler){
 

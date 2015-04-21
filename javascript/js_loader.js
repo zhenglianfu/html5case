@@ -30,6 +30,9 @@
         },{
             name : 'Chrome',
             reg : /Chrome\/(\d+)/i
+        },{
+            name : 'Mobile',
+            reg : /mobile/i
         }]),
         paths = {},
         moduleCache = {},

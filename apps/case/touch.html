@@ -23,22 +23,26 @@
         <div id="touch"></div>
         <div id="shake_result"></div>
         <div id="point"></div>
+        <div id="angle"></div>
 <script type="text/javascript" src="/javascript/zepto.min.js"></script>
 <script type="text/javascript" src="../lib/h5event.js"></script>
 <script type="text/javascript" >
     var el = document.getElementById('touch');
     var shakeResult = document.getElementById('shake_result');
     var point = document.getElementById('point');
+    var angle = document.getElementById('angle');
     var c = 0;
     var left = 0;
     var maxLeft = document.body.clientWidth - 10;
     var wipe = Wipe(el, {
         rotateLeft : function(e, delta){
+            angle.innerHTML = window.orientation || 'undefined';
             left -= delta * 3;
             left = left < 0 ? 0 : left;
             point.style.left = left + 'px';
         },
         rotateRight : function(e, delta){
+            angle.innerHTML = window.orientation || 'undefined';
             left += delta * 3;
             left = left > maxLeft ? maxLeft : left;
             point.style.left = left + 'px';
