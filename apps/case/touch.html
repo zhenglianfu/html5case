@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>touch</title>
+    <style>
+        #touch{
+            width: 300px;
+            height: 300px;
+            background: #159957;
+        }
+        #point{
+            position: absolute;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            background: #fe88be;
+        }
+    </style>
+</head>
+<body>
+        <div id="touch"></div>
+        <div id="shake_result"></div>
+        <div id="point"></div>
+<script type="text/javascript" src="/javascript/zepto.min.js"></script>
+<script type="text/javascript" src="../lib/h5event.js"></script>
+<script type="text/javascript" >
+    var el = document.getElementById('touch');
+    var shakeResult = document.getElementById('shake_result');
+    var point = document.getElementById('point');
+    var c = 0;
+    var left = 0;
+    var wipe = Wipe(el, {
+        rotateLeft : function(e, delta){
+            left -= delta * 10;
+            point.style.left = left + 'px';
+        },
+        rotateRight : function(e, delta){
+            left += delta * 10;
+            point.style.left = left + 'px';
+        },
+        up: function(){
+            console.log('up');
+        },
+        down: function(){
+            console.log('down');
+        },
+        left: function(){
+            console.log('left');
+        },
+        right: function () {
+            console.log('right');
+        },
+        press : function(){
+            console.log('press');
+        },
+        rub : function(){
+            console.log('rub');
+        },
+        shake : function(e, speed){
+            console.log('shake');
+            c += speed;
+            shakeResult.innerHTML = c;
+        },
+        kiss : function(){
+
+        }
+    });
+</script>
+</body>
+</html>
