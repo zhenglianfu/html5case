@@ -149,19 +149,23 @@
             var x = acceleration.x,
                 y = acceleration.y,
                 z = acceleration.z;
+            // 间隔20ms处理一次
+            if (diffTime > 20) {
+                if (this.isRotateLeft(x)) {
+                    this.opts.rotateLeft(e, Math.abs(x));
+                }
+                if (this.isRotateRight(x)) {
+                    this.opts.rotateRight(e, Math.abs(x));
+                }
+            }
             // 间隔100ms处理一次
             if (diffTime > 100) {
                 this.acceleratorTimestamp = timestamp;
-                var speed = Math.abs(x + y + z - this.acceleratorX - this.acceleratorY - this.acceleratorZ) / diffTime * 1000;
+                var speed = Math.abs(x + y + z - this.acceleratorX - this.acceleratorY - this.acceleratorZ) / diffTime * 100;
                 if (this.isShake(speed)) {
-                    this.opts.shake(e, speed);
+                    // speed is 10~50+
+                    this.opts.shake(e, speed/10);
                 }
-            }
-            if (this.isRotateLeft(x)) {
-                this.opts.rotateLeft(e, Math.abs(x - this.acceleratorX));
-            }
-            if (this.isRotateRight(x)) {
-                this.opts.rotateRight(e, Math.abs(x - this.acceleratorX));
             }
             this.acceleratorX = x;
             this.acceleratorY = y;
@@ -223,13 +227,13 @@
 
         },
         isShake : function(speed){
-            return speed > 15;
+            return speed > 10;
         },
         isRotateLeft: function(x){
-            return this.acceleratorX - x > 0;
+            return x > 0;
         },
         isRotateRight: function(x){
-            return x - this.acceleratorX > 0;
+            return x < 0;
         },
         setHandler : function(type, handler){
 

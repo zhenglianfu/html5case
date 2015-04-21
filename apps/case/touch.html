@@ -31,13 +31,16 @@
     var point = document.getElementById('point');
     var c = 0;
     var left = 0;
+    var maxLeft = document.body.clientWidth - 10;
     var wipe = Wipe(el, {
         rotateLeft : function(e, delta){
-            left -= delta * 10;
+            left -= delta * 3;
+            left = left < 0 ? 0 : left;
             point.style.left = left + 'px';
         },
         rotateRight : function(e, delta){
-            left += delta * 10;
+            left += delta * 3;
+            left = left > maxLeft ? maxLeft : left;
             point.style.left = left + 'px';
         },
         up: function(){
@@ -59,9 +62,7 @@
             console.log('rub');
         },
         shake : function(e, speed){
-            console.log('shake');
-            c += speed;
-            shakeResult.innerHTML = c;
+            shakeResult.innerHTML = shakeResult.innerHTML + ',' + speed.toFixed(2);
         },
         kiss : function(){
 
