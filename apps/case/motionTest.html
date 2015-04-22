@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>motion</title>
+    <style>
+        #arrow{
+            border: 10px solid #159957;
+            border-color: transparent transparent #159957 transparent;
+            border-width: 20px 10px;
+            margin: 0 auto;
+            height: 0;
+            width: 0;
+            transform: rotate(0deg);
+        }
+    </style>
+</head>
+<body>
+        <div id="arrow"></div>
+        <div id="target"></div>
+        <div id="result"></div>
+        <p>x轴加速度：<span id="x">0</span>米每二次方秒</p>
+        <p>y轴加速度：<span id="y">0</span>米每二次方秒</p>
+        <p>z轴加速度：<span id="z">0</span>米每二次方秒</p>
+        <hr />
+        <p>x轴加速度(考虑重力加速度)：<span id="xg">0</span>米每二次方秒</p>
+        <p>y轴加速度(考虑重力加速度)：<span id="yg">0</span>米每二次方秒</p>
+        <p>z轴加速度(考虑重力加速度)：<span id="zg">0</span>米每二次方秒</p>
+        <hr />
+        <p>左右旋转速度：<span id="alpha">0</span>度每秒</p>
+        <p>前后旋转速度：<span id="beta">0</span>度每秒</p>
+        <p>扭转速度：<span id="gamma">0</span>度每秒</p>
+        <hr />
+        <p>上次收到通知的间隔：<span id="interval">0</span>毫秒</p>
+        <script type="text/javascript" src="/javascript/zepto.min.js"></script>
+        <script type="text/javascript" src="../lib/h5event.js"></script>
+        <script type="text/javascript">
+            function motionHandler(event) {
+                console.log(event);
+                document.getElementById("interval").innerHTML = event.interval;
+                var acc = event.acceleration;
+                document.getElementById("x").innerHTML = acc.x.toFixed(5);
+                document.getElementById("y").innerHTML = acc.y.toFixed(5);
+                document.getElementById("z").innerHTML = acc.z.toFixed(5);
+                var accGravity = event.accelerationIncludingGravity;
+                document.getElementById("xg").innerHTML = accGravity.x.toFixed(5);
+                document.getElementById("yg").innerHTML = accGravity.y.toFixed(5);
+                document.getElementById("zg").innerHTML = accGravity.z.toFixed(5);
+            }
+            function motionOrientHandler(e){
+                var rotationRate = event.rotationRate || event;
+                document.getElementById("alpha").innerHTML = rotationRate.alpha.toFixed(5);
+                document.getElementById("beta").innerHTML = rotationRate.beta.toFixed(5);
+                document.getElementById("gamma").innerHTML = rotationRate.gamma.toFixed(5);
+            }
+            if (window.DeviceMotionEvent) {
+                window.addEventListener("devicemotion", motionHandler, false);
+                window.addEventListener("deviceorientation", motionOrientHandler, false);
+            }
+        </script>
+<script type="text/javascript" >
+    var el = document.getElementById('touch');
+    var shakeResult = document.getElementById('result');
+    var arrow = document.getElementById('arrow');
+    Wipe(el, {
+        motion : function(e, motion){
+            if (e.type = 'deviceorientation') {
+                arrow.style.transform = 'rotate(' + motion.alphaDeg + 'deg)';
+            }
+        }
+    });
+</script>
+</body>
+</html>
