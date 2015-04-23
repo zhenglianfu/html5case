@@ -36,23 +36,31 @@
         <script type="text/javascript" src="/javascript/zepto.min.js"></script>
         <script type="text/javascript" src="../lib/h5event.js"></script>
         <script type="text/javascript">
+            function formatNum(i){
+                if (i == null) {
+                    i = 0;
+                } else if ('string' == typeof i) {
+                    return i;
+                }
+                return i.toFixed(3);
+            }
             function motionHandler(event) {
                 console.log(event);
                 document.getElementById("interval").innerHTML = event.interval;
                 var acc = event.acceleration;
-                document.getElementById("x").innerHTML = acc.x.toFixed(5);
-                document.getElementById("y").innerHTML = acc.y.toFixed(5);
-                document.getElementById("z").innerHTML = acc.z.toFixed(5);
+                document.getElementById("x").innerHTML = formatNum(acc.x);
+                document.getElementById("y").innerHTML = formatNum(acc.y);
+                document.getElementById("z").innerHTML = formatNum(acc.z);
                 var accGravity = event.accelerationIncludingGravity;
-                document.getElementById("xg").innerHTML = accGravity.x.toFixed(5);
-                document.getElementById("yg").innerHTML = accGravity.y.toFixed(5);
-                document.getElementById("zg").innerHTML = accGravity.z.toFixed(5);
+                document.getElementById("xg").innerHTML = formatNum(accGravity.x);
+                document.getElementById("yg").innerHTML = formatNum(accGravity.y);
+                document.getElementById("zg").innerHTML = formatNum(accGravity.z);
             }
             function motionOrientHandler(e){
                 var rotationRate = event.rotationRate || event;
-                document.getElementById("alpha").innerHTML = rotationRate.alpha.toFixed(5);
-                document.getElementById("beta").innerHTML = rotationRate.beta.toFixed(5);
-                document.getElementById("gamma").innerHTML = rotationRate.gamma.toFixed(5);
+                document.getElementById("alpha").innerHTML = formatNum(rotationRate.alpha);
+                document.getElementById("beta").innerHTML = formatNum(rotationRate.beta);
+                document.getElementById("gamma").innerHTML = formatNum(rotationRate.gamma);
             }
             if (window.DeviceMotionEvent) {
                 window.addEventListener("devicemotion", motionHandler, false);
@@ -60,13 +68,14 @@
             }
         </script>
 <script type="text/javascript" >
-    var el = document.getElementById('touch');
-    var shakeResult = document.getElementById('result');
     var arrow = document.getElementById('arrow');
-    Wipe(el, {
+    Wipe(arrow, {
         motion : function(e, motion){
+            console.log(e, motion);
             if (e.type = 'deviceorientation') {
                 arrow.style.transform = 'rotate(' + motion.alphaDeg + 'deg)';
+                arrow.style.webkitTransform = 'rotate(' + motion.alphaDeg + 'deg)';
+
             }
         }
     });

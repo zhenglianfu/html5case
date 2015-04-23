@@ -147,37 +147,40 @@
         },
         motionProxy : function(e){
             this.motionStatusProxy(e);
-            var delta;
-            var timestamp = new Date().getTime();
-            if (this.acceleratorTimestamp == 0) {
-                this.acceleratorTimestamp = timestamp;
-            }
-            var acceleration = e.accelerationIncludingGravity; // 重力参数
-            var diffTime = timestamp - this.acceleratorTimestamp;
-            var x = acceleration.x,
-                y = acceleration.y,
-                z = acceleration.z;
-            // 间隔2帧处理一次
-            if (diffTime > 100 / 3) {
-                if ((delta = this.isRotateLeft(x, y, z)) > 0) {
-                    this.opts.rotateLeft(e, Math.abs(delta));
+            // handler only devicemotion
+            if (e.type == 'devicemotion') {
+                var delta;
+                var timestamp = new Date().getTime();
+                if (this.acceleratorTimestamp == 0) {
+                    this.acceleratorTimestamp = timestamp;
                 }
-                if ((delta = this.isRotateRight(x, y, z)) > 0) {
-                    this.opts.rotateRight(e, Math.abs(delta));
+                var acceleration = e.accelerationIncludingGravity; // 重力参数
+                var diffTime = timestamp - this.acceleratorTimestamp;
+                var x = acceleration.x,
+                    y = acceleration.y,
+                    z = acceleration.z;
+                // 间隔2帧处理一次
+                if (diffTime > 100 / 3) {
+                    if ((delta = this.isRotateLeft(x, y, z)) > 0) {
+                        this.opts.rotateLeft(e, Math.abs(delta));
+                    }
+                    if ((delta = this.isRotateRight(x, y, z)) > 0) {
+                        this.opts.rotateRight(e, Math.abs(delta));
+                    }
                 }
-            }
-            // 间隔100ms处理一次
-            if (diffTime > 100) {
-                this.acceleratorTimestamp = timestamp;
-                var speed = Math.abs(x + y + z - this.acceleratorX - this.acceleratorY - this.acceleratorZ) / diffTime * 100;
-                if (this.isShake(speed)) {
-                    // speed is 10~50+
-                    this.opts.shake(e, speed/10, acceleration);
+                // 间隔100ms处理一次
+                if (diffTime > 100) {
+                    this.acceleratorTimestamp = timestamp;
+                    var speed = Math.abs(x + y + z - this.acceleratorX - this.acceleratorY - this.acceleratorZ) / diffTime * 100;
+                    if (this.isShake(speed)) {
+                        // speed is 10~50+
+                        this.opts.shake(e, speed/10, acceleration);
+                    }
                 }
+                this.acceleratorX = x;
+                this.acceleratorY = y;
+                this.acceleratorZ = z;
             }
-            this.acceleratorX = x;
-            this.acceleratorY = y;
-            this.acceleratorZ = z;
         },
         motionStatusProxy : function(e){
             if (e.type == 'devicemotion') {
