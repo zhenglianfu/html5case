@@ -1,5 +1,5 @@
 @charset "UTF-8";
-@import "/stylesheets/font-awesome/css/font-awesome.min.css";
+@import "../../../stylesheets/font-awesome/css/font-awesome.min.css";
 body{
     font-size: 14px;
 }
