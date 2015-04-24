@@ -27,3 +27,9 @@ body{
 .list.vertical-list .item{
     float: none;
 }
+.gravity-wrap{
+    width: 240px;
+    height: 240px;
+    margin: 0 auto;
+    background: url('/images/tray-bg.jpg') center no-repeat;
+}
