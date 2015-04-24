@@ -10,7 +10,7 @@ PManager.add([{
     }
 },{
     engine : {
-        url : ''
+        url : '/apps/lib/engine.js'
     }
 },{
     touchEvent: {

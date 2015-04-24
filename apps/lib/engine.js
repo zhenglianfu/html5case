@@ -1,5 +1,17 @@
 (function(){
     var join = Array.prototype.join;
+    var slice = Array.prototype.slice;
+    var toString = Object.prototype.toString;
+    Engine.isArray = Array.prototype.isArray || function(arr){
+        return '[object Array]' === toString.apply(arr, []);
+    };
+    // ext
+    Function.prototype.extend = function(opts){
+        var p = new this();
+        function child(){};
+        child.prototype = $.extend({_super: this}, p, opts);
+        return child;
+    }
     // engine
     function Engine(canvas){
         this.ctx = canvas.getContext('2d');
@@ -32,4 +44,22 @@
 
         }
     };
+    Engine.Sprite = function(opts){
+        if (!(this instanceof Engine.Sprite)) {
+            return new Engine.Sprite(opts);
+        }
+        this.opts = $.extend({
+            functions : {}
+        }, opts);
+        this.visible = false;
+        this.width = 0;
+        this.height = 0;
+        return this;
+    }
+    Engine.Sprite.prototype = {
+
+    };
+    Engine.Sprite.extend = function(){
+
+    }
 }());
