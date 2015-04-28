@@ -1,3 +1,10 @@
+/**
+ * h5 canvas 游戏引擎
+ *
+ * #提供基础元素，容器，精灵，定时器，加载资源文件
+ * #提供事件支持
+ * underscore
+ * */
 (function(){
     var join = Array.prototype.join;
     var slice = Array.prototype.slice;
