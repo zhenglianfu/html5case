@@ -5,12 +5,40 @@
     <title>SVG BASE</title>
     <link rel="stylesheet" type="text/css" href="../../stylesheets/main.css">
     <link rel="stylesheet" type="text/css" href="../../stylesheets/normalize.css">
+    <style>
+        .hide{
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <div>
-        <svg>
-            <path d="M0 0C153 334 151 334 151 334" style="fill:#fff;stroke:red;stroke-width:2;"></path>
+        <svg width="500px" height="500px">
+            <g>
+                <path d="M0 50C50 0 100 100 150 50" style="fill:#fff;stroke:red;stroke-width:2;"></path>
+            </g>
+            <g>
+                <path d="M0 50C50 100 100 0 150 50" style="fill:#fff;stroke:red;stroke-width:2;"></path>
+            </g>
+            <g class="hide">
+                <path d="M0 200C50 150 100 250 150 200M150 200C200 150 250 250 300 200" style="fill:#fff;stroke:red;stroke-width:2;"></path>
+            </g>
         </svg>
     </div>
+    <script type="text/javascript" src="../../javascript/zepto.min.js"></script>
+    <script>
+        var maxHeight = 100;
+        var width = 100;
+        var y = 0;
+        var $path = $('path').eq(0);
+        function wave(){
+            var d = '';
+            var m = [0,y];
+            d += 'M' + m.join(' ');
+            var c = [50, y - 50, width / 3 * 2, maxHeight, width, y];
+            d += 'C' + c.join(' ');
+            return d;
+        }
+    </script>
 </body>
 </html>
