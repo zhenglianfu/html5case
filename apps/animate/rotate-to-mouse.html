@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>rotate to mouse</title>
+</head>
+<body>
+    <div>
+        <canvas id="canvas"></canvas>
+    </div>
+    <script type="text/javascript" src="./util.js"></script>
+    <script type="text/javascript" src="arrow.js"></script>
+    <script type="text/javascript">
+        var ele = document.getElementById('canvas'),
+            context = ele.getContext('2d'),
+            arrow = new Arrow();
+            arrow.x = canvas.width / 2;
+            arrow.y = canvas.height / 2;
+        arrow.draw(context);
+    </script>
+</body>
+</html>
