@@ -1,5 +1,5 @@
 @charset "UTF-8";
-@import "/stylesheets/font-awesome/css/font-awesome.min.css";
+@import "../../../stylesheets/font-awesome/css/font-awesome.min.css";
 body{
     font-size: 14px;
 }
@@ -26,4 +26,10 @@ body{
 }
 .list.vertical-list .item{
     float: none;
+}
+.gravity-wrap{
+    width: 240px;
+    height: 240px;
+    margin: 0 auto;
+    background: url('../../../images/tray-bg.jpg') center no-repeat;
 }

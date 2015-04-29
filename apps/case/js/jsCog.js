@@ -1,8 +1,9 @@
 // add modules
 PManager.add([{
     zepto : {
-        url : '/javascript/zepto.min.js',
-        module : '$'
+        url : './zepto.min.js',
+        module : '$',
+        jsPath : true
     }
 },{
     canvas2d : {
@@ -10,7 +11,9 @@ PManager.add([{
     }
 },{
     engine : {
-        url : ''
+        url : '../apps/lib/engine.js',
+        module : 'engine',
+        jsPath : true
     }
 },{
     touchEvent: {

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>motion</title>
+    <style>
+        #arrow{
+            border: 10px solid #159957;
+            border-color: transparent transparent #159957 transparent;
+            border-width: 20px 10px;
+            margin: 0 auto;
+            height: 0;
+            width: 0;
+            transform: rotate(0deg);
+        }
+    </style>
+</head>
+<body>
+        <div id="arrow"></div>
+        <div id="target"></div>
+        <div id="result"></div>
+        <p>x轴加速度：<span id="x">0</span>米每二次方秒</p>
+        <p>y轴加速度：<span id="y">0</span>米每二次方秒</p>
+        <p>z轴加速度：<span id="z">0</span>米每二次方秒</p>
+        <hr />
+        <p>x轴加速度(考虑重力加速度)：<span id="xg">0</span>米每二次方秒</p>
+        <p>y轴加速度(考虑重力加速度)：<span id="yg">0</span>米每二次方秒</p>
+        <p>z轴加速度(考虑重力加速度)：<span id="zg">0</span>米每二次方秒</p>
+        <hr />
+        <p>左右旋转速度：<span id="alpha">0</span>度每秒</p>
+        <p>前后旋转速度：<span id="beta">0</span>度每秒</p>
+        <p>扭转速度：<span id="gamma">0</span>度每秒</p>
+        <hr />
+        <p>上次收到通知的间隔：<span id="interval">0</span>毫秒</p>
+        <script type="text/javascript" src="/javascript/zepto.min.js"></script>
+        <script type="text/javascript" src="../lib/h5event.js"></script>
+        <script type="text/javascript">
+            function formatNum(i){
+                if (i == null) {
+                    i = 0;
+                } else if ('string' == typeof i) {
+                    return i;
+                }
+                return i.toFixed(3);
+            }
+            function motionHandler(event) {
+                console.log(event);
+                document.getElementById("interval").innerHTML = event.interval;
+                var acc = event.acceleration;
+                document.getElementById("x").innerHTML = formatNum(acc.x);
+                document.getElementById("y").innerHTML = formatNum(acc.y);
+                document.getElementById("z").innerHTML = formatNum(acc.z);
+                var accGravity = event.accelerationIncludingGravity;
+                document.getElementById("xg").innerHTML = formatNum(accGravity.x);
+                document.getElementById("yg").innerHTML = formatNum(accGravity.y);
+                document.getElementById("zg").innerHTML = formatNum(accGravity.z);
+            }
+            function motionOrientHandler(e){
+                var rotationRate = event.rotationRate || event;
+                document.getElementById("alpha").innerHTML = formatNum(rotationRate.alpha);
+                document.getElementById("beta").innerHTML = formatNum(rotationRate.beta);
+                document.getElementById("gamma").innerHTML = formatNum(rotationRate.gamma);
+            }
+            if (window.DeviceMotionEvent) {
+                window.addEventListener("devicemotion", motionHandler, false);
+                window.addEventListener("deviceorientation", motionOrientHandler, false);
+            }
+        </script>
+<script type="text/javascript" >
+    var arrow = document.getElementById('arrow');
+    Wipe(arrow, {
+        motion : function(e, motion){
+            console.log(e, motion);
+            if (e.type = 'deviceorientation') {
+                arrow.style.transform = 'rotate(' + motion.alphaDeg + 'deg)';
+                arrow.style.webkitTransform = 'rotate(' + motion.alphaDeg + 'deg)';
+            }
+        }
+    });
+</script>
+</body>
+</html>

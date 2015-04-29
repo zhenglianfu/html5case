@@ -36,8 +36,9 @@
             kiss : foo,
             shake : foo,
             rotateLeft : foo,
-            rotateRight : foo
-        },opts);
+            rotateRight : foo,
+            motion: foo
+        }, opts);
         this.init();
         this.rubLength = 0;
         this.touchLength = 0;
@@ -48,6 +49,7 @@
         this.acceleratorY = 0;
         this.acceleratorZ = 0;
         this.acceleratorTimestamp = 0;
+        this.motionStatus = {};
     };
     Wipe.prototype = {
         _bindEvent: function(){
@@ -66,8 +68,12 @@
             });
             if (window.DeviceMotionEvent) {
                 window.addEventListener('devicemotion', function(e){
-                   that.motionProxy(e);
+                    that.motionProxy(e);
                 });
+                window.addEventListener('deviceorientation', function(e){
+                    that.motionProxy(e);
+                });
+
             }
         },
         startProxy : function(e){
@@ -140,37 +146,66 @@
             this.clearPressTimer();
         },
         motionProxy : function(e){
-            var delta;
-            var timestamp = new Date().getTime();
-            if (this.acceleratorTimestamp == 0) {
-                this.acceleratorTimestamp = timestamp;
-            }
-            var acceleration = e.accelerationIncludingGravity; // 重力参数
-            var diffTime = timestamp - this.acceleratorTimestamp;
-            var x = acceleration.x,
-                y = acceleration.y,
-                z = acceleration.z;
-            // 间隔2帧处理一次
-            if (diffTime > 100 / 3) {
-                if ((delta = this.isRotateLeft(x, y, z)) > 0) {
-                    this.opts.rotateLeft(e, Math.abs(delta));
+            this.motionStatusProxy(e);
+            // handler only devicemotion
+            if (e.type == 'devicemotion') {
+                var delta;
+                var timestamp = new Date().getTime();
+                if (this.acceleratorTimestamp == 0) {
+                    this.acceleratorTimestamp = timestamp;
                 }
-                if ((delta = this.isRotateRight(x, y, z)) > 0) {
-                    this.opts.rotateRight(e, Math.abs(delta));
+                var acceleration = e.accelerationIncludingGravity; // 重力参数
+                var diffTime = timestamp - this.acceleratorTimestamp;
+                var x = acceleration.x,
+                    y = acceleration.y,
+                    z = acceleration.z;
+                // 间隔2帧处理一次
+                if (diffTime > 100 / 3) {
+                    if ((delta = this.isRotateLeft(x, y, z)) > 0) {
+                        this.opts.rotateLeft(e, Math.abs(delta));
+                    }
+                    if ((delta = this.isRotateRight(x, y, z)) > 0) {
+                        this.opts.rotateRight(e, Math.abs(delta));
+                    }
                 }
-            }
-            // 间隔100ms处理一次
-            if (diffTime > 100) {
-                this.acceleratorTimestamp = timestamp;
-                var speed = Math.abs(x + y + z - this.acceleratorX - this.acceleratorY - this.acceleratorZ) / diffTime * 100;
-                if (this.isShake(speed)) {
-                    // speed is 10~50+
-                    this.opts.shake(e, speed/10);
+                // 间隔100ms处理一次
+                if (diffTime > 100) {
+                    this.acceleratorTimestamp = timestamp;
+                    var speed = Math.abs(x + y + z - this.acceleratorX - this.acceleratorY - this.acceleratorZ) / diffTime * 100;
+                    if (this.isShake(speed)) {
+                        // speed is 10~50+
+                        this.opts.shake(e, speed/10, acceleration);
+                    }
                 }
+                this.acceleratorX = x;
+                this.acceleratorY = y;
+                this.acceleratorZ = z;
             }
-            this.acceleratorX = x;
-            this.acceleratorY = y;
-            this.acceleratorZ = z;
+        },
+        motionStatusProxy : function(e){
+            if (e.type == 'devicemotion') {
+                var accelerationIncludingGravity = e.accelerationIncludingGravity;
+                var acceleration = e.acceleration;
+                var rotationRate = e.rotationRate;
+                $.extend(this.motionStatus, {
+                    gravity_X : accelerationIncludingGravity.x,
+                    gravity_y : accelerationIncludingGravity.y,
+                    gravity_z : accelerationIncludingGravity.z,
+                    x         : acceleration.x,
+                    y         : acceleration.y,
+                    z         : acceleration.z,
+                    alpha     : rotationRate.alpha,
+                    beta      : rotationRate.beta,
+                    gamma     : rotationRate.gamma
+                });
+            } else if (e.type == 'deviceorientation') {
+                $.extend(this.motionStatus, {
+                    alphaDeg : e.alpha,
+                    betaDeg  : e.beta,
+                    gammaDeg : e.gamma
+                });
+            }
+            this.opts.motion(e, this.motionStatus);
         },
         clearPressTimer : function(){
             this.pressed = false;
@@ -252,7 +287,7 @@
             }
             return 0;
         },
-        flip : function () {
+        isFlipLeft : function () {
             var angle = window.orientation || 0;
         },
         setHandler : function(type, handler){

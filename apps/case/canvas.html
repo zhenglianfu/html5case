@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>canvas demo</title>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/main.css">
-    <link rel="stylesheet" type="text/css" href="/stylesheets/normalize.css">
-    <link rel="stylesheet" type="text/css" href="/apps/case/css/case.css">
+    <link rel="stylesheet" type="text/css" href="../../stylesheets/main.css">
+    <link rel="stylesheet" type="text/css" href="../../stylesheets/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./css/case.css">
     <style>
         #circle-panel{
             border: 1px solid #ccc;
@@ -20,12 +20,17 @@
                 <h3>canvas 触摸绘制圆点</h3>
                 <canvas id="circle-panel" width="500px" height="300px"></canvas>
             </div>
-
+            <div>
+                <h3>重力校准</h3>
+                <div class="gravity-wrap">
+                    <canvas id="gravity-canvas" width="240px" height="240px"></canvas>
+                </div>
+            </div>
         </section>
         <section></section>
     </article>
-    <script type="text/javascript" src="/javascript/js_loader.js" data-main="./js/jsCog.js"></script>
+    <script type="text/javascript" src="../../javascript/js_loader.js"></script>
     <script type="text/javascript" src="./js/jsCog.js"></script>
-    <script type="text/javascript" src="js/canvas.js"></script>
+    <script type="text/javascript" src="./js/canvas.js"></script>
 </body>
 </html>

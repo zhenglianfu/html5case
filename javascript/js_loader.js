@@ -2,6 +2,7 @@
     var doc = document,
     // main js, if existed load it, root is doc_dir
         _main_,
+        host = location.host,
         js_dir = function(){
             var scripts = doc.getElementsByTagName('script'),
                 script = scripts[scripts.length - 1],
@@ -324,6 +325,19 @@
             // rest state
             needRefreshDepend = false;
         },
+        referJSPath : function(url, baseDir){
+            baseDir = baseDir || js_dir;
+            if (url.indexOf('../') == 0) {
+                url = url.substring(3);
+                baseDir = baseDir.substring(0, baseDir.lastIndexOf('/'));
+                return Util.referJSPath(url, baseDir);
+            } else if (url.indexOf('./') == 0) {
+                url = url.substring(2);
+            } else if (url.indexOf('/') == 0) {
+                baseDir = host;
+            }
+            return baseDir + '/' + url;
+        },
         addModule : function(token, obj){
             // internal method, only used in Util
             /**
@@ -334,7 +348,7 @@
              * obj.styleList : the css files of this module
              * */
             paths[token] = {
-                url : obj.url,
+                url : obj.jsPath ? Util.referJSPath(obj.url) : obj.url,
                 name_space : obj.name_space || 'window',
                 module : obj.module || 'window'
             };

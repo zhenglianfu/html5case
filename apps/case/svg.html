@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>SVG BASE</title>
+    <link rel="stylesheet" type="text/css" href="../../stylesheets/main.css">
+    <link rel="stylesheet" type="text/css" href="../../stylesheets/normalize.css">
+    <style>
+        .hide{
+            display: none;
+        }
+        .center{
+            margin: 0 auto;
+        }
+        .bg-gray{
+            background: #c0c0c0;
+        }
+        .padding{
+            padding: 10px;
+        }
+        svg{
+            background: #fff;
+        }
+        svg text{
+            font-size: 16px;
+        }
+        .control-point{
+            fill: #d0d0d0;
+            cursor: pointer;
+        }
+        .hp-line{
+            fill: transparent;
+            stroke: #d0d0d0;
+            stroke-width: 1px;
+        }
+        .bezier-path{
+            fill: transparent;
+            stroke-width: 3px;
+            stroke: #333;
+        }
+        /*path{*/
+            /*stroke-dasharray: 1000;*/
+            /*stroke-dashoffset: 1000;*/
+            /*animation: dash 3s linear infinite;*/
+            /*-webkit-animation: dash 3s linear infinite;*/
+        /*}*/
+        @keyframes dash {
+            from{
+                stroke-dasharray: 1000;
+                stroke-dashoffset: 1000;
+            }
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        @-webkit-keyframes dash {
+            from{
+                stroke-dasharray: 1000;
+                stroke-dashoffset: 1000;
+            }
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <svg width="300px" height="200px">
+            <g>
+                <path d="M0 50C50 0 100 100 150 50" style="fill:#fff;stroke:red;stroke-width:2;"></path>
+            </g>
+            <g class="hide">
+                <path d="M0 200C50 150 100 250 150 200M150 200C200 150 250 250 300 200" style="fill:#fff;stroke:red;stroke-width:2;"></path>
+            </g>
+        </svg>
+    </div>
+    <div class="bg-gray padding">
+        <div class="center" style="width: 500px;">
+            <svg width="500" height="300" id="twice_bezier">
+                <circle cx="50" cy="200" r="5" id="m" class="control-point"></circle>
+                <circle cx="200" cy="50" r="5" id="c" class="control-point"></circle>
+                <circle cx="450" cy="200" r="5" id="r" class="control-point"></circle>
+                <polyline points="50,200 200,50 450,200" class="hp-line"></polyline>
+                <path d="M50,200Q200,50 450,200" class="bezier-path"></path>
+                <text x="200" y ="25">二次曲线演示</text>
+            </svg>
+        </div>
+        <div class="center" style="width: 500px;">
+            <svg width="500" height="300" id="cube_bezier">
+                <circle cx="50" cy="200" r="5" id="cube_m" class="control-point"></circle>
+                <circle cx="200" cy="100" r="5" id="cube_c1" class="control-point"></circle>
+                <circle cx="300" cy="100" r="5" id="cube_c2" class="control-point"></circle>
+                <circle cx="450" cy="200" r="5" id="cube_end" class="control-point"></circle>
+                <polyline points="50,200 200,100 300,100 450,200" class="hp-line"></polyline>
+                <path d="M50,200C200,100 300,100 450,200" class="bezier-path"></path>
+                <text x="200" y="25">三次曲线演示</text>
+            </svg>
+        </div>
+    </div>
+    <script type="text/javascript" src="../../javascript/zepto.min.js"></script>
+    <script>
+        var maxHeight = 100;
+        var width = 150;
+        var y = 0;
+        var waveNum = 10;
+        var $path = $('path').eq(0);
+        function wave(k){
+            var maxK = maxHeight / 2;
+//            k = Math.abs(k) > maxK ? maxK : k;
+            var unitWidth = width / 3;
+            var d = '';
+            for (var i = 0; i < waveNum; i ++) {
+                var m = [i * width, maxHeight/2];
+                d += 'M' + m.join(' ');
+                var c = [i * width + unitWidth, maxK - k, i * width + unitWidth * 2, maxK + k, i * width + unitWidth * 3, maxK];
+                d += 'C' + c.join(' ');
+            }
+            $path.attr('d', d);
+            return d;
+        }
+        var k = 30;
+        var step = 3;
+        function shake(g){
+            if (k <= 0) {
+                wave(0);
+                return;
+            }
+            wave(g);
+            if (Math.abs(g) >= k) {
+                step = -step;
+                k --;
+                g = g > 0 ? k : -k;
+            }
+            setTimeout(function(){
+                g += step;
+                console.log(g, k);
+                shake(g);
+            }, 16.7);
+        }
+//        shake(0);
+    </script>
+    <script>
+        $(function(){
+            var $svg = $('#twice_bezier');
+            function pointEvent(point, fn){
+                var isDrag = false;
+                point.on('mousedown', function(){
+                    isDrag = true;
+                });
+                point.parent().on('click', function(){
+                   isDrag = false;
+                }).bind('mousemove', function(e){
+                    if (isDrag) {
+                        var x = e.offsetX,
+                                y = e.offsetY;
+                        point.attr({
+                            cx : x,
+                            cy : y
+                        });
+                        fn && fn(point);
+
+                    }
+                });
+            }
+            function reDrawPolyLine(){
+                var points = '';
+                $svg.find('circle').each(function(){
+                    points += $(this).attr('cx') +','+  $(this).attr('cy') + ' ';
+                });
+                $svg.find('.hp-line').attr('points', points);
+            }
+            function reDrawBezierPath(){
+                var path = '';
+                $svg.find('circle').each(function(index){
+                    path += (index == 0 ? 'M' : '') + (index == 1 ? 'Q' : '') + $(this).attr('cx') + ' ' + $(this).attr('cy') + ' ';
+                });
+                $svg.find('.bezier-path').attr('d', path);
+            }
+            $svg.find('.control-point').each(function(){
+                pointEvent($(this), function(){
+                    reDrawPolyLine();
+                    reDrawBezierPath();
+                });
+            });
+            // cube bezier
+            var $cubeSvg = $('#cube_bezier');
+            function reDrawCubePolyLine(){
+                var points = [];
+                $cubeSvg.find('circle').each(function(){
+                    points.push($(this).attr('cx') +','+  $(this).attr('cy'));
+                });
+                $cubeSvg.find('.hp-line').attr('points', points.join(' '));
+            }
+            function reDrawCubeBezierPath(){
+                var path = '';
+                $cubeSvg.find('circle').each(function(index){
+                    path += (index == 0 ? 'M' : '') + (index == 1 ? 'C' : '') + $(this).attr('cx') + ' ' + $(this).attr('cy') + ' ';
+                });
+                $cubeSvg.find('.bezier-path').attr('d', path);
+            }
+            $cubeSvg.find('.control-point').each(function(){
+                pointEvent($(this), function(){
+                    reDrawCubePolyLine();
+                    reDrawCubeBezierPath();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
