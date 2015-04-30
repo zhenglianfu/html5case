@@ -2,14 +2,17 @@
  * Created by zhenglianfu on 2015/4/27.
  */
 // requestAnimationFrame
-
+window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.msRequestAnimationFrame || function(fn){
+    return setTimeout(fn, 100 / 6);
+};
+window.cancelAnimationFrame = window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelRequestAnimationFrame || window.msCancelRequestAnimationFrame || clearTimeout
 var util= {};
 util.captureMouse = function(element){
     var mouse = {
         x : 0,
         y : 0
     };
-    elment.addEventListener('mousemove', function(event){
+    element.addEventListener('mousemove', function(event){
         var x, y;
         if (event.pageY || event.pageX) {
             x = event.pageX;

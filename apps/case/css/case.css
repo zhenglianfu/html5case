@@ -33,3 +33,34 @@ body{
     margin: 0 auto;
     background: url('../../../images/tray-bg.jpg') center no-repeat;
 }
+.filter-wrap{
+    width: 400px;
+    margin: 0 auto;
+}
+.filter-ctrl ul:after{
+    display: block;
+    clear: both;
+    content: " ";
+    overflow: hidden;
+}
+.filter-ctrl ul{
+    clear: both;
+}
+.filter-item{
+    float: left;
+    margin-right: 10px;
+    margin-bottom: 5px;
+    padding: 5px;
+    border: 1px solid #cccccc;
+}
+.filter-item a{
+    color: inherit;
+    text-decoration: inherit;
+}
+.filter-item.file{
+    width: 100%;
+    margin-top: 5px;
+}
+#filter-file-url{
+    width: 250px;
+}

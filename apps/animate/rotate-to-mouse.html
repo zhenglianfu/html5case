@@ -15,8 +15,18 @@
             context = ele.getContext('2d'),
             arrow = new Arrow();
             arrow.x = canvas.width / 2;
-            arrow.y = canvas.height / 2;
+            arrow.y = canvas.height / 2,
+            mouse = util.captureMouse(ele);
         arrow.draw(context);
+        (function drawFrame(){
+            requestAnimationFrame(drawFrame, ele);
+            context.clearRect(0,0,ele.width,ele.height);
+            var dx = mouse.x - arrow.x,
+                dy = mouse.y - arrow.y;
+            arrow.rotation = Math.atan2(dy, dx); // radians
+            arrow.draw(context);
+        }());
+
     </script>
 </body>
 </html>

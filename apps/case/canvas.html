@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="../../stylesheets/normalize.css">
     <link rel="stylesheet" type="text/css" href="./css/case.css">
     <style>
-        #circle-panel{
+        #circle-panel, #filter-canvas{
             border: 1px solid #ccc;
         }
     </style>
@@ -24,6 +24,35 @@
                 <h3>重力校准</h3>
                 <div class="gravity-wrap">
                     <canvas id="gravity-canvas" width="240px" height="240px"></canvas>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-center">Canvas 滤镜</h3>
+                <div>
+                    <div class="filter-wrap">
+                        <canvas id="filter-canvas" width="400" height="300"></canvas>
+                        <div class="filter-ctrl text-center">
+                            <ul>
+                                <li class="filter-item"><a href="javascript:/*fzl*/" class="takeBack">底片</a></li>
+                                <li class="filter-item"><a href="javascript:/*fzl*/" class="sepia">复古</a></li>
+                                <li class="filter-item"><a href="javascript:/*fzl*/" class="grayScale">灰度</a></li>
+                                <li class="filter-item"><a href="javascript:/*fzl*/" class="grayScale2">灰度2</a></li>
+                                <li class="filter-item"><a href="javascript:/*fzl*/" class="grayScale3">灰度3</a></li>
+                                <li class="filter-item"><a href="javascript:/*fzl*/" class="blackWhite">黑白</a></li>
+                                <li class="filter-item"><a href="javascript:/*fzl*/" class="redMask">红色</a></li>
+                                <li class="filter-item"><a href="javascript:/*fzl*/" class="greenMask">绿色</a></li>
+                                <li class="filter-item"><a href="javascript:/*fzl*/" class="blueMask">蓝色</a></li>
+                                <li class="filter-item"><a href="javascript:/*fzl*/" class="fudiao">浮雕</a></li>
+                                <li class="filter-item"><a href="javascript:/*fzl*/" class="freeze">特效</a></li>
+                                <li class="filter-item"><a href="javascript:/*fzl*/" class="restore">还原</a></li>
+                                <li class="filter-item"><input type="range" id="brightnessRange"><a href="javascript:/*fzl*/" class="brightness">亮度</a></li>
+                                <li class="filter-item file"><input type="file" name="" id="filter-file"></li>
+                                <li class="filter-item file"><label>图片地址：</label><input type="text" name="" id="filter-file-url" placeholder="跨域限制，呵呵了" disabled><input type="submit" value="submit" id="urlSubmit"></li>
+                                <li class="filter-item"><input type="button" id="originSize" name="" value="原图大小"></li>
+                                <li class="filter-item"><input type="button" id="canvasSize" name="" value="适应400*300"></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

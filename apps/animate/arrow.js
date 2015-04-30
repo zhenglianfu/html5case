@@ -26,5 +26,4 @@ Arrow.prototype.draw = function(context){
     context.fill();
     context.stroke();
     context.restore();
-
 }

@@ -21,6 +21,7 @@
     }
     // engine
     function Engine(canvas){
+        this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         // default style
         this.fillStyle = '#fff';
@@ -49,6 +50,19 @@
         },
         drawRect : function(){
 
+        },
+        drawImg : function(img, position){
+           var w = this.canvas.width,
+               y = this.canvas.height;
+           if (typeof img === 'string') {
+               var temp = new Image();
+               temp.src = img;
+               img = temp;
+           }
+
+        },
+        clearAll : function(){
+            this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
         }
     };
     Engine.Sprite = function(opts){
@@ -69,4 +83,5 @@
     Engine.Sprite.extend = function(){
 
     }
+    window.Engine = Engine;
 }());
