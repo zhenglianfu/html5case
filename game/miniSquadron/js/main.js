@@ -17,7 +17,8 @@
             top: top,
             left : left
         }
-    }
+    };
+    var player = Player();
     var bgCanvas = _id('bgCanvas'),
         containerCanvas = _id('containerCanvas'),
         directionCtrl = _id('directionCtrls'),
@@ -38,5 +39,9 @@
             dx = x - (offset.left + 40),
             dy = y - (offset.top + 40 ),
             rotation = Math.atan2(dy, dx);
+        $('.direction').css("transform", 'rotate(' + (rotation / Math.PI * 180 + 135) + 'deg)');
+        var py = player.speed * Math.sin(rotation);
+        var px = player.speed * Math.cos(rotation);
+        console.log('x:' + px + ', y:' + py);
     }, false);
 })();

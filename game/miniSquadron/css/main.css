@@ -18,6 +18,12 @@ html,body{
 #directionCtrls, #fight{
     position: absolute;
     z-index: 99;
+    cursor: pointer;
+    transition: all .2s;
+}
+#fight:active{
+    transform: scale(.9);
+    -webkit-transform: scale(.9);
 }
 #directionCtrls{
     width: 80px;
