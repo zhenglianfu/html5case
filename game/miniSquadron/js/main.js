@@ -23,10 +23,21 @@
         containerCanvas = _id('containerCanvas'),
         directionCtrl = _id('directionCtrls'),
         w = document.body.clientWidth,
-        h = document.body.clientHeight;
+        h = document.body.clientHeight,
+        mouseDown = false;
     containerCanvas.width = bgCanvas.width = w;
     containerCanvas.height = bgCanvas.height = h;
+    directionCtrl.addEventListener('mousedown', function(e){
+        e.preventDefault();
+        mouseDown = true;
+    });
+    directionCtrl.addEventListener('mouseup', function(){
+        mouseDown = false;
+    });
     directionCtrl.addEventListener('mousemove', function(event){
+        if (!mouseDown) {
+            return;
+        }
         var x, y;
         if (event.pageX || event.pageY) {
             x = event.pageX;
@@ -42,6 +53,13 @@
         $('.direction').css("transform", 'rotate(' + (rotation / Math.PI * 180 + 135) + 'deg)');
         var py = player.speed * Math.sin(rotation);
         var px = player.speed * Math.cos(rotation);
-        console.log('x:' + px + ', y:' + py);
     }, false);
+    // TODO resize ...
+
+    // draw bg
+    var bgPainter = Canvas2D(bgCanvas);
+    var gradient  = bgPainter.getGradient(0, 0, 0, bgPainter.height);
+    gradient.addColorStop(0, '#444').addColorStop(50 / bgPainter.height, '#666').addColorStop(100 / bgPainter.height, '#5bf').addColorStop(1, '#4af');
+    bgPainter.rect(0,0,bgPainter.width,bgPainter.height);
+    bgPainter.fill(gradient.getGradient());
 })();

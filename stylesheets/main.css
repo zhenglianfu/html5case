@@ -15,7 +15,7 @@ header,nav,footer,section,article,aside{
     display: block;
     position: relative;
 }
-ul,ol{
+ul,ol,li{
     list-style: none;
 }
 input,select,textarea,button{
@@ -59,4 +59,7 @@ h6{
 }
 .text-center{
     text-align: center;
+}
+.padding{
+    padding: 10px;
 }

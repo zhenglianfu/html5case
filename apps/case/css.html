@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
     <title>Symbols</title>
+    <link href="../../stylesheets/main.css" rel="stylesheet">
     <style>
+        body{
+            padding: 20px;
+        }
+        .box{
+            padding: 20px;
+        }
         .heart-wrap{
             height: 150px;
         }
@@ -105,6 +112,37 @@
             text-align: center;
             box-shadow: 0 0 0 0 #fff;
         }
+        .shadow-ul{
+            clear: both;
+        }
+        .shadow-ul:after{
+            clear: both;
+            display: block;
+            content: "";
+        }
+        .shadow-ul li{
+            float: left;
+            height: 40px;
+            width: 120px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background: #1e6bb8;
+            -webkit-box-shadow: inset 0 0 200px #fff;
+            -moz-box-shadow: inset 0 0 200px #fff;
+            box-shadow: inset 0 0 200px #fff;
+            transition: all .3s;
+            text-align: center;
+            line-height: 40px;
+        }
+        .shadow-ul li:hover{
+            color: #fff;
+            -webkit-box-shadow: inset 0 0 0 #fff;
+            -moz-box-shadow: inset 0 0 0 #fff;
+            box-shadow: inset 0 0 0 #fff;
+        }
+        a{
+            color: inherit;
+        }
     </style>
 </head>
 <body>
@@ -116,5 +154,13 @@
     </svg>
     <button id="button">赞</button>
     <button id="circleBtn">赞</button>
+    <div class="padding">
+        <ul class="shadow-ul">
+            <li><a href="">AAA</a></li>
+            <li><a href="">BBB</a></li>
+            <li><a href="">CCC</a></li>
+            <li><a href="">DDD</a></li>
+        </ul>
+    </div>
 </body>
 </html>
