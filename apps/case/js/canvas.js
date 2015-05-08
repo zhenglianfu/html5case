@@ -134,7 +134,7 @@ PManager.load('zepto,engine', function(data, error){
         var canvas = $('#filter-canvas')[0],
             engine = new Engine(canvas),
             context = canvas.getContext('2d'),
-            imgTypes = ['png', 'jpg', 'jpeg', 'bmp'],
+            imgTypes = ['png', 'jpg', 'jpeg', 'bmp', 'gif'],
             imgRange = {},
             originImg = null,
             restoreImgData = null;
@@ -161,7 +161,11 @@ PManager.load('zepto,engine', function(data, error){
             sy = (y - h) / 2;
             engine.clearAll();
             context.drawImage(img, sx, sy, w, h);
-            restoreImgData = context.getImageData(sx, sy, w, h);
+            // Security error: cross domain resource
+            try {
+                restoreImgData = context.getImageData(sx, sy, w, h);
+            } catch(e){
+            }
             return imgRange = {
                 x : sx,
                 y : sy,
@@ -171,15 +175,26 @@ PManager.load('zepto,engine', function(data, error){
         }
         $('#filter-file').bind('change', function(){
             if (this.value) {
-                var tokens = this.value.split('.');
+                var tokens = this.value.toLowerCase().split('.');
+                var img  = new Image(),
+                    file = this.files[0];
+                img.onload = function(){
+                    imgRange = drawImg(img);
+                };
                 if (imgTypes.indexOf(tokens[tokens.length - 1]) >= 0) {
-                    var read = new FileReader;
-                    read.onload = function(e){
-                        var img = new Image();
-                        img.src = read.result;
-                        imgRange = drawImg(img);
+                    if (window.URL && window.URL.createObjectURL) {
+                        img.src = URL.createObjectURL(file);
+                    } else if (window.FileReader) {
+                        var read = new FileReader;
+                        read.onload = function(e){
+                            img.src = read.result;
+                            imgRange = drawImg(img);
+                        }
+                        read.readAsDataURL(file);
+                    } else {
+                        // IE or old browser
+                        alert('您的浏览器out了，不支持即时预览, 下载最新版的IE浏览器吧');
                     }
-                    read.readAsDataURL(this.files[0]);
                 } else{
                     alert('请选择' + imgTypes.join(',')+'格式的图片');
                 }
@@ -320,7 +335,7 @@ PManager.load('zepto,engine', function(data, error){
         }
 
         function storeImg(){
-            context.putImageData(restoreImgData, imgRange.x, imgRange.y);
+            restoreImgData && context.putImageData(restoreImgData, imgRange.x, imgRange.y);
         }
         // events
         $('.filter-ctrl').on('click', 'a', function(){
@@ -377,8 +392,12 @@ PManager.load('zepto,engine', function(data, error){
             canvas.height = 300;
             drawImg(originImg);
         });
-        $('#filter-file-url').val('../../images/sample.jpg');
-        $('#urlSubmit').trigger('click');
-        $('#filter-file-url').val('');
+        (function(){
+            var img = new Image();
+            img.onload = function(){
+                drawImg(img);
+            }
+            img.src = location.origin + '/images/sample.jpg';
+        }())
     }());
 });

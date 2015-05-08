@@ -34,6 +34,9 @@
         },{
             name : 'Mobile',
             reg : /mobile/i
+        },{
+            name : 'Unknow',
+            reg : /.*/i
         }]),
         paths = {},
         moduleCache = {},
