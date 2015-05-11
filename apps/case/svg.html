@@ -5,6 +5,7 @@
     <title>SVG BASE</title>
     <link rel="stylesheet" type="text/css" href="../../stylesheets/main.css">
     <link rel="stylesheet" type="text/css" href="../../stylesheets/normalize.css">
+    <link rel="stylesheet" type="text/css" href="../../stylesheets/svg-editor.css">
     <style>
         .hide{
             display: none;
@@ -25,18 +26,20 @@
             font-size: 16px;
         }
         .control-point{
-            fill: #d0d0d0;
+            fill: #999;
             cursor: pointer;
         }
         .hp-line{
             fill: transparent;
-            stroke: #d0d0d0;
+            stroke: #999;
             stroke-width: 1px;
+            pointer-events: none;
         }
         .bezier-path{
             fill: transparent;
             stroke-width: 3px;
             stroke: #333;
+            pointer-events: none;
         }
         /*path{*/
             /*stroke-dasharray: 1000;*/
@@ -61,6 +64,17 @@
             to {
                 stroke-dashoffset: 0;
             }
+        }
+        .svg-editor-wrap{
+            padding: 10px;
+            text-align: center;
+        }
+        .svg-editor-wrap p{
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .svg-editor{
+            height: 500px;
         }
     </style>
 </head>
@@ -96,6 +110,107 @@
                 <path d="M50,200C200,100 300,100 450,200" class="bezier-path"></path>
                 <text x="200" y="25">三次曲线演示</text>
             </svg>
+        </div>
+    </div>
+    <div class="svg-editor-wrap">
+        <p> 为什么会有这个呢？<br/>
+            因为我脑子不够使，所有不得不借助于工具。<br>
+            我没有资格去吐槽SVG不好，会被无情的嘲笑<br>
+            那些牛人都是靠自己的大脑输出代码，而我不行，我很垃圾，所以有了这个工具来帮我生成代码。
+        </p>
+        <div>
+            <div class="editor-panel">
+                <div class="svg-editor">
+                    <div class="menu-bar"></div>
+                    <div class="tool-bar">
+                        <div class="box-title">工具箱</div>
+                        <div class="tool-list-wrap">
+                            <ul class="tool-list">
+                                <li class="tool-item">
+                                    <div class="tool-item-content">
+                                        <svg width="38px" height="37px">
+                                            <g>
+                                                <line x1="5" y1="5" x2="32" y2="32" class="default-stroke" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </li>
+                                <li class="tool-item even">
+                                    <svg width="38px" height="37px">
+                                        <g>
+                                            <rect height="15" width="15" x="10" y="10" class="default-stroke"></rect>
+                                        </g>
+                                    </svg>
+                                </li>
+                                <li class="tool-item">
+                                    <svg width="38px" height="37px">
+                                        <g>
+                                            <circle r="10" cx="19" cy="18" class="default-stroke"></circle>
+                                        </g>
+                                    </svg>
+                                </li>
+                                <li class="tool-item even">
+                                    <svg width="38px" height="37px">
+                                        <path d="M24,6L6,24M30,12L12,30M27,9L9,27M24,6L30,12M6,24L12,30L6,32L6,24" class="default-stroke"></path>
+                                    </svg>
+                                </li>
+                                <li class="tool-item">
+                                </li>
+                                <li class="tool-item even">
+                                </li>
+                                <li class="tool-item">
+                                </li>
+                                <li class="tool-item even">
+                                </li>
+                                <li class="tool-item">
+                                </li>
+                                <li class="tool-item even">
+                                </li>
+                                <li class="tool-item">
+                                </li>
+                                <li class="tool-item even">
+                                </li>
+                                <li class="tool-item">
+                                </li>
+                                <li class="tool-item even">
+                                </li>
+                                <li class="tool-item">
+                                </li>
+                                <li class="tool-item even">
+                                </li>
+                                <li class="tool-item">
+                                </li>
+                                <li class="tool-item even">
+                                </li>
+                                <li class="tool-item">
+                                </li>
+                                <li class="tool-item even">
+                                </li>
+                                <li class="tool-item">
+                                </li>
+                                <li class="tool-item even">
+                                </li>
+                                <li class="tool-item">
+                                </li>
+                                <li class="tool-item even">
+                                </li>
+                                <li class="tool-item">
+                                </li>
+                                <li class="tool-item even">
+                                </li>
+                                <li class="tool-item">
+                                </li>
+                                <li class="tool-item even">
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="more-tool-icon"></div>
+                    </div>
+                    <div class="panel-wrap">
+                        <div class="panel" id="1_panel_1"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <script type="text/javascript" src="../../javascript/zepto.min.js"></script>
