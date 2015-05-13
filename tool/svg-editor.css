@@ -5,12 +5,10 @@
 .svg-editor{
     border: 1px solid #ccc;
     border-radius: 3px;
+    position: relative;
 }
 .tool-bar{
     float: left;
-}
-.panel-wrap{
-
 }
 .tool-list:after,
 .tool-list:before{
@@ -22,7 +20,27 @@
     background: #fff;
     background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0));
     width: 100%;
+    position: absolute;
+    left: 0;
+    overflow: auto;
+    background: url("./imgs/bg.png") 0 0 repeat;
+}
+.panel-bg{
+    z-index: 33;
+    position: absolute;
+    width: 100%;
     height: 100%;
+    top: 0px;
+    left: 0px;
+}
+.default-stroke{
+    stroke: #ccc;
+    stroke-width: 1px;
+}
+.panel{
+    position: absolute;
+    background: #fff;
+    z-index: 66;
 }
 .menu-bar{
     border-bottom: 1px solid #cccccc;
@@ -30,13 +48,14 @@
     box-shadow: 0 1px 2px #ccc;
 }
 .tool-bar{
-    position: relative;
+    position: absolute;
     width: 80px;
     border: 1px solid #ccc;
     box-shadow: 1px 1px 2px #aaa;
-    height: 300px;
-    margin: 10px;
+    height: 240px;
     background: #fff;
+    border-width: 0 1px 0 0;
+    z-index: 99;
 }
 .tool-bar .box-title{
     border-bottom: 1px solid #ccc;
@@ -45,7 +64,7 @@
     font-size: 14px;
 }
 .tool-list-wrap{
-    height: 255px;
+    height: 195px;
     overflow: hidden;
     position: relative;
 }

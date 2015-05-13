@@ -5,7 +5,7 @@
     <title>SVG BASE</title>
     <link rel="stylesheet" type="text/css" href="../../stylesheets/main.css">
     <link rel="stylesheet" type="text/css" href="../../stylesheets/normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../stylesheets/svg-editor.css">
+    <link rel="stylesheet" type="text/css" href="../../tool/svg-editor.css">
     <style>
         .hide{
             display: none;
@@ -74,7 +74,7 @@
             margin-bottom: 10px;
         }
         .svg-editor{
-            height: 500px;
+            height: 300px;
         }
     </style>
 </head>
@@ -129,7 +129,13 @@
         <div>
             <div class="editor-panel">
                 <div class="svg-editor">
-                    <div class="menu-bar"></div>
+                    <div class="menu-bar">
+                        <ul>
+                            <li class="menu-item"></li>
+                            <li></li>
+                            <li></li>
+                        </ul>
+                    </div>
                     <div class="tool-bar">
                         <div class="box-title">工具箱</div>
                         <div class="tool-list-wrap">
@@ -168,60 +174,12 @@
                                         </svg>
                                     </div>
                                 </li>
-                                <li class="tool-item">
-                                </li>
-                                <li class="tool-item even">
-                                </li>
-                                <li class="tool-item">
-                                </li>
-                                <li class="tool-item even">
-                                </li>
-                                <li class="tool-item">
-                                </li>
-                                <li class="tool-item even">
-                                </li>
-                                <li class="tool-item">
-                                </li>
-                                <li class="tool-item even">
-                                </li>
-                                <li class="tool-item">
-                                </li>
-                                <li class="tool-item even">
-                                </li>
-                                <li class="tool-item">
-                                </li>
-                                <li class="tool-item even">
-                                </li>
-                                <li class="tool-item">
-                                </li>
-                                <li class="tool-item even">
-                                </li>
-                                <li class="tool-item">
-                                </li>
-                                <li class="tool-item even">
-                                </li>
-                                <li class="tool-item">
-                                </li>
-                                <li class="tool-item even">
-                                </li>
-                                <li class="tool-item">
-                                </li>
-                                <li class="tool-item even">
-                                </li>
-                                <li class="tool-item">
-                                </li>
-                                <li class="tool-item even">
-                                </li>
-                                <li class="tool-item">
-                                </li>
-                                <li class="tool-item even">
-                                </li>
                             </ul>
                         </div>
-                        <div class="more-tool-icon"></div>
+                        <!--<div class="more-tool-icon"></div>-->
                     </div>
                     <div class="panel-wrap">
-                        <div class="panel" id="1_panel_1"></div>
+                        <div class="panel" id="1_panel_1" style="width: 200px;height: 100px;top: 30px;left: 100px;"></div>
                     </div>
                 </div>
             </div>
@@ -336,5 +294,6 @@
             });
         });
     </script>
+    <script type="text/javascript" src="../../tool/svg-editor.js"></script>
 </body>
 </html>
