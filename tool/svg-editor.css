@@ -41,6 +41,26 @@
     position: absolute;
     background: #fff;
     z-index: 66;
+    cursor: crosshair;
+}
+.panel .right,
+.panel .bottom{
+    width: 10px;
+    height: 10px;
+    border: 1px solid #000000;
+    position: absolute;
+    left: 100%;
+    top: 50%;
+}
+.panel .right{
+    margin-left: -5px;
+    cursor: e-resize;
+}
+.panel .bottom{
+    top: 100%;
+    left: 50%;
+    margin-top: -5px;
+    cursor: n-resize;
 }
 .menu-bar{
     border-bottom: 1px solid #cccccc;
