@@ -64,3 +64,25 @@ body{
 #filter-file-url{
     width: 250px;
 }
+.clip-wrap{
+    width: 300px;
+    margin: 0 auto;
+    position: relative;
+}
+.clip-area{
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    top: 0px;
+    left: 0px;
+}
+.clip-helper{
+    width: 100%;
+    height: 100%;
+    border: 1px dashed #cccccc;
+    box-sizing: border-box;
+}
+.ctrl-btns{
+    text-align: center;
+    margin-top: 10px;
+}

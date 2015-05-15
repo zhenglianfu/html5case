@@ -400,4 +400,36 @@ PManager.load('zepto,engine', function(data, error){
             img.src = location.origin + '/images/sample.jpg';
         }())
     }());
+
+    // clip canvas
+    (function(){
+        var canvas = document.getElementById('imgClip-canvas'),
+            engine = Engine(canvas),
+            fileInput = document.getElementById('clipFileInput');
+        // set area
+        canvas.width = 300;
+        canvas.height = 300;
+        // bind event
+        fileInput.addEventListener('change', function(){
+            var file;
+            if (this.value) {
+                file = this.files[0];
+            }
+        });
+    }());
+
+    // common functions
+    function readFileAsURL(file, fun){
+        if (window.URL && URL.createObjectURL) {
+            fun && fun(URL.createObjectURL(file));
+        } else if (window.FileReader) {
+            var reader = new FileReader;
+            reader.onload = function(){
+                fun && fun(reader.result);
+            }
+            reader.readAsDataURL(file);
+        } else {
+            alert('your browser is too old!');
+        }
+    }
 });

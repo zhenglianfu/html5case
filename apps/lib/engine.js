@@ -21,6 +21,9 @@
     }
     // engine
     function Engine(canvas){
+        if (!(this instanceof  Engine)) {
+            return new Engine(canvas);
+        }
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         // default style
