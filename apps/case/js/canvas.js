@@ -414,6 +414,14 @@ PManager.load('zepto,engine', function(data, error){
             var file;
             if (this.value) {
                 file = this.files[0];
+                readFileAsURL(file, function(src){
+                    var img = new Image;
+                    img.src = src;
+                    img.onload = function(){
+                        // TODO 图片适应大小canvas
+                        engine.ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    }
+                });
             }
         });
     }());
