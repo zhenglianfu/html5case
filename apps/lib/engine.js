@@ -60,7 +60,11 @@
            if (typeof img === 'string') {
                var temp = new Image();
                temp.src = img;
-               img = temp;
+               temp.onload = function(){
+                   this.ctx.drawImage(temp, position.x, position.y, position.width, position.height);
+               }
+           } else {
+               this.ctx.drawImage(img, position.x, position.y, position.width, position.height);
            }
 
         },
@@ -85,6 +89,6 @@
     };
     Engine.Sprite.extend = function(){
 
-    }
+    };
     window.Engine = Engine;
 }());

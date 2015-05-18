@@ -419,7 +419,30 @@ PManager.load('zepto,engine', function(data, error){
                     img.src = src;
                     img.onload = function(){
                         // TODO 图片适应大小canvas
-                        engine.ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        var imgWidth  = img.width,
+                            imgHeight = img.height,
+                            cx = 0,
+                            cy = 0,
+                            rate;
+                        if (imgWidth > canvas.width) {
+                            rate = canvas.width / imgWidth;
+                            imgWidth  = img.width = canvas.width;
+                            imgHeight = img.height = imgHeight * rate;
+                        }
+                        if (img.height > canvas.height) {
+                            rate = canvas.height / imgHeight;
+                            imgHeight = img.height = canvas.height;
+                            imgWidth  = img.height = imgHeight * rate;
+                        }
+                        cx = (canvas.width - imgWidth) / 2;
+                        cy = (canvas.height - imgHeight) / 2;
+                        engine.clearAll();
+                        engine.drawImg(img, {
+                            x: cx,
+                            y: cy,
+                            width: imgWidth,
+                            height: imgHeight
+                        });
                     }
                 });
             }

@@ -75,14 +75,19 @@ body{
     height: 300px;
     top: 0px;
     left: 0px;
+    border: 1px solid #ccc;
 }
 .clip-helper{
     width: 100%;
     height: 100%;
     border: 1px dashed #cccccc;
     box-sizing: border-box;
+    position: absolute;
 }
 .ctrl-btns{
     text-align: center;
     margin-top: 10px;
+}
+#circle-panel, #filter-canvas{
+    border: 1px solid #ccc;
 }

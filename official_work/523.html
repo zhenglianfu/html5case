@@ -1,10 +1,198 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML>
 <html>
 <head>
     <title>523 activity</title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="../stylesheets/normalize.css">
+    <link type="text/css" rel="stylesheet" href="../stylesheets/main.css">
+    <style type="text/css">
+        .lottery-box{
+            clear: both;
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #c0c0c0;
+        }
+        .lottery-box:after{
+            display: block;
+            clear: both;
+            content: "";
+            overflow: hidden;
+            width: 0;
+            height: 0;
+        }
+        .lottery-item{
+            display: block;
+            float: left;
+            width: 33.33%;
+            overflow: hidden;
+            position: relative;
+        }
+        .lottery-item-list{
+            width: 100%;
+            position: absolute;
+            top: 0;
+        }
+        .lottery-item-content{
+            line-height: 100%;
+            text-align: center;
+            height: 100%;
+        }
+        .red{
+            background: #f00;
+        }
+        .orange{
+            background: orange;
+        }
+        .yellow{
+            background: #ffff00;
+        }
+        .green {
+            background: green;
+        }
+        .cyan{
+            background: #04ffd8;
+        }
+        .blue{
+            background: #0676ee;
+        }
+        .purple{
+            background: #fe06ff;
+        }
+        .chestnut{
+            background: #721d38;
+        }
+        .pink{
+            background: #fe88be;
+        }
+
+        .ctrl-wrap{
+            text-align: center;
+            margin-top: 10px;
+        }
+        .btn{
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 3px 10px;
+        }
+        .btn:hover{
+            background: #eee;
+        }
+    </style>
 </head>
 <body>
+    <div>
+        <div class="lottery-box">
+            <div class="lottery-item">
+                <ul class="lottery-item-list">
+                    <li data-index="0"><div class="lottery-item-content red"></div></li>
+                    <li data-index="1"><div class="lottery-item-content orange"></div></li>
+                    <li data-index="2"><div class="lottery-item-content yellow"></div></li>
+                    <li data-index="3"><div class="lottery-item-content green"></div></li>
+                    <li class="duplicate"><div class="lottery-item-content red"></div></li>
+                </ul>
+            </div>
+            <div class="lottery-item">
+                <ul class="lottery-item-list">
+                    <li data-index="0"><div class="lottery-item-content cyan"></div></li>
+                    <li data-index="1"><div class="lottery-item-content blue"></div></li>
+                    <li data-index="2"><div class="lottery-item-content purple"></div></li>
+                    <li data-index="3"><div class="lottery-item-content chestnut"></div></li>
+                    <li class="duplicate"><div class="lottery-item-content cyan"></div></li>
+                </ul>
+            </div>
+            <div class="lottery-item">
+                <ul class="lottery-item-list">
+                    <li data-index="0"><div class="lottery-item-content pink"></div></li>
+                    <li data-index="1"><div class="lottery-item-content orange"></div></li>
+                    <li data-index="2"><div class="lottery-item-content yellow"></div></li>
+                    <li data-index="3"><div class="lottery-item-content green"></div></li>
+                    <li class="duplicate"><div class="lottery-item-content pink"></div></li>
+                </ul>
+            </div>
+        </div>
+        <div class="ctrl-wrap">
+            <label>单个块周期时间</label><input type="text" id="item_duration">
+            <button class="btn" id="start">开始</button>
+            <button class="btn" id="end">停止</button>
+        </div>
+    </div>
+    <script type="text/javascript" src="../javascript/zepto.min.js"></script>
+    <script type="text/javascript">
+        var speed = +$('#item_duration').val();
+        var stop = false;
+        function resetHeight(){
+            var height = $('.lottery-item').width();
+            $('.lottery-item').height(height);
+            $('.lottery-item-list li').height(height);
+            $('.lottery-item-list').each(function(){
+                $(this).height(height * ($(this).children().length));
+            });
+        }
+        resetHeight();
+        function start($item, index, totalDuration){
+            var $item_list = $item.find('.lottery-item-list'),
+                    height = $item_list.width(),
+                    len = $item_list.find('li').length,
+                    cIndex = 0,
+                    cTop = 0,
+                    item_duration = Math.random() * 800,
+                    totalDuration = totalDuration || 3000,
+                    cTime = 0,
+                    times = 0;
+            function callBack(){
+                speed = +$('#item_duration').val();
+                cTime += item_duration;
+                cTop = cTop - height;
+                times++;
+                item_duration = item_duration > speed ? item_duration - (speed / 2) : item_duration;
+                if (Math.abs(cTop) == height * (len - 1)) {
+                    cTop = 0;
+                    $item_list.css({top: 0});
+                }
+                run($item_list, cTop, -height, item_duration, 0, callBack);
+            }
+            run($item_list, cTop, -height, item_duration, 0, callBack);
+        }
+        function run($item, top, change, duration, t, fn){
+            if (t > duration) {
+                $item.css({top: tween.linear(top, change, duration, duration)});
+                fn && fn();
+            } else {
+                requestAnimationFrame(function(){
+                    $item.css({top: tween.linear(top, change, t, duration)});
+                    t += 16.7;
+                    run($item, top, change, duration, t, fn);
+                });
+            }
+        }
 
+        var tween = {
+            linear : function(b, c, t, d){
+                return b + (t / d) * c;
+            },
+            easeIn : function(b, c, t, d){
+                return b + Math.pow((t / d), 2) * c;
+            }
+        }
+
+        function slowDown(){
+
+        }
+        $('#start').click(function(){
+            $('.lottery-item').each(function(i){
+                (function(k){
+                    setTimeout(function(){
+                        start($('.lottery-item').eq(k), 4, 100);
+                    }, k * Math.random() * 300);
+                }(i))
+            });
+        });
+        $('#end').click(function(){});
+        // requestAnimationFrame
+        window.requestAnimationFrame = window.requestAnimationFrame || function(fn){
+            setTimeout(fn, 16.7);
+        };
+    </script>
 </body>
 </html>
