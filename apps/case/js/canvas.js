@@ -405,11 +405,21 @@ PManager.load('zepto,engine', function(data, error){
     (function(){
         var canvas = document.getElementById('imgClip-canvas'),
             engine = Engine(canvas),
-            fileInput = document.getElementById('clipFileInput');
+            fileInput  = document.getElementById('clipFileInput'),
+            clipBtn    = document.getElementById('clipBtn'),
+            clipHelper = document.getElementById('clipHelper');
         // set area
         canvas.width = 300;
         canvas.height = 300;
         // bind event
+        clipBtn.addEventListener('click', function(){
+            var top = clipHelper.offsetTop + 1,
+                left = clipHelper.offsetLeft + 1,
+                w = clipHelper.clientWidth,
+                h = clipHelper.clientHeight,
+                imageData = engine.getImageData(left, top, w, h);
+            engine.clearAll().putImageData(imageData, left, top);
+        });
         fileInput.addEventListener('change', function(){
             var file;
             if (this.value) {
@@ -446,6 +456,52 @@ PManager.load('zepto,engine', function(data, error){
                     }
                 });
             }
+        });
+        // move event
+        var mouseDown = false,
+            originX = 0,
+            originY = 0,
+            originPositionX = 0,
+            originPositionY = 0,
+            top = 0,
+            left = 0,
+            width   = clipHelper.offsetWidth,
+            height  = clipHelper.offsetHeight,
+            containerHeight = 300,
+            containerWidth  = 300;
+        clipHelper.addEventListener('mousedown', function(e){
+            originX = e.clientX + pageXOffset;
+            originY = e.clientY + pageYOffset;
+            originPositionY = clipHelper.offsetTop;
+            originPositionX = clipHelper.offsetLeft;
+            mouseDown = true;
+        });
+        clipHelper.addEventListener('mousemove', function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            if (mouseDown) {
+                var deltaX = e.clientX + pageXOffset - originX,
+                    deltaY = e.clientY + pageYOffset - originY;
+                top = originPositionY + deltaY;
+                left = originPositionX + deltaX;
+                if (top < 0) {
+                    top = 0
+                } else if (containerHeight < top + height) {
+                    top = containerHeight - height;
+                }
+                if (left < 0) {
+                    left = 0;
+                } else if (containerWidth < left + width) {
+                    left = containerWidth - width;
+                }
+                $(clipHelper).css({
+                    left: left,
+                    top : top
+                });
+            }
+        }, true);
+        clipHelper.addEventListener('mouseup', function(){
+            mouseDown = false;
         });
     }());
 

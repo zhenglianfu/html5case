@@ -68,8 +68,16 @@
            }
 
         },
+        getImageData : function(x, y, w, h){
+            return this.ctx.getImageData(x, y, w, h);
+        },
+        putImageData : function(imageData, x, y){
+            this.ctx.putImageData(imageData, x, y);
+            return this;
+        },
         clearAll : function(){
             this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+            return this;
         }
     };
     Engine.Sprite = function(opts){

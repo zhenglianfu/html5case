@@ -7,13 +7,18 @@
     <link type="text/css" rel="stylesheet" href="../stylesheets/normalize.css">
     <link type="text/css" rel="stylesheet" href="../stylesheets/main.css">
     <style type="text/css">
-        .lottery-box{
+        body>div{
+            margin-bottom: 20px;
+        }
+        .lottery-box,
+        .lottery-box-3d{
             clear: both;
             max-width: 600px;
             margin: 0 auto;
             border: 1px solid #c0c0c0;
         }
-        .lottery-box:after{
+        .lottery-box:after,
+        .lottery-box-3d:after{
             display: block;
             clear: both;
             content: "";
@@ -112,15 +117,55 @@
             </div>
         </div>
         <div class="ctrl-wrap">
-            <label>单个块周期时间</label><input type="text" id="item_duration">
-            <button class="btn" id="start">开始</button>
-            <button class="btn" id="end">停止</button>
+            <label>单个块周期时间</label><input type="text" id="item_duration" class="item_duration">
+            <label>周期时间</label><input type="text" id="totalDuration" class="item_duration">
+            <button class="btn btn-start" id="start">开始</button>
+            <button class="btn btn-end" id="end">停止</button>
         </div>
     </div>
+    <!--
+    <div>
+        <div class="lottery-box-3d">
+            <div class="lottery-item">
+                <ul class="lottery-item-list">
+                    <li data-index="0"><div class="lottery-item-content red"></div></li>
+                    <li data-index="1"><div class="lottery-item-content orange"></div></li>
+                    <li data-index="2"><div class="lottery-item-content yellow"></div></li>
+                    <li data-index="3"><div class="lottery-item-content green"></div></li>
+                    <li class="duplicate"><div class="lottery-item-content red"></div></li>
+                </ul>
+            </div>
+            <div class="lottery-item">
+                <ul class="lottery-item-list">
+                    <li data-index="0"><div class="lottery-item-content cyan"></div></li>
+                    <li data-index="1"><div class="lottery-item-content blue"></div></li>
+                    <li data-index="2"><div class="lottery-item-content purple"></div></li>
+                    <li data-index="3"><div class="lottery-item-content chestnut"></div></li>
+                    <li class="duplicate"><div class="lottery-item-content cyan"></div></li>
+                </ul>
+            </div>
+            <div class="lottery-item">
+                <ul class="lottery-item-list">
+                    <li data-index="0"><div class="lottery-item-content pink"></div></li>
+                    <li data-index="1"><div class="lottery-item-content orange"></div></li>
+                    <li data-index="2"><div class="lottery-item-content yellow"></div></li>
+                    <li data-index="3"><div class="lottery-item-content green"></div></li>
+                    <li class="duplicate"><div class="lottery-item-content pink"></div></li>
+                </ul>
+            </div>
+        </div>
+        <div class="ctrl-wrap">
+            <label>单个块周期时间</label><input type="text" class="item_duration">
+            <button class="btn btn-start">开始</button>
+            <button class="btn btn-end">停止</button>
+        </div>
+    </div>
+    -->
     <script type="text/javascript" src="../javascript/zepto.min.js"></script>
     <script type="text/javascript">
-        var speed = +$('#item_duration').val();
+        var speed = +$('#item_duration').val() || 100;
         var stop = false;
+        var totalDuration = 5000;
         function resetHeight(){
             var height = $('.lottery-item').width();
             $('.lottery-item').height(height);
@@ -133,24 +178,30 @@
         function start($item, index, totalDuration){
             var $item_list = $item.find('.lottery-item-list'),
                     height = $item_list.width(),
-                    len = $item_list.find('li').length,
+                    len = $item_list.find('li:not(.duplicate)').length,
                     cIndex = 0,
                     cTop = 0,
-                    item_duration = Math.random() * 800,
+                    item_duration = Math.max(Math.random() * 800, 200),
                     totalDuration = totalDuration || 3000,
                     cTime = 0,
-                    times = 0;
+                    times = 0,
+                    dis = (item_duration - speed) / len;
+            console.log(item_duration);
             function callBack(){
-                speed = +$('#item_duration').val();
+                speed = +$('#item_duration').val() || 100;
                 cTime += item_duration;
                 cTop = cTop - height;
                 times++;
-                item_duration = item_duration > speed ? item_duration - (speed / 2) : item_duration;
+                item_duration = item_duration > speed ? item_duration - dis : item_duration;
                 if (Math.abs(cTop) == height * (len - 1)) {
                     cTop = 0;
                     $item_list.css({top: 0});
                 }
-                run($item_list, cTop, -height, item_duration, 0, callBack);
+                if ((cTime > totalDuration && times % len == index) || (stop && times % len == index)) {
+                    console.log('stoped');
+                } else {
+                    run($item_list, cTop, -height, item_duration, 0, callBack);
+                }
             }
             run($item_list, cTop, -height, item_duration, 0, callBack);
         }
@@ -180,15 +231,18 @@
 
         }
         $('#start').click(function(){
+            stop = false;
             $('.lottery-item').each(function(i){
                 (function(k){
                     setTimeout(function(){
-                        start($('.lottery-item').eq(k), 4, 100);
-                    }, k * Math.random() * 300);
+                        start($('.lottery-item').eq(k), 3, +$('#totalDuration').val() || 5000);
+                    }, k * 1000);
                 }(i))
             });
         });
-        $('#end').click(function(){});
+        $('#end').click(function(){
+            stop = true;
+        });
         // requestAnimationFrame
         window.requestAnimationFrame = window.requestAnimationFrame || function(fn){
             setTimeout(fn, 16.7);

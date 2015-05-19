@@ -57,12 +57,12 @@
             <h3>Canvas剪裁</h3>
             <div>
                 <div class="clip-wrap">
-                    <canvas id="imgClip-canvas"></canvas>
-                    <div class="clip-area">
-                        <div class="clip-helper" style="width: 200px;height: 200px;"></div>
+                    <canvas id="imgClip-canvas" width="300" height="300"></canvas>
+                    <div class="clip-area" style="width: 300px; height:300px;">
+                        <div id="clipHelper" class="clip-helper" style="width: 200px;height: 200px;"></div>
                     </div>
                     <div class="ctrl-btns">
-                        <input type="button" value="确定">
+                        <input type="button" id="clipBtn" value="确定">
                         <input type="file" name="" id="clipFileInput"/>
                     </div>
                 </div>

@@ -83,11 +83,14 @@ body{
     border: 1px dashed #cccccc;
     box-sizing: border-box;
     position: absolute;
+    background: rgba(255, 255, 255, .3);
+    cursor: move;
 }
 .ctrl-btns{
     text-align: center;
     margin-top: 10px;
 }
-#circle-panel, #filter-canvas{
+#circle-panel,
+#filter-canvas{
     border: 1px solid #ccc;
 }

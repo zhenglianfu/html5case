@@ -23,7 +23,7 @@
     position: absolute;
     left: 0;
     overflow: auto;
-    background: url("./imgs/bg.png") 0 0 repeat;
+    background: url("imgs/bg.png") 0 0 repeat;
 }
 .panel-bg{
     z-index: 33;
