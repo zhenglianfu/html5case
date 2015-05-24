@@ -6,189 +6,329 @@
     <link rel="stylesheet" type="text/css" href="../../stylesheets/main.css">
     <link rel="stylesheet" type="text/css" href="../../stylesheets/normalize.css">
     <link rel="stylesheet" type="text/css" href="../../stylesheets/font-awesome/css/font-awesome.min.css">
-    <style>
-        .browser-list{
-            padding: 10px;
-        }
-        .browser-icon{
-            display: inline-block;
-            height: 64px;
-            width: 64px;
-        }
-        .browser-icon.small{
-            height: 32px;
-            width: 32px;
-        }
-        .chrome{
-            background: url("../../images/chrome.png") no-repeat transparent;
-            background-size: 100%;
-        }
-        .safari{
-            background: url("../../images/safari.png") no-repeat transparent;
-            background-size: 100%;
-        }
-        .firefox{
-            background: url("../../images/firefox.png") no-repeat transparent;
-            background-size: 100%;
-        }
-        .opera{
-            background: url("../../images/opera.png") no-repeat transparent;
-            background-size: 100%;
-        }
-        .ie{
-            background: url("../../images/IE.png") no-repeat transparent;
-            background-size: 100%;
-            position: relative;
-        }
-        .ie:after{
-            /*content: '10+';*/
-            display: block;
-            position: absolute;
-            font-size: 20px;
-            left: 100%;
-            top: 50%;
-            margin-top: -10px;
-            line-height: 100%;
-            font-style: normal;
-        }
-        .ctrl,
-        .result{
-            float: left;
-        }
-        .ctrl{
-            width: 33%;
-        }
-        .result{
-            width: 66%;
-        }
-        .form .fm-ipt{
-            margin-bottom: 10px;
-        }
-        .form .fm-ipt label{
-            min-width: 100px;
-            line-height: 24px;
-            display: inline-block;
-            font-size: 14px;
-        }
-        .form input{
-            line-height: 20px;
-            padding: 2px 4px;
-            font-size: 14px;
-        }
-        .target-ele{
-            border: 1px solid #ccc;
-            height: 200px;
-            width: 300px;
-            margin: 20px auto;
-        }
-        .result{
-            border: 1px solid #ccc;
-            border-width: 0 1px 1px;
-        }
-        .result .title{
-            border: 1px solid #ccc;
-            border-width: 1px 0 1px;
-            font-size: 16px;
-            padding: 3px 10px;
-            background: #eee;
-        }
-        .result .code-wrap{
-            display: inline-block;
-        }
-        .border{
-            border: 1px solid #ccc;
-        }
-        pre{
-            font-size: 14px;
-            font-family: "Courier New", Consolas, cursive;
-        }
-        .padding-top0{
-            padding-top: 0;
-        }
-        .foot{
-            margin-top: 100px;
-            border: 1px solid #ccc;
-            border-width: 1px 0 0;
-            background: #377ef0;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="./css/tool_css3.css">
 </head>
 <body>
-    <div class="gradient padding">
-        <h3>CSS3 渐变大法</h3>
-        <div class="clear-fix">
-            <div class="ctrl form">
-                <div class="padding padding-top0">
-                    <div class="border padding">
-                        <h6>基本设定</h6>
-                        <div class="fm-ipt">
-                            <label>起始颜色</label>
-                            <input />
+    <div class="container">
+        <div class="nav left-menu">
+            <div>
+                <ul class="ul-menu">
+                    <li data-alias="gradient" class="active">CSS3渐变</li>
+                    <li data-alias="gradientPlus">CSS3渐变 增强型</li>
+                    <li data-alias="matrix">Matrix</li>
+                    <li data-alias="animate">Animate</li>
+                </ul>
+                <i class="fa fa-chevron-left expand close"></i>
+            </div>
+        </div>
+        <div class="content-wrap">
+            <div class="gradient padding content active">
+                <h3>CSS3 渐变大法</h3>
+                <div class="clear-fix">
+                    <div class="ctrl form">
+                        <div class="padding padding-top0">
+                            <div class="border padding">
+                                <h6>基本设定</h6>
+                                <div class="fm-ipt">
+                                    <label>渐变方式</label>
+                                    <select>
+                                        <option class="linear">linear</option>
+                                        <option class="radial">radial</option>
+                                    </select>
+                                </div>
+                                <div class="fm-ipt">
+                                    <label>起始颜色</label>
+                                    <input type="color" class="color-selector" placeholder="example: eee"/>
+                                </div>
+                                <div class="fm-ipt">
+                                    <label>结束颜色</label>
+                                    <input type="color" class="color-selector" placeholder="example: 42a5e2"/>
+                                </div>
+                                <div class="fm-ipt">
+                                    <label>透明度</label>
+                                    <input type="range" class="range-input">
+                                </div>
+                                <div class="fm-ipt">
+                                    <label>X轴起始位置</label>
+                                    <input>
+                                </div>
+                                <div class="fm-ipt">
+                                    <label>Y轴起始位置</label>
+                                    <input>
+                                </div>
+                                <div class="fm-ipt">
+                                    <label>X轴结束位置</label>
+                                    <input>
+                                </div>
+                                <div class="fm-ipt">
+                                    <label>Y轴结束位置</label>
+                                    <input>
+                                </div>
+                                <div class="fm-ipt">
+                                    <label>角度</label>
+                                    <input>
+                                </div>
+                                <div class="fm-ipt">
+                                    <div class="text-right">
+                                        <button class="btn">添加Stop</button>
+                                    </div>
+                                </div>
+                                <div class="stop-list">
+                                    <div class="stop-item">
+                                        <div class="fm-ipt">
+                                            <label>位置</label>
+                                            <input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="fm-ipt">
+                                    <div class="text-center">
+                                        <button class="btn">Run</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="fm-ipt">
-                            <label>结束颜色</label>
-                            <input />
+                    </div>
+                    <div class="result">
+                        <div>
+                            <div class="title">初窥其表 莫知其里</div>
+                            <div>
+                                <div class="target-ele"></div>
+                            </div>
                         </div>
-                        <div class="fm-ipt">
-                            <label>透明度</label>
-                            <input type="range">
+                        <div>
+                            <div class="title">知术为下 明道为上</div>
+                            <div class="padding">
+                                <ul class="ul-border-split">
+                                    <li class="clear-fix half-padding">
+                                        <div class="f-left margin-right">
+                                            <i class="browser-icon small chrome"></i>
+                                        </div>
+                                        <div class="f-left">
+                                            <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                        </div>
+                                    </li>
+                                    <li class="clear-fix half-padding">
+                                        <div class="f-left margin-right">
+                                            <i class="browser-icon small safari"></i>
+                                        </div>
+                                        <div class="f-left">
+                                            <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                        </div>
+                                    </li>
+                                    <li class="clear-fix half-padding">
+                                        <div class="f-left margin-right">
+                                            <i class="browser-icon small firefox"></i>
+                                        </div>
+                                        <div class="f-left">
+                                            <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                        </div>
+                                    </li>
+                                    <li class="clear-fix half-padding">
+                                        <div class="f-left margin-right">
+                                            <i class="browser-icon small opera"></i>
+                                        </div>
+                                        <div class="f-left">
+                                            <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                        </div>
+                                    </li>
+                                    <li class="clear-fix half-padding">
+                                        <div class="f-left margin-right">
+                                            <i class="browser-icon small ie"></i>
+                                        </div>
+                                        <div class="f-left">
+                                            <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="result">
-                <div>
-                    <div class="title">风云际会 天崩地裂</div>
-                    <div>
-                        <div class="target-ele"></div>
+            <div class="gradientPlus padding content">
+                <h3>CSS3渐变增强版</h3>
+                <div class="clear-fix">
+                    <div class="ctrl form">
+                        <div class="padding padding-top0">
+                            <div class="border padding">
+                                <h6>设定</h6>
+                                <div class="fm-ipt">
+                                    <input>
+                                    <button class="btn">添加</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result">
+                        <div>
+                            <div class="title">控制器</div>
+                            <div></div>
+                        </div>
+                        <div>
+                            <div class="title">预览</div>
+                            <div></div>
+                        </div>
+                        <div>
+                            <div class="title">CODE</div>
+                            <div class="padding">
+                                <div class="text-center">
+                                    <button class="btn code-display-ctrl">show code</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <div class="title">招法路数 了然于心</div>
-                    <div class="padding">
-                        <ul>
-                            <li class="clear-fix">
-                                <div class="f-left margin-right">
-                                    <i class="browser-icon small chrome"></i>
+            </div>
+            <div class="matrix padding content">
+                <h3>Matrix = [黑客帝国]*[死而后生,重装上阵,矩阵革命]</h3>
+                <div class="clear-fix">
+                    <div class="ctrl form">
+                        <div class="padding-top0 padding">
+                            <div class="border padding">
+                                <h6>基本设定</h6>
+                                <div class="fm-ipt">
+                                    <label>X轴偏移</label>
+                                    <input>
                                 </div>
-                                <div class="f-left">
-                                    <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                <div class="fm-ipt">
+                                    <label>Y轴偏移</label>
+                                    <input>
                                 </div>
-                            </li>
-                        </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result">
+                        <div>
+                            <div class="title">红色还是蓝色</div>
+                            <div>
+                                <div class="target-ele"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="title">CODE透视&时间停止</div>
+                            <div class="padding">
+                                <ul class="ul-border-split">
+                                    <li class="clear-fix half-padding">
+                                        <div class="f-left margin-right">
+                                            <i class="browser-icon small chrome"></i>
+                                        </div>
+                                        <div class="f-left">
+                                            <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                        </div>
+                                    </li>
+                                    <li class="clear-fix half-padding">
+                                        <div class="f-left margin-right">
+                                            <i class="browser-icon small safari"></i>
+                                        </div>
+                                        <div class="f-left">
+                                            <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                        </div>
+                                    </li>
+                                    <li class="clear-fix half-padding">
+                                        <div class="f-left margin-right">
+                                            <i class="browser-icon small firefox"></i>
+                                        </div>
+                                        <div class="f-left">
+                                            <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                        </div>
+                                    </li>
+                                    <li class="clear-fix half-padding">
+                                        <div class="f-left margin-right">
+                                            <i class="browser-icon small opera"></i>
+                                        </div>
+                                        <div class="f-left">
+                                            <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                        </div>
+                                    </li>
+                                    <li class="clear-fix half-padding">
+                                        <div class="f-left margin-right">
+                                            <i class="browser-icon small ie"></i>
+                                        </div>
+                                        <div class="f-left">
+                                            <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <div class="title">解招拆招 入木三分</div>
-                    <div class="support padding">
-                        <ul>
-                            <li class="">
-                                <i class="browser-icon small chrome"></i>
-                            </li>
-                            <li>
-                                <i class="browser-icon small firefox"></i>
-                            </li>
-                            <li>
-                                <i class="browser-icon small safari"></i>
-                            </li>
-                            <li>
-                                <i class="browser-icon small opera"></i>
-                            </li>
-                            <li>
-                                <i class="browser-icon small ie"></i>
-                            </li>
-                        </ul>
+            </div>
+            <div class="animate padding content">
+                <h3>CSS3 大招</h3>
+                <div class="clear-fix">
+                    <div class="ctrl form">
+                        <div class="padding padding-top0">
+                            <div class="border padding">
+                                <h6>基本设定</h6>
+                                <div class="fm-ipt">
+                                    <label>周期</label>
+                                    <input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result">
+                        <div>
+                            <div class="title">CSS3上天入地</div>
+                            <div>
+                                <div class="target-ele"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="title">出神入化</div>
+                            <div class="padding">
+                                <ul class="ul-border-split">
+                                    <li class="clear-fix half-padding">
+                                        <div class="f-left margin-right">
+                                            <i class="browser-icon small chrome"></i>
+                                        </div>
+                                        <div class="f-left">
+                                            <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                        </div>
+                                    </li>
+                                    <li class="clear-fix half-padding">
+                                        <div class="f-left margin-right">
+                                            <i class="browser-icon small safari"></i>
+                                        </div>
+                                        <div class="f-left">
+                                            <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                        </div>
+                                    </li>
+                                    <li class="clear-fix half-padding">
+                                        <div class="f-left margin-right">
+                                            <i class="browser-icon small firefox"></i>
+                                        </div>
+                                        <div class="f-left">
+                                            <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                        </div>
+                                    </li>
+                                    <li class="clear-fix half-padding">
+                                        <div class="f-left margin-right">
+                                            <i class="browser-icon small opera"></i>
+                                        </div>
+                                        <div class="f-left">
+                                            <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                        </div>
+                                    </li>
+                                    <li class="clear-fix half-padding">
+                                        <div class="f-left margin-right">
+                                            <i class="browser-icon small ie"></i>
+                                        </div>
+                                        <div class="f-left">
+                                            <pre>-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="matrix padding">
-        <h3>Matrix[黑客帝国]x[死而后生,重装上阵,矩阵革命]</h3>
-        <div></div>
-    </div>
-    <div class="animate padding"></div>
-    <div class="foot">
+    <div class="footer">
         <div class="clear-fix text-center browser-list">
             <i class="browser-icon chrome" title="日中天"></i>
             <i class="browser-icon firefox" title="英雄迷途"></i>
@@ -197,6 +337,11 @@
             <i class="browser-icon ie" title="呵呵，凡人"></i>
         </div>
         <div class="text-center" style="font-size: 12px;transform: scale(0.3,0.3);">感谢以上该死的浏览器</div>
+        <div class="copyright">
+            <a href="https://github.com/zhenglianfu">&copy;zhenglianfu@github</a>
+        </div>
     </div>
+    <script type="text/javascript" src="../../javascript/zepto.min.js"></script>
+    <script type="text/javascript" src="./js/tool_css3.js"></script>
 </body>
 </html>

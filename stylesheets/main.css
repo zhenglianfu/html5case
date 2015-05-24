@@ -64,6 +64,16 @@ h6{
     width: 0;
     height: 0;
 }
+.btn{
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 3px;
+    padding: 5px 15px;
+    text-align: center;
+}
+.btn:hover{
+    background: #eee;
+}
 .box{
     padding: 10px;
     border: 1px solid #ccc;
@@ -71,8 +81,14 @@ h6{
 .text-center{
     text-align: center;
 }
+.text-right{
+    text-align: right;
+}
 .padding{
     padding: 10px;
+}
+.half-padding{
+    padding: 5px;
 }
 .margin{
     margin: 10px;
@@ -88,4 +104,12 @@ h6{
 }
 .f-right{
     float: right;
+}
+
+/* footer */
+footer,
+.footer{
+    margin-top: 50px;
+    text-align: center;
+    padding: 10px;
 }
