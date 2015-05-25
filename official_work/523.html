@@ -188,12 +188,13 @@
                     dis = (item_duration - speed) / len;
             console.log(item_duration);
             function callBack(){
+                cIndex++;
                 speed = +$('#item_duration').val() || 100;
                 cTime += item_duration;
                 cTop = cTop - height;
                 times++;
                 item_duration = item_duration > speed ? item_duration - dis : item_duration;
-                if (Math.abs(cTop) == height * (len - 1)) {
+                if (cIndex % len == 0) {
                     cTop = 0;
                     $item_list.css({top: 0});
                 }
