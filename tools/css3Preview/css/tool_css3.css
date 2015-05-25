@@ -1,10 +1,11 @@
 .container{
     position: relative;
-    height: 100%;
     overflow: hidden;
 }
 .content-wrap{
     padding-left: 16px;
+    overflow: hidden;
+    position: relative;
     -webkit-transition: all .3s;
     -moz-transition: all .3s;
     -ms-transition: all .3s;
@@ -15,7 +16,9 @@
     padding-left: 150px;
 }
 .content-wrap .content{
-    display: none;
+    background: #fff;
+    left: 20px;
+    overflow: auto;
 }
 .content-wrap .content.active{
     display: block;
@@ -28,6 +31,7 @@
     min-height: 250px;
     background: #302F34;
     color: #fff;
+    z-index: 19910829;
     -webkit-transition: all .3s;
     -moz-transition: all .3s;
     -ms-transition: all .3s;
@@ -73,8 +77,8 @@ body{
 }
 .browser-icon{
     display: inline-block;
-    height: 64px;
-    width: 64px;
+    height: 48px;
+    width: 48px;
 }
 .browser-icon.small{
     height: 32px;
