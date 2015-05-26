@@ -1,5 +1,5 @@
-/* only for mobile event */
 /* webkit chrome safari */
+// TODO 计算滑动速率，离开时速度
 (function(){
     var mTouchEvent = function mTouchEvent(){
         var uid = 0;
@@ -112,16 +112,16 @@
                 y : change.clientY
             };
             if (this.isDown(this.startPoint, point)) {
-                this.opts.down(e);
+                this.opts.down.call(this.$el, e);
             }
             if (this.isUp(this.startPoint, point)) {
-                this.opts.up(e);
+                this.opts.up.call(this.$el, e);
             }
             if (this.isLeft(this.startPoint, point)) {
-                this.opts.left(e);
+                this.opts.left.call(this.$el, e);
             }
             if (this.isRight(this.startPoint, point)) {
-                this.opts.right(e);
+                this.opts.right.call(this.$el, e);
             }
         },
         moveProxy : function(e){
@@ -137,7 +137,7 @@
             };
             this.rubLength += this.distance(curr, this.currentPoint);
             if (this.isRub(this.rubLength)) {
-                this.opts.rub(e);
+                this.opts.rub.call(this.$el, e);
             }
             this.currentPoint = curr;
         },
@@ -162,10 +162,10 @@
                 // 间隔2帧处理一次
                 if (diffTime > 100 / 3) {
                     if ((delta = this.isRotateLeft(x, y, z)) > 0) {
-                        this.opts.rotateLeft(e, Math.abs(delta));
+                        this.opts.rotateLeft.call(this.opts.$el, e, Math.abs(delta));
                     }
                     if ((delta = this.isRotateRight(x, y, z)) > 0) {
-                        this.opts.rotateRight(e, Math.abs(delta));
+                        this.opts.rotateRight.call(this.opts.$el, e, Math.abs(delta));
                     }
                 }
                 // 间隔100ms处理一次
@@ -174,7 +174,7 @@
                     var speed = Math.abs(x + y + z - this.acceleratorX - this.acceleratorY - this.acceleratorZ) / diffTime * 100;
                     if (this.isShake(speed)) {
                         // speed is 10~50+
-                        this.opts.shake(e, speed/10, acceleration);
+                        this.opts.shake.call(this.opts.$el, e, speed/10, acceleration);
                     }
                 }
                 this.acceleratorX = x;
@@ -205,7 +205,7 @@
                     gammaDeg : e.gamma
                 });
             }
-            this.opts.motion(e, this.motionStatus);
+            this.opts.motion.call(this.opts.$el, e, this.motionStatus);
         },
         clearPressTimer : function(){
             this.pressed = false;
@@ -224,7 +224,7 @@
             var that = this;
             this.pressedTimer = setTimeout(function(){
                 that.pressed = true;
-                that.opts.press(e);
+                that.opts.press.call(that.opts.$el, e);
             }, 2000);
         },
         init : function(){

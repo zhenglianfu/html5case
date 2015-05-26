@@ -458,6 +458,10 @@ PManager.load('zepto,engine', function(data, error){
             }
         });
         // move event
+        // TODO save as a common component -> drag-component
+        function Drag(el, opts){
+
+        }
         var mouseDown = false,
             originX = 0,
             originY = 0,
@@ -474,6 +478,8 @@ PManager.load('zepto,engine', function(data, error){
             originY = e.clientY + pageYOffset;
             originPositionY = clipHelper.offsetTop;
             originPositionX = clipHelper.offsetLeft;
+            width  = clipHelper.offsetWidth;
+            height = clipHelper.offsetHeight;
             mouseDown = true;
         });
         clipHelper.addEventListener('mousemove', function(e){
@@ -499,10 +505,58 @@ PManager.load('zepto,engine', function(data, error){
                     top : top
                 });
             }
-        }, true);
+        });
         clipHelper.addEventListener('mouseup', function(){
             mouseDown = false;
         });
+        var blocks = document.querySelectorAll('.block');
+        for (var i = 0, len = blocks.length; i < len; i++) {
+            blocks[i].addEventListener('mousedown', cliperResize);
+            blocks[i].addEventListener('mousemove', cliperResize, true);
+            blocks[i].addEventListener('mouseup', cliperResize);
+        }
+        document.body.addEventListener('mouseup', cliperResize);
+        var resizeMouseDown = false;
+        var width  = 0;
+        var height = 0;
+        // 被父类元素capture住了mousemove事件, 没有dispatch到子元素
+        function cliperResize(e){
+            var ele = this,
+                className = ' ' + ele.className + ' ';
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.type == 'mousedown'){
+                originPositionX = e.clientX + pageXOffset;
+                originPositionY = e.clientY + pageYOffset;
+                width  = $('#clipHelper').offset().width;
+                height = $('#clipHelper').offset().height;
+                resizeMouseDown = true;
+            } else if (e.type == 'mousemove') {
+                if (resizeMouseDown) {
+                    if (className.indexOf('north') > -1) {
+
+                    } else if (className.indexOf(' south ') > -1) {
+                        var deltaY = e.clientY + pageYOffset - originPositionY;
+                        $('#clipHelper').height(height + deltaY);
+                    } else if (className.indexOf(' west ') > -1) {
+
+                    } else if (className.indexOf(' east ') > -1) {
+                        var deltaX = e.clientX + pageXOffset - originPositionX;
+                        $('#clipHelper').width(width + deltaX);
+                    } else if (className.indexOf(' north-east ') > -1) {
+
+                    } else if (className.indexOf(' north-west ') > -1) {
+
+                    } else if (className.indexOf(' south-east ') > -1) {
+
+                    } else if (className.indexOf(' south-west ') > -1) {
+
+                    }
+                }
+            } else if (e.type == 'mouseup') {
+                resizeMouseDown = false;
+            }
+        }
     }());
 
     // common functions
