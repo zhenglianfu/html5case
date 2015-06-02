@@ -535,26 +535,24 @@ PManager.load('zepto,engine', function(data, error){
                 resizeMouseDown = true;
             } else if (e.type == 'mousemove') {
                 if (resizeMouseDown) {
-                    if (className.indexOf('north') > -1) {
-                        var deltaY = e.clientY + pageYOffset - originPositionY;
+                    var deltaX = e.clientX + pageXOffset - originPositionX,
+                        deltaY = e.clientY + pageYOffset - originPositionY;
+                    if (className.indexOf(' north ') > -1) {
                         $('#clipHelper').height(height - deltaY).css('top', top + deltaY);
                     } else if (className.indexOf(' south ') > -1) {
-                        var deltaY = e.clientY + pageYOffset - originPositionY;
                         $('#clipHelper').height(height + deltaY);
                     } else if (className.indexOf(' west ') > -1) {
-                        var deltaX = e.clientX + pageXOffset - originPositionX;
                         $('#clipHelper').width(width - deltaX).css('left', left + deltaX);
                     } else if (className.indexOf(' east ') > -1) {
-                        var deltaX = e.clientX + pageXOffset - originPositionX;
                         $('#clipHelper').width(width + deltaX);
                     } else if (className.indexOf(' north-east ') > -1) {
-
+                        $('#clipHelper').height(height - deltaY).css('top', top + deltaY).width(width + deltaX);
                     } else if (className.indexOf(' north-west ') > -1) {
-
+                        $('#clipHelper').height(height - deltaY).css('top', top + deltaY).width(width - deltaX).css('left', left + deltaX);
                     } else if (className.indexOf(' south-east ') > -1) {
-
+                        $('#clipHelper').height(height + deltaY).width(width + deltaX);
                     } else if (className.indexOf(' south-west ') > -1) {
-
+                        $('#clipHelper').height(height + deltaY).width(width - deltaX).css('left', left + deltaX);
                     }
                 }
             } else if (e.type == 'mouseup') {
