@@ -530,16 +530,20 @@ PManager.load('zepto,engine', function(data, error){
                 originPositionY = e.clientY + pageYOffset;
                 width  = $('#clipHelper').offset().width;
                 height = $('#clipHelper').offset().height;
+                top    = parseInt($('#clipHelper').css('top'));
+                left   = parseInt($('#clipHelper').css('left'));
                 resizeMouseDown = true;
             } else if (e.type == 'mousemove') {
                 if (resizeMouseDown) {
                     if (className.indexOf('north') > -1) {
-
+                        var deltaY = e.clientY + pageYOffset - originPositionY;
+                        $('#clipHelper').height(height - deltaY).css('top', top + deltaY);
                     } else if (className.indexOf(' south ') > -1) {
                         var deltaY = e.clientY + pageYOffset - originPositionY;
                         $('#clipHelper').height(height + deltaY);
                     } else if (className.indexOf(' west ') > -1) {
-
+                        var deltaX = e.clientX + pageXOffset - originPositionX;
+                        $('#clipHelper').width(width - deltaX).css('left', left + deltaX);
                     } else if (className.indexOf(' east ') > -1) {
                         var deltaX = e.clientX + pageXOffset - originPositionX;
                         $('#clipHelper').width(width + deltaX);
