@@ -86,6 +86,66 @@ body{
     background: rgba(255, 255, 255, .3);
     cursor: move;
 }
+.clip-helper .block{
+    width: 6px;
+    height: 6px;
+    background: #333;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.clip-helper .block.north{
+    top: -3px;
+    left: 50%;
+    margin-left: -3px;
+    cursor: n-resize;
+}
+.clip-helper .block.south{
+    top: 100%;
+    left: 50%;
+    margin-top: -3px;
+    margin-left: -3px;
+    cursor: n-resize;
+}
+.clip-helper .block.east{
+    top: 50%;
+    left: 100%;
+    margin-top: -3px;
+    margin-left: -3px;
+    cursor: e-resize;
+}
+.clip-helper .block.west{
+    top: 50%;
+    left: -3px;
+    margin-top: -3px;
+    cursor: e-resize;
+}
+.clip-helper .block.north-east{
+    top: -3px;
+    left: 100%;
+    margin-left: -3px;
+    cursor: ne-resize;
+}
+.clip-helper .block.north-west{
+    top: -3px;
+    left: -3px;
+    cursor: nw-resize;
+}
+.clip-helper .block.south-west{
+    top: 100%;
+    left: 0;
+    margin-left: -3px;
+    margin-top: -3px;
+    cursor: sw-resize;
+}
+.clip-helper .block.south-east{
+    top: 100%;
+    left: 100%;
+    margin-left: -3px;
+    margin-top: -3px;
+    cursor: se-resize;
+}
 .ctrl-btns{
     text-align: center;
     margin-top: 10px;

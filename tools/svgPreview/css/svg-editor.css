@@ -51,6 +51,7 @@
     position: absolute;
     left: 100%;
     top: 50%;
+    display: none;
 }
 .panel .right{
     margin-left: -5px;
@@ -79,7 +80,6 @@
 }
 .tool-bar .box-title{
     border-bottom: 1px solid #ccc;
-    cursor: move;
     padding: 5px;
     font-size: 14px;
 }
