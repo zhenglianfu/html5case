@@ -130,17 +130,19 @@
             <div class="editor-panel">
                 <div class="svg-editor">
                     <div class="menu-bar">
-                        <ul>
-                            <li class="menu-item"></li>
-                            <li></li>
-                            <li></li>
+                        <ul class="menu-list clear-fix">
+                            <li class="menu-item" id="add">新建</li>
+                            <li class="menu-item" id="clear">清空</li>
+                            <li class="menu-item" id="saveFile">保存为svg</li>
+                            <li class="menu-item" id="saveImg">保存为图片</li>
+                            <li class="menu-item" id="code">代码输出</li>
                         </ul>
                     </div>
                     <div class="tool-bar">
                         <div class="box-title">工具箱</div>
                         <div class="tool-list-wrap">
                             <ul class="tool-list">
-                                <li class="tool-item">
+                                <li class="tool-item" id="line">
                                     <div class="tool-item-content">
                                         <svg width="38px" height="37px">
                                             <g>
@@ -149,7 +151,7 @@
                                         </svg>
                                     </div>
                                 </li>
-                                <li class="tool-item even">
+                                <li class="tool-item even" id="rect">
                                     <div class="tool-item-content">
                                         <svg width="38px" height="37px">
                                             <g>
@@ -158,7 +160,7 @@
                                         </svg>
                                     </div>
                                 </li>
-                                <li class="tool-item">
+                                <li class="tool-item" id="circle">
                                     <div class="tool-item-content">
                                         <svg width="38px" height="37px">
                                             <g>
@@ -175,7 +177,7 @@
                                         </svg>
                                     </div>
                                 </li>
-                                <li class="tool-item">
+                                <li class="tool-item" id="pen">
                                     <div class="tool-item-content">
                                         <svg width="38px" height="37px">
                                             <path d="M24,6L6,24M30,12L12,30M27,9L9,27M24,6L30,12M6,24L12,30L6,32L6,24" class="default-stroke"></path>

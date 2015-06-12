@@ -67,12 +67,24 @@
     border-bottom: 1px solid #cccccc;
     height: 35px;
     box-shadow: 0 1px 2px #ccc;
+
+}
+.menu-list{
+    height: 100%;
+}
+.menu-list .menu-item{
+    float: left;
+    padding: 9px 15px;
+    border-right: 1px solid #ccc;
+    cursor: pointer;
+}
+.menu-list .menu-item:hover{
+    background: #eee;
 }
 .tool-bar{
     position: absolute;
     width: 80px;
     border: 1px solid #ccc;
-    box-shadow: 1px 1px 2px #aaa;
     height: 240px;
     background: #fff;
     border-width: 0 1px 0 0;
@@ -101,6 +113,10 @@
 .tool-list .tool-item.even{
     border: 0 none;
     border-bottom: 1px solid #ccc;
+}
+.tool-item.active,
+.tool-item.active svg{
+    background: #eee;
 }
 .tool-item-content{
     cursor: pointer;

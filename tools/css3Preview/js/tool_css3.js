@@ -16,16 +16,26 @@
         var name = $(this).attr('data-alias');
         $contents.find('.content').removeClass('active');
         $contents.find('.' + name).addClass('active');
-        scrollToContent($contents.find('.' + name).index())
+        scrollToContent($contents.find('.' + name).index());
+        $menu.find('li').removeClass('active');
+        $(this).addClass('active');
+    });
+    $contents.bind('click', function(){
+        if (menuClosed == false) {
+            menuClosed = true;
+            $menu.removeClass('open');
+        }
     });
     function scrollToContent(index){
-        var $wrap = $('.content-wrap');
+        $contents.scrollTop(contentHeight * index);
 
     }
     function resizePanel(){
         var height = document.documentElement.clientHeight;
         contentHeight = height - $('.footer').height();
         $('.content-wrap, .content').height(contentHeight);
+        // start point
+        scrollToContent(0);
     }
     resizePanel();
     window.addEventListener('resize', resizePanel);
