@@ -11,7 +11,7 @@ PManager.add([{
     }
 },{
     engine : {
-        url : '../apps/lib/engine.js',
+        url : '../learning/lib/engine.js',
         module : 'engine',
         jsPath : true
     }

@@ -3,9 +3,38 @@
  *
  * #提供基础元素，容器，精灵，定时器，加载资源文件
  * #提供事件支持
- * underscore
+ *
  * */
 (function(){
+    /* 大量常用js方法 */
+    var _ = {
+        extend : function(){
+            var target = arguments[0],
+                len = arguments.length,
+                copy,
+                deep = false,
+                k,
+                item,
+                i = 1;
+            if (typeof target === 'boolean') {
+                deep = target;
+                target = arguments[1];
+                i++;
+            }
+            for (; i < len; i ++) {
+                copy = arguments[i];
+                if (copy) {
+
+                }
+            }
+        },
+        map : function(iter, fn){
+
+        }
+    };
+    var requestAnimationFrame = window.requestAnimationFrame ? requestAnimationFrame : function(fn){
+        return setTimeout(fn, 100 / 6);
+    };
     var join = Array.prototype.join;
     var slice = Array.prototype.slice;
     var toString = Object.prototype.toString;
