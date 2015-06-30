@@ -7,47 +7,73 @@
  * */
 (function(){
     /* 大量常用js方法 */
+    var classes = {};
+    var core_toString = classes.toString;
     var _ = {
+        isArray : Array.isArray || function(arr){
+            return core_toString.apply(arr) === '[object Array]';
+        },
         extend : function(){
             var target = arguments[0],
-                len = arguments.length,
                 copy,
-                deep = false,
-                k,
-                item,
-                i = 1;
+                len = arguments.length,
+                i = 1,
+                k, item,
+                deep = false;
             if (typeof target === 'boolean') {
                 deep = target;
-                target = arguments[1];
-                i++;
+                i ++;
+                target = arguments[i];
             }
-            for (; i < len; i ++) {
-                copy = arguments[i];
-                if (copy) {
-
+            for (;i < len; i++) {
+                var item = arguments[i];
+                if(item){
+                    for(k in item){
+                        copy = item[k];
+                        if (typeof copy === 'object' && deep) {
+                            if (Array.isArray(copy)) {
+                                target[k] = _.extend(deep, [], copy);
+                            } else {
+                                target[k] = _.extend(deep, {}, copy);
+                            }
+                        } else if (copy != null) {
+                            target[k] = copy;
+                        }
+                    }
+                }
+            }
+            return target;
+        },
+        each : function(iter, fn){
+            var len,
+                i = 0;
+            if (iter && (len = iter.length)) {
+                for (; i < len; i++) {
+                    fn && fn.call(iter[i], i, iter[i], iter);
                 }
             }
         },
         map : function(iter, fn){
-
+            var len,
+                i = 0,
+                res = [];
+            if (iter && (len = iter.length)) {
+                for(; i < len; i++){
+                    res[i] = fn && fn.call(iter[i], i, iter[i], iter);
+                }
+                return res;
+            }
         }
     };
-    var requestAnimationFrame = window.requestAnimationFrame ? requestAnimationFrame : function(fn){
+    _.each('Object|Array|RegExp|Date|Number|Null|Undefined|Boolean|String', function(i, v){
+        classes['[object ' + v + ']'] = v.toLowerCase();
+    });
+    var requestAnimationFrame = window.requestAnimationFrame ? window.requestAnimationFrame : function(fn){
         return setTimeout(fn, 100 / 6);
     };
-    var join = Array.prototype.join;
-    var slice = Array.prototype.slice;
-    var toString = Object.prototype.toString;
-    Engine.isArray = Array.prototype.isArray || function(arr){
-        return '[object Array]' === toString.apply(arr, []);
+    var cancelAnimationFrame = window.cancelAnimationFrame ? window.cancelAnimationFrame : function(id){
+        return clearTimeout(id);
     };
-    // ext
-    Function.prototype.extend = function(opts){
-        var p = new this();
-        function child(){};
-        child.prototype = $.extend({_super: this}, p, opts);
-        return child;
-    }
     // engine
     function Engine(canvas){
         if (!(this instanceof  Engine)) {
@@ -61,8 +87,34 @@
         this.lineWidth = 1;
         var buffer = document.createElement('canvas');
         this.bufferCtx = buffer.getContext('2d');
+        this.sprites = [];
+        this.length = 0;
+        this.soundChannels = [];
+        this.soundChannels.length = 3;
+        this.paused = false;
+        this.running = null;
+        this.allTime = 0;
+        this.pauseTime = 0;
+        this.startTime = 0;
+        this._events = {};
     }
+    Engine.handler_uuid = 0;
+    Engine.eventTypes = {
+        start : 'start',
+        end : 'end',
+        run : 'run'
+    };
     Engine.prototype = {
+        on : function(type, handler){
+            this._events[type] = this._events[type] || [];
+            if (handler) {
+                handler.uuid = Engine.handler_uuid++;
+                this._events[type].push(handler);
+            }
+        },
+        getSprites : function(){
+          return this.sprites;
+        },
         setFillStyle : function(){
             if (arguments.length == 1) {
                 this.ctx.fillStyle = arguments[0];
@@ -80,23 +132,6 @@
         moveTo : function(x, y){
             this.ctx.moveTo(x, y);
         },
-        drawRect : function(){
-
-        },
-        drawImg : function(img, position){
-           var w = this.canvas.width,
-               y = this.canvas.height;
-           if (typeof img === 'string') {
-               var temp = new Image();
-               temp.src = img;
-               temp.onload = function(){
-                   this.ctx.drawImage(temp, position.x, position.y, position.width, position.height);
-               }
-           } else {
-               this.ctx.drawImage(img, position.x, position.y, position.width, position.height);
-           }
-
-        },
         getImageData : function(x, y, w, h){
             return this.ctx.getImageData(x, y, w, h);
         },
@@ -107,22 +142,210 @@
         clearAll : function(){
             this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
             return this;
+        },
+        _hasSprite : function(sprite){
+            if (sprite) {
+                for (var i = 0, len = this.sprites.length; i < len; i++) {
+                    if (sprite.id === this.sprites[i].id) {
+                        return i;
+                    }
+                }
+            }
+            return -1;
+        },
+        addSprite: function(sprite){
+            if (sprite instanceof Engine.Sprite && this._hasSprite(sprite) === -1) {
+                this.sprites.push(sprite);
+                this.length = this.sprites.length;
+            }
+        },
+        putSprite: function(sprite){
+            return this.addSprite(sprite);
+        },
+        removeAllSprite: function(){
+            this.sprites = [];
+            this.length = 0;
+        },
+        removeSprite: function(sprite){
+            var index;
+            if (sprite instanceof Engine.Sprite && (index = this._hasSprite(sprite)) > -1) {
+                this.sprites.splice(index, 1);
+                this.length = this.sprites.length;
+            }
+        },
+        deleteSprite: function(sprite){
+            var index;
+            if (sprite instanceof Engine.Sprite && (index = this._hasSprite(sprite)) > -1) {
+                this.sprites.splice(index, 1);
+                this.length = this.sprites.length;
+            }
+        },
+        draw: function(){
+            // clear first
+            this.clearAll();
+            // engine's resource
+            // sprites on this engine
+            for (var i = 0, len = this.sprites.length; i < len; i++) {
+                var sprite = this.sprites[i];
+                sprite.draw(this.ctx);
+            }
+        },
+        start: function(){
+            var engine = this;
+            engine.running = true;
+            engine.paused = false;
+            this.startTime = new Date().getTime();
+            this._run(this);
+            this._eventTrigger({type: 'start'});
+        },
+        _eventTrigger: function(event){
+            var handlers = this._events[event.type];
+            if (handlers) {
+                for (var i = 0, len = handlers.length; i < len; i++) {
+                    handlers[i].apply(this, arguments);
+                }
+            }
+        },
+        _run: function(engine){
+            (function loop(){
+                engine.draw();
+                engine.timer = engine.running && !engine.paused && requestAnimationFrame(function(){
+                    loop();
+                });
+            }());
+        },
+        end : function(){
+            cancelAnimationFrame(this.timer);
+            this.running = false;
+            this._eventTrigger({type: 'end'});
+        },
+        pause : function(){
+            this.paused = true;
+            cancelAnimationFrame(this.timer);
+        },
+        resume : function(){
+            this.paused = false;
+            this._run(this);
         }
     };
+
+    // sprite def
     Engine.Sprite = function(opts){
         if (!(this instanceof Engine.Sprite)) {
             return new Engine.Sprite(opts);
         }
-        this.opts = $.extend({
-            functions : {}
+        this.opts = _.extend({
+            name : 'ghost',
+            imgSrc : '',
+            videoSrc : '',
+            audioSrc : '',
+            load : function(){},
+            text : '',
+            resType: ''
         }, opts);
+        this.name = this.opts.name;
         this.visible = false;
+        this.id = this.name + '_' + (new Date().getTime() + Engine.Sprite.sp_uuid++);
         this.width = 0;
         this.height = 0;
+        this.point = {
+            x : 0,
+            y : 0
+        };
+        this.rotate = 0;
+        this.lifeEnd = false;
+        this.visible = true;
+        this.loaded = false;
+        this.init();
         return this;
-    }
+    };
+    // sprite generate uuid, make sure (new Sprite).id is unique
+    Engine.Sprite.sp_uuid = 0;
     Engine.Sprite.prototype = {
+        init: function(){
+            if (this.opts.imgSrc) {
+                this.opts.resType = 'img';
+                this.image = new Image;
+            } else if (this.opts.audioSrc) {
+                this.opts.resType = 'audio';
+                this.audio = document.createElement('audio');
+            } else if (this.opts.videoSrc) {
+                this.opts.resType = 'video';
+                this.video = document.createElement('video');
+            } else {
+                this.opts.resType = 'text';
+            }
+        },
+        load: function(){
+            if (this.loaded) {
+                return;
+            }
+            var sprite = this;
+            var args = arguments
+            var onloadProxy = function(){
+                sprite.loaded = true;
+                sprite.opts.load.apply(sprite, args);
+            };
+            // resource type
+            var type = this.opts.resType;
+            switch (type){
+                case 'img' :
+                    this.image.onload = onloadProxy;
+                    this.image.src = this.opts.imgSrc;
+                    break;
+                case 'video':
+                    this.video.onload = onloadProxy;
+                    this.video.src = this.opts.videoSrc;
+                    break;
+                case 'sound':
+                    this.audio.onload = onloadProxy;
+                    this.audio.src = this.opts.audioSrc;
+                    break;
+                default :
+                    this.text = this.opts.text;
+                    break;
+            }
+        },
+        draw : function(ctx){
+            if (this.visible == false || this.lifeEnd == true) {
+                return;
+            }
+            ctx.save();
+            ctx.translate((this.point.x + this.width / 2), (this.point.y + this.height / 2));
+            ctx.rotate(this.rotate);
+            ctx.translate(-(this.point.x + this.width / 2), -(this.point.y + this.height / 2));
+            var type = this.opts.resType;
+            var sprite = this;
+            if (this.loaded == false) {
+                // auto call load function
+                sprite.load();
+                setTimeout(function(){
+                    sprite.draw(ctx);
+                }, 50);
+                return;
+            }
+            switch (type){
+                case 'img':
+                    ctx.drawImage(this.image, this.point.x, this.point.y, this.width, this.height);
+                    break;
+                case 'sound':
+                    if (this.audio) {
+                        this.audio.play();
+                    }
+                case 'video':
+                    // draw image
+                    if (this.video) {
 
+                    }
+            }
+            ctx.restore();
+        },
+        setVisible: function(visible){
+            this.visible = visible;
+        },
+        getVisible: function(){
+            return this.visible;
+        }
     };
     Engine.Sprite.extend = function(){
 

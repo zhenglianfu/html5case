@@ -2,26 +2,165 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <title>接冰块</title>
+    <style>
+        .box{
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            float: left;
+        }
+        #loading{
+            height: 1em;
+            background: #90deff;
+            width: 0%;
+        }
+    </style>
 </head>
 <body>
 <div>
-    <canvas></canvas>
-</div>
-<script type="text/javascript">
-    function Engine(canvas){
-        if (!(this instanceof Engine)) {
-            return new Engine(canvas);
-        }
-        this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
-    }
-    function Spite(){
-        if (!(this instanceof Spite)) {
-            return new Spite();
-        }
-    }
+    <div id="score">0</div>
+    <div id="loading" data-num="0"></div>
+    <div class="box">
+        <canvas id="main"></canvas>
+    </div>
 
+</div>
+<script type="text/javascript" src="../learning/lib/engine.js"></script>
+<script type="text/javascript">
+    var ele_score = document.getElementById('score');
+    var engine = new Engine(document.getElementById('main'));
+    engine.canvas.height = document.documentElement.clientHeight;
+    engine.canvas.width  = 300;
+    var len = 3;
+    var spite;
+    var loadCount = 0;
+    var load = function(i, len){
+        this.width = this.image.width;
+        this.height = this.image.height;
+    };
+    var ices = [];
+    engine.on('start', function(){
+        console.log('start');
+    });
+    engine.on('end', function(){
+        console.log('game over');
+        this.removeAllSprite();
+        this.addSprite(girl);
+        this.draw();
+    });
+    engine.start();
+    setTimeout(function(){
+        engine.end();
+        cancelAnimationFrame(dropTimer);
+        clearTimeout(generateTimer);
+    }, 3000);
+    window.engine = engine;
+    runTimer = null;
+    runSpeed = 2;
+    generateSpaceTime = 1000;
+    generateTimer = null;
+    dropTimer = null;
+    var girl = new Engine.Sprite({
+        type: 'img',
+        imgSrc: './resources/image/ice_block.png',
+        load: function(){
+            this.width = this.image.width;
+            this.height = this.image.height;
+            this.point.x = (engine.canvas.width - this.width)/2;
+            this.point.y = engine.canvas.height - this.height;
+        },
+        name: 'ice'
+    });
+    engine.addSprite(girl);
+    function generateIce(len){
+        len = len || 1;
+        var i = 0;
+        for (; i < len; i++) {
+            var sprite = new Engine.Sprite({
+                type: 'img',
+                imgSrc: './resources/image/ice_block.png',
+                load: load,
+                name: 'player'
+            });
+            sprite.point.x = (engine.canvas.width - 70) * Math.random();
+            sprite.point.y = -Math.random() * engine.canvas.height - 70;
+            ices.push(sprite);
+            engine.putSprite(sprite);
+        }
+        return sprite;
+    }
+    score = 0;
+    function drop(){
+        var ice;
+        for (var i = 0, len = ices.length; i < len; i++) {
+            ice = ices[i];
+            if (ice.getVisible() && ice.point.y + ice.height > engine.canvas.height - girl.height && ice.point.y + ice.height < engine.canvas.height - girl.height / 2 && Math.abs(girl.point.x - ice.point.x) < girl.width / 2) {
+                score++;
+                ice.setVisible(false);
+                ele_score.innerHTML = score;
+            }
+            if (ice.point.y > engine.canvas.height) {
+                ice.setVisible(false);
+                engine.deleteSprite(ice);
+            }
+            if (ice.loaded) {
+                ice.point.y += 2;
+                ice.rotate  += 0.1;
+            }
+        }
+    }
+    var canvas = document.getElementById('main');
+    canvas.addEventListener('touchstart', function(e){
+        e.preventDefault();
+    });
+    if (window.isMobile || true) {
+        canvas.addEventListener('touchstart', function(e){
+            var event = e.changedTouches[0];
+            var offsetX = event.clientX - canvas.getBoundingClientRect().left;
+            if (offsetX > canvas.width / 2) {
+                run('right');
+            } else {
+                run('left');
+            }
+        });
+        canvas.addEventListener('touchend', function(e){
+            var event = e.changedTouches[0];
+            console.log(event);
+            stopRunning();
+        });
+    } else {
+        canvas.addEventListener('mousedown', function(e){
+
+        });
+        canvas.addEventListener('mouseup', function(e){
+
+        });
+    }
+    function run(orient){
+        if (orient == 'left') {
+            girl.point.x -= runSpeed;
+            girl.point.x = girl.point.x < 0 ? 0 : girl.point.x;
+        } else {
+            girl.point.x += runSpeed;
+            var max = engine.canvas.width - girl.width;
+            girl.point.x = girl.point.x > max ? max : girl.point.x;
+        }
+        runTimer = requestAnimationFrame(function(){
+            run(orient)
+        });
+    }
+    function stopRunning(){
+        cancelAnimationFrame(runTimer);
+    }
+    (function loop(){
+        drop();
+        dropTimer = requestAnimationFrame(loop);
+    }());
+    (function loop(){
+        generateIce(len);
+        generateTimer = setTimeout(loop, generateSpaceTime);
+    }());
 </script>
 </body>
 </html>
