@@ -32,6 +32,7 @@
     var engine = new Engine(document.getElementById('main'));
     engine.canvas.height = document.documentElement.clientHeight;
     engine.canvas.width  = 300;
+    var gameTime = 30000;
     var len = 3;
     var spite;
     var loadCount = 0;
@@ -54,7 +55,7 @@
         engine.end();
         cancelAnimationFrame(dropTimer);
         clearTimeout(generateTimer);
-    }, 3000);
+    }, gameTime);
     window.engine = engine;
     runTimer = null;
     runSpeed = 2;

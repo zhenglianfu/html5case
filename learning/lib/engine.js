@@ -63,6 +63,9 @@
                 }
                 return res;
             }
+        },
+        type: function(x){
+            return classes[core_toString.apply(x)];
         }
     };
     _.each('Object|Array|RegExp|Date|Number|Null|Undefined|Boolean|String', function(i, v){
@@ -99,6 +102,37 @@
         this._events = {};
     }
     Engine.handler_uuid = 0;
+    Engine.requestAnimationFrame = function(fn){
+        return requestAnimationFrame.call(window, fn);
+    };
+    Engine.cancelAnimationFrame  = function(id){
+        return cancelAnimationFrame.call(window, id);
+    };
+    Engine.setTimeout = function(){
+        switch (arguments.length){
+            case 1:
+                return {
+                    id : requestAnimationFrame(arguments[0]),
+                    type: 'frame'
+                };
+                break;
+            default:
+                return {
+                    id : setTimeout(arguments[0], arguments[1]),
+                    type: 'timeout'
+                };
+        }
+        return {};
+    };
+    Engine.clearTimeout = function(timer){
+        if (timer.type === 'frame') {
+            cancelAnimationFrame(timer.id);
+        } else if (timer.type === 'timeout'){
+            clearTimeout(timer.id);
+        } else {
+            console.error('unexpect value of timer.type');
+        }
+    };
     Engine.eventTypes = {
         start : 'start',
         end : 'end',
@@ -143,6 +177,9 @@
             this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
             return this;
         },
+        reset : function(){
+            // TODO reset
+        },
         _hasSprite : function(sprite){
             if (sprite) {
                 for (var i = 0, len = this.sprites.length; i < len; i++) {
@@ -158,6 +195,7 @@
                 this.sprites.push(sprite);
                 this.length = this.sprites.length;
             }
+            return this;
         },
         putSprite: function(sprite){
             return this.addSprite(sprite);
@@ -173,6 +211,15 @@
                 this.length = this.sprites.length;
             }
         },
+        replaceSprite: function(oldSp, newSp){
+            if (oldSp instanceof Engine.Sprite && newSp instanceof Engine.Sprite) {
+                var index = this._hasSprite(oldSp);
+                if (~index) {
+                    this.sprites[index] = newSp;
+                }
+            }
+            return this;
+        },
         deleteSprite: function(sprite){
             var index;
             if (sprite instanceof Engine.Sprite && (index = this._hasSprite(sprite)) > -1) {
@@ -187,7 +234,9 @@
             // sprites on this engine
             for (var i = 0, len = this.sprites.length; i < len; i++) {
                 var sprite = this.sprites[i];
+                this.ctx.save();
                 sprite.draw(this.ctx);
+                this.ctx.restore();
             }
         },
         start: function(){
@@ -226,6 +275,9 @@
         resume : function(){
             this.paused = false;
             this._run(this);
+        },
+        isEnd: function(){
+            return this.running == false;
         }
     };
 
@@ -274,6 +326,8 @@
                 this.video = document.createElement('video');
             } else {
                 this.opts.resType = 'text';
+                this.text = this.opts.text;
+                this.loaded = true;
             }
         },
         load: function(){
@@ -281,7 +335,7 @@
                 return;
             }
             var sprite = this;
-            var args = arguments
+            var args = arguments;
             var onloadProxy = function(){
                 sprite.loaded = true;
                 sprite.opts.load.apply(sprite, args);
@@ -332,11 +386,18 @@
                     if (this.audio) {
                         this.audio.play();
                     }
+                    break;
                 case 'video':
                     // draw image
                     if (this.video) {
 
                     }
+                    break;
+                case 'text':
+                    ctx.font = this.opts.font || '1rem';
+                    ctx.fillStyle = this.opts.fillStyle || '#000';
+                    ctx.fillText(this.text, this.point.x, this.point.y);
+                    break;
             }
             ctx.restore();
         },
