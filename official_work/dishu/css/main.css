@@ -1,0 +1,6 @@
+.wrap{
+    width: 600px;
+    margin: auto;
+    border: 1px solid #ccc;
+    position: relative;
+}

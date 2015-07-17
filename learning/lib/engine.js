@@ -9,6 +9,9 @@
     /* 大量常用js方法 */
     var classes = {};
     var core_toString = classes.toString;
+    var arr = [];
+    var core_slice = arr.slice;
+    var core_concat = arr.concat;
     var _ = {
         isArray : Array.isArray || function(arr){
             return core_toString.apply(arr) === '[object Array]';
@@ -66,11 +69,24 @@
         },
         type: function(x){
             return classes[core_toString.apply(x)];
+        },
+        proxy: function(fn, context, args){
+            args = args || [];
+            return function(){
+                var arg_arr = core_slice.apply(arguments, [0]);
+                fn.apply(context, core_concat.apply(arg_arr, args));
+            };
         }
     };
     _.each('Object|Array|RegExp|Date|Number|Null|Undefined|Boolean|String', function(i, v){
         classes['[object ' + v + ']'] = v.toLowerCase();
     });
+    function DumpEvent(){
+        var event = document.createEvent('MouseEvents');
+        event.initEvent('custom', true, true);
+        return event;
+    }
+    // frame flash time
     var requestAnimationFrame = window.requestAnimationFrame ? window.requestAnimationFrame : function(fn){
         return setTimeout(fn, 100 / 6);
     };
@@ -78,11 +94,15 @@
         return clearTimeout(id);
     };
     // engine
-    function Engine(canvas){
+    function Engine(canvas, originWith, originHeight){
         if (!(this instanceof  Engine)) {
-            return new Engine(canvas);
+            return new Engine(canvas, originWith, originHeight);
         }
         this.canvas = canvas;
+        this.originWidth = originWith || canvas.width;
+        this.originHeight = originHeight || canvas.height;
+        this.scaleY = canvas.height / this.originHeight;
+        this.scaleX = canvas.width / this.originWidth;
         this.ctx = canvas.getContext('2d');
         // default style
         this.fillStyle = '#fff';
@@ -100,8 +120,12 @@
         this.pauseTime = 0;
         this.startTime = 0;
         this._events = {};
+        // bind user input event
+        this._bindUserEvent();
     }
     Engine.handler_uuid = 0;
+    Engine.event_handler_uuid = 0;
+
     Engine.requestAnimationFrame = function(fn){
         return requestAnimationFrame.call(window, fn);
     };
@@ -139,6 +163,23 @@
         run : 'run'
     };
     Engine.prototype = {
+        resize: function(){
+          this._resize();
+        },
+        _resize: function(){
+            this.scaleX = this.canvas.width / this.originWidth;
+            this.scaleY = this.canvas.height / this.originHeight;
+        },
+        _bindUserEvent : function(){
+            var userEvents = 'click|mousedown|mouseup|mousemove|touchstart|touchend|touchmove|touchcancel|dbclick|drop|wheel|mousewheel'.split('|');
+            for (var i = 0, len = userEvents.length; i < len; i++) {
+                this.canvas.addEventListener(userEvents[i], _.proxy(this._dispatchUserInput, this));
+            }
+            document.body.addEventListener('keydown', _.proxy(this._dispatchUserInput, this));
+            document.body.addEventListener('keyup', _.proxy(this._dispatchUserInput, this));
+            window.addEventListener('resize', _.proxy(this._dispatchUserInput, this));
+            window.addEventListener('resize', _.proxy(this._resize, this));
+        },
         on : function(type, handler){
             this._events[type] = this._events[type] || [];
             if (handler) {
@@ -235,7 +276,7 @@
             for (var i = 0, len = this.sprites.length; i < len; i++) {
                 var sprite = this.sprites[i];
                 this.ctx.save();
-                sprite.draw(this.ctx);
+                sprite.draw(this.ctx, this);
                 this.ctx.restore();
             }
         },
@@ -278,8 +319,62 @@
         },
         isEnd: function(){
             return this.running == false;
+        },
+        _dispatchUserInput: function(e){
+            var type = e.type.toLowerCase();
+            var len = this.sprites.length;
+            // displath to all sprite who register
+            if (~['keyup', 'keydown', 'resize'].indexOf(type)) {
+                for (var i = 0; i < len; i++) {
+                   this.sprites[i].trigger(type, e);
+                }
+            } else if (~['click','dbclick', 'wheel', 'mousewheel', 'mousedown','mouseup','mousemove','touchstart','touchmove', 'touchend', 'touchcancel', 'drop'].indexOf(type)) {
+                var position = {};
+                if (/touch/.test(type)){
+                    position = [];
+                    var touchs = e.changedTouches;
+                    var len = touchs.length;
+                    for (var i = 0; i < len; i++) {
+                        position[i] = this._offsetEventPosition(touchs[i].clientX, touchs[i].clientY);
+                    }
+                } else {
+                    position = this._offsetEventPosition(e.clientX, e.clientY);
+                }
+                for (var i = 0; i < len; i++) {
+                    if (this._isInSpritePath(this.sprites[i], position)){
+                        this.sprites[i].trigger(type, e);
+                    };
+                }
+            }
+        },
+        _isInSpritePath: function(sprite, point){
+            // TODO consider scale
+            var scaleX = this.scaleX;
+            var scaleY = this.scaleY;
+            if (_.isArray(point)) {
+
+            } else {
+
+            }
+            console.log(point);
+        },
+        _offsetEventPosition: function(clientX, clientY){
+            var scrollTop = window.pageYOffset || window.scrollY || document.body.scrollTop;
+            var scrollLeft = window.pageXOffset || window.scrollX || document.body.scrollLeft;
+            var offsetLeft = this.canvas.offsetLeft;
+            var offsetTop = this.canvas.offsetTop;
+            var offsetEl = this.canvas;
+            while((offsetEl = offsetEl.offsetParent)){
+                offsetLeft += offsetEl.offsetLeft;
+                offsetTop += offsetEl.offsetTop;
+            }
+            return {
+                x : clientX + scrollLeft - offsetLeft,
+                y : clientY + scrollTop - offsetTop
+            }
         }
     };
+
 
     // sprite def
     Engine.Sprite = function(opts){
@@ -293,20 +388,33 @@
             audioSrc : '',
             load : function(){},
             text : '',
-            resType: ''
+            resType: '',
+            width: 0,
+            height: 0,
+            x: 0,
+            y: 0,
+            visible: true
         }, opts);
+        this.eventsHandler = {};
+        var load = this.opts.load;
+        this.opts.load = function(){
+            if (this.opts.resType == 'img') {
+                this.width = this.image.width;
+                this.height = this.image.height;
+            }
+            load.apply(this, arguments);
+        };
         this.name = this.opts.name;
-        this.visible = false;
         this.id = this.name + '_' + (new Date().getTime() + Engine.Sprite.sp_uuid++);
         this.width = 0;
         this.height = 0;
         this.point = {
-            x : 0,
-            y : 0
+            x : this.opts.x,
+            y : this.opts.y
         };
         this.rotate = 0;
         this.lifeEnd = false;
-        this.visible = true;
+        this.visible = this.opts.visible;
         this.loaded = false;
         this.init();
         return this;
@@ -314,6 +422,34 @@
     // sprite generate uuid, make sure (new Sprite).id is unique
     Engine.Sprite.sp_uuid = 0;
     Engine.Sprite.prototype = {
+        // TODO Engine应该处理事件冒泡代理
+        on: function(type, handler){
+            this.eventsHandler[type] = this.eventsHandler[type] || [];
+            handler.uuid = Engine.event_handler_uuid++;
+            this.eventsHandler[type].push(handler);
+        },
+        off : function(type, handler){
+            switch (arguments.length) {
+                case 1:
+                    this.eventsHandler[type] = [];
+                    break;
+                case 2:
+                    var handlers = this.eventsHandler[type];
+                    if (handlers && handlers.indexOf(handler) > -1) {
+                        handlers.splice(handlers.indexOf(handler), 1);
+                    }
+                    break;
+                default :
+            }
+        },
+        trigger: function(type, event){
+            var handlers = this.eventsHandler[type];
+            if (handlers && handlers.length) {
+                for (var i = 0, len = handlers.length; i < len; i++) {
+                    handlers[i].call(this, event || DumpEvent());
+                }
+            }
+        },
         init: function(){
             if (this.opts.imgSrc) {
                 this.opts.resType = 'img';
@@ -360,27 +496,30 @@
                     break;
             }
         },
-        draw : function(ctx){
+        draw : function(ctx, engine){
             if (this.visible == false || this.lifeEnd == true) {
                 return;
             }
-            ctx.save();
-            ctx.translate((this.point.x + this.width / 2), (this.point.y + this.height / 2));
-            ctx.rotate(this.rotate);
-            ctx.translate(-(this.point.x + this.width / 2), -(this.point.y + this.height / 2));
             var type = this.opts.resType;
             var sprite = this;
             if (this.loaded == false) {
                 // auto call load function
                 sprite.load();
                 setTimeout(function(){
-                    sprite.draw(ctx);
+                    sprite.draw(ctx, engine);
                 }, 50);
                 return;
             }
+            ctx.save();
+            ctx.translate((this.point.x + this.width / 2), (this.point.y + this.height / 2));
+            ctx.rotate(this.rotate);
+            ctx.translate(-(this.point.x + this.width / 2), -(this.point.y + this.height / 2));
             switch (type){
                 case 'img':
+                    ctx.save();
+                    ctx.scale(engine.scaleX, engine.scaleY);
                     ctx.drawImage(this.image, this.point.x, this.point.y, this.width, this.height);
+                    ctx.restore();
                     break;
                 case 'sound':
                     if (this.audio) {
