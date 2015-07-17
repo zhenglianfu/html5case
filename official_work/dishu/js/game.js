@@ -58,6 +58,10 @@
 
     preLoad(function(){
         // after load all resources
+        engine.addSprite(Engine.Sprite({
+            name: 'bg',
+            imgSrc: './image/bg.png'
+        }));
         for (var i = 0; i < 9; i++) {
             hmSprites[i] = Engine.Sprite({
                 name: '',
@@ -74,24 +78,26 @@
                 y: points[i * 2 + 1]
             });
         }
+        engine.addSprite(hmSprites);
+        engine.addSprite(lockSprites);
+        var start = new Date().getTime();
+        var space = 3000;
+        var num = 1;
+        var rate = 0.3;
+        (function reDraw(){
+            var spend = new Date().getTime() - start;
+            // set visible = false
+            for (var i = 0; i < 9; i++) {
+                hmSprites[i].visible = false;
+            }
+            for (var i = 0; i < num; i++) {
+                var isEvil = Math.random() > 0.7;
+                var index = (Math.random() * 9) >> 0;
+                lockSprites[i].visible = hmSprites[index].visible = true;
+            }
+        }())
     });
     window.engine = engine;
     window.onresize = resize;
     resize();
-    var start = new Date().getTime();
-    var space = 3000;
-    var num = 1;
-    var rate = 0.3;
-    (function reDraw(){
-        var spend = new Date().getTime() - start;
-        // set visible = false
-        for (var i = 0; i < 9; i++) {
-            hmSprites[i].visible = false;
-        }
-        for (var i = 0; i < num; i++) {
-            var isEvil = Math.random() > 0.7;
-            var index = (Math.random() * 9) >> 0;
-            lockSprites[i].visible = hmSprites[index].visible = true;
-        }
-    }())
 }());
