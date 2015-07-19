@@ -12,9 +12,15 @@
     var arr = [];
     var core_slice = arr.slice;
     var core_concat = arr.concat;
+    var rtrim = /^\s+|\s+$/g;
     var _ = {
         isArray : Array.isArray || function(arr){
             return core_toString.apply(arr) === '[object Array]';
+        },
+        trim: String.prototype.trim ? function(str){
+            return str.trim();
+        } : function(str){
+            return str.replace(rtrim, '');
         },
         extend : function(){
             var target = arguments[0],
@@ -321,27 +327,30 @@
             return this.running == false;
         },
         _dispatchUserInput: function(e){
+            if (this.paused || this.running == false) {
+                return false;
+            }
             var type = e.type.toLowerCase();
             var len = this.sprites.length;
             // displath to all sprite who register
             if (~['keyup', 'keydown', 'resize'].indexOf(type)) {
                 for (var i = 0; i < len; i++) {
-                   this.sprites[i].trigger(type, e);
+                   this.sprites[i].visible && this.sprites[i].trigger(type, e);
                 }
             } else if (~['click','dbclick', 'wheel', 'mousewheel', 'mousedown','mouseup','mousemove','touchstart','touchmove', 'touchend', 'touchcancel', 'drop'].indexOf(type)) {
                 var position = {};
                 if (/touch/.test(type)){
                     position = [];
                     var touchs = e.changedTouches;
-                    var len = touchs.length;
-                    for (var i = 0; i < len; i++) {
+                    var elen = touchs.length;
+                    for (var i = 0; i < elen; i++) {
                         position[i] = this._offsetEventPosition(touchs[i].clientX, touchs[i].clientY);
                     }
                 } else {
                     position = this._offsetEventPosition(e.clientX, e.clientY);
                 }
                 for (var i = 0; i < len; i++) {
-                    if (this._isInSpritePath(this.sprites[i], position)){
+                    if (this.sprites[i].visible && this._isInSpritePath(this.sprites[i], position)){
                         this.sprites[i].trigger(type, e);
                     };
                 }
@@ -349,14 +358,22 @@
         },
         _isInSpritePath: function(sprite, point){
             // TODO consider scale
-            var scaleX = this.scaleX;
-            var scaleY = this.scaleY;
+            var x = this.scaleX * sprite.point.x;
+            var y = this.scaleY * sprite.point.y;
+            var w = this.scaleX * sprite.width;
+            var h = this.scaleY * sprite.height;
             if (_.isArray(point)) {
-
+                for (var i = 0, len = point.length; i < len; i++) {
+                    var px = point[i].x;
+                    var py = point[i].y;
+                    if (px >= x && px <= x + w && py >= y && py <= y + h) {
+                        return true;
+                    }
+                }
             } else {
-
+                return point.x >= x && point.y <= x + w && point.y >= y && point.y <= y + h;
             }
-            console.log(point);
+            return false;
         },
         _offsetEventPosition: function(clientX, clientY){
             var scrollTop = window.pageYOffset || window.scrollY || document.body.scrollTop;
@@ -406,8 +423,8 @@
         };
         this.name = this.opts.name;
         this.id = this.name + '_' + (new Date().getTime() + Engine.Sprite.sp_uuid++);
-        this.width = 0;
-        this.height = 0;
+        this.width = this.opts.width;
+        this.height = this.opts.height;
         this.point = {
             x : this.opts.x,
             y : this.opts.y
@@ -420,13 +437,18 @@
         return this;
     };
     // sprite generate uuid, make sure (new Sprite).id is unique
+    // TODO 使用全参数的drawImage(), 修改构造函数支持图片裁剪绘制
     Engine.Sprite.sp_uuid = 0;
     Engine.Sprite.prototype = {
         // TODO Engine应该处理事件冒泡代理
         on: function(type, handler){
-            this.eventsHandler[type] = this.eventsHandler[type] || [];
-            handler.uuid = Engine.event_handler_uuid++;
-            this.eventsHandler[type].push(handler);
+            var types = type.split(',');
+            for (var i = 0; i < types.length; i ++) {
+                type = _.trim(types[i]);
+                this.eventsHandler[type] = this.eventsHandler[type] || [];
+                handler.uuid = handler.uuid == null ? Engine.event_handler_uuid++ : handler.uuid;
+                this.eventsHandler[type].push(handler);
+            }
         },
         off : function(type, handler){
             switch (arguments.length) {
@@ -461,8 +483,8 @@
                 this.opts.resType = 'video';
                 this.video = document.createElement('video');
             } else {
-                this.opts.resType = 'text';
-                this.text = this.opts.text;
+                this.opts.resType = this.opts.resType || 'text';
+                this.text = this.opts.text || '';
                 this.loaded = true;
             }
         },
@@ -514,12 +536,12 @@
             ctx.translate((this.point.x + this.width / 2), (this.point.y + this.height / 2));
             ctx.rotate(this.rotate);
             ctx.translate(-(this.point.x + this.width / 2), -(this.point.y + this.height / 2));
+            ctx.save();
+            ctx.scale(engine.scaleX, engine.scaleY);
+            ctx.beginPath();
             switch (type){
                 case 'img':
-                    ctx.save();
-                    ctx.scale(engine.scaleX, engine.scaleY);
                     ctx.drawImage(this.image, this.point.x, this.point.y, this.width, this.height);
-                    ctx.restore();
                     break;
                 case 'sound':
                     if (this.audio) {
@@ -533,11 +555,21 @@
                     }
                     break;
                 case 'text':
-                    ctx.font = this.opts.font || '1rem';
+                    ctx.font = this.opts.font || 'normal normal 1rem "Microsoft YaHei", "STHeiti Light", sans-serif';
                     ctx.fillStyle = this.opts.fillStyle || '#000';
                     ctx.fillText(this.text, this.point.x, this.point.y);
                     break;
+                case 'rect':
+                    ctx.fillStyle = this.opts.fillStyle || '#000';
+                    ctx.strokeStyle = this.opts.strokeStyle || this.opts.fillStyle;
+                    ctx.lineWidth = this.opts.lineWidth || this.opts.lineWidth;
+                    ctx.lineCap = this.opts.lineCap || 'butt';
+                    ctx.rect(this.point.x, this.point.y, this.width, this.height);
+                    ctx.stroke();
+                    ctx.fill();
             }
+            ctx.closePath();
+            ctx.restore();
             ctx.restore();
         },
         setVisible: function(visible){

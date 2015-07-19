@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>放大镜</title>
+</head>
+<body>
+    <canvas id="magnifier"></canvas>
+    <script>
+        var canvas = document.getElementById("magnifier");
+        var context = canvas.getContext('2d');
+        var img = new Image;
+        img.onload = function(){
+            canvas.width = this.width / 2;
+            canvas.height = this.height / 2;
+            context.drawImage(this, 0, 0, canvas.width, canvas.height);
+        }
+        img.src = './image/sample.jpg';
+        var dragging = false;
+        var imgData;
+        var magnificationScale = 1.1;
+        var magnifyingGlassY = 0;
+        var magnifyingGlassX = 0;
+        var magnifyRectangle = {};
+        var magnifyingGlassRadius = 50;
+        canvas.addEventListener('mousemove', function(e){
+            if (dragging) {
+                eraseMagnifyingGlass();
+                drawMagnifyingGlass(windowToCanvas(e.clientX, e.clientY));
+            }
+        }, true);
+        canvas.addEventListener('mousedown', function(){
+            dragging = true;
+        });
+        canvas.addEventListener('mouseup', function(){
+            dragging = false;
+            eraseMagnifyingGlass();
+        });
+        function eraseMagnifyingGlass(){
+            if (imgData != null) {
+                context.putImageData(imgData, magnifyRectangle.x, magnifyRectangle.y);
+            }
+        }
+        function windowToCanvas(clientX, clientY){
+            var scrollTop = window.pageYOffset || document.body.scrollTop;
+            var scrollLeft = window.pageXOffset || document.body.scrollLeft;
+            var offsetTop = canvas.offsetTop;
+            var offsetLeft = canvas.offsetLeft;
+            var offsetParent = canvas;
+            while((offsetParent = offsetParent.offsetParent) != null) {
+                offsetLeft += offsetParent.offsetLeft;
+                offsetTop += offsetParent.offsetTop;
+            }
+            return {
+                x : clientX + scrollLeft - offsetLeft,
+                y : clientY + scrollTop - offsetTop
+            };
+        }
+
+        function calculateMagnifyRectangle(mouse){
+            magnifyRectangle.x = mouse.x - magnifyingGlassRadius;
+            magnifyRectangle.y = mouse.y - magnifyingGlassRadius;
+            magnifyRectangle.height = 2 * magnifyingGlassRadius;
+            magnifyRectangle.width = 2 * magnifyingGlassRadius;
+        }
+
+        function drawMagnifyingGlass(mouse){
+            var scaleMagnifyRectangle = null;
+            magnifyingGlassX = mouse.x;
+            magnifyingGlassY = mouse.y;
+            calculateMagnifyRectangle(mouse);
+            imgData = context.getImageData(magnifyRectangle.x, magnifyRectangle.y, magnifyRectangle.width, magnifyRectangle.height);
+            context.save();
+            scaleMagnifyRectangle = {
+                width: magnificationScale * magnifyRectangle.width,
+                height: magnificationScale * magnifyRectangle.height
+            };
+            setClip();
+            context.drawImage(canvas, magnifyRectangle.x, magnifyRectangle.y, magnifyRectangle.width, magnifyRectangle.height,
+                   magnifyRectangle.x + magnifyRectangle.width / 2 - scaleMagnifyRectangle.width / 2, magnifyRectangle.y + magnifyRectangle.height / 2 - scaleMagnifyRectangle.height / 2,
+                    scaleMagnifyRectangle.width, scaleMagnifyRectangle.height);
+            context.restore();
+            drawMagnifyingGlassCircle(mouse);
+        }
+
+        function setClip(){
+            context.beginPath();
+            context.arc(magnifyingGlassX, magnifyingGlassY, magnifyingGlassRadius, 0, 2*Math.PI, false);
+            context.clip();
+            context.closePath();
+        }
+        function drawMagnifyingGlassCircle(mouse){
+            context.fillStyle= 'rgba(0,0,0,.3)';
+            context.beginPath();
+            context.strokeStyle = "#fff";
+            context.lineWidth = 2;
+            context.arc(mouse.x, mouse.y, magnifyingGlassRadius - 1 , 0, 2*Math.PI, false);
+            context.stroke();
+            context.closePath();
+        }
+
+    </script>
+</body>
+</html>
