@@ -1,7 +1,6 @@
 .wrap{
     max-width: 621px;
     margin: auto;
-    border: 1px solid #ccc;
     position: relative;
 }
 .align-center{
@@ -10,11 +9,15 @@
 .fix{
     position: fixed;
     bottom: 0;
+    width: 100%;
 }
 #startSection{
     position: absolute;
-    top: 15%;
+    top: 0;
     width: 100%;
+    padding-top: 20%;
+    background: rgba(0,0,0,.7);
+    height: 100%;
 }
 #loading{
     position: absolute;
@@ -36,4 +39,15 @@
     -ms-transform: translateX(-50%);
     -o-transform: translateX(-50%);
     transform: translateX(-50%);
+}
+.light{
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 98;
+    pointer-events: none;
+    height: 100%;
+}
+.light image{
+    height: 100%;
 }

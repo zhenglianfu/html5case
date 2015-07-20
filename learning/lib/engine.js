@@ -155,6 +155,10 @@
         return {};
     };
     Engine.clearTimeout = function(timer){
+        if (timer == null) {
+            return;
+        }
+        // check timer
         if (timer.type === 'frame') {
             cancelAnimationFrame(timer.id);
         } else if (timer.type === 'timeout'){
@@ -171,6 +175,28 @@
     Engine.prototype = {
         resize: function(){
           this._resize();
+        },
+        preLoad: function(fn){
+            var engine = this;
+            var length = this.sprites.length;
+            // call load of every sprite
+            for (var i = 0; i < length; i++) {
+                engine.sprites[i].loaded == false && engine.sprites[i].load();
+            }
+            // calculate loading status
+            (function call(){
+                var c = 0;
+                for (var i = 0; i < length; i++) {
+                    if (engine.sprites[i].loaded) {
+                        c ++;
+                    }
+                }
+                if (c == length) {
+                    fn && fn();
+                } else {
+                    Engine.setTimeout(call, 100);
+                }
+            }());
         },
         _resize: function(){
             this.scaleX = this.canvas.width / this.originWidth;
@@ -238,6 +264,7 @@
             return -1;
         },
         addSprite: function(sprite){
+            // TODO sort by index
             if (sprite instanceof Engine.Sprite && this._hasSprite(sprite) === -1) {
                 this.sprites.push(sprite);
                 this.length = this.sprites.length;
@@ -328,7 +355,7 @@
         },
         _dispatchUserInput: function(e){
             if (this.paused || this.running == false) {
-                return false;
+                //return false;
             }
             var type = e.type.toLowerCase();
             var len = this.sprites.length;
@@ -371,7 +398,7 @@
                     }
                 }
             } else {
-                return point.x >= x && point.y <= x + w && point.y >= y && point.y <= y + h;
+                return point.x >= x && point.x <= x + w && point.y >= y && point.y <= y + h;
             }
             return false;
         },
@@ -399,6 +426,7 @@
             return new Engine.Sprite(opts);
         }
         this.opts = _.extend({
+            index : 0, // 默认层级
             name : 'ghost',
             imgSrc : '',
             videoSrc : '',
@@ -500,6 +528,7 @@
             };
             // resource type
             var type = this.opts.resType;
+            // video sound用h5元素，canvas不适用
             switch (type){
                 case 'img' :
                     this.image.onload = onloadProxy;
@@ -577,6 +606,23 @@
         },
         getVisible: function(){
             return this.visible;
+        },
+        life: function(millionSec, fn){
+            console.log(millionSec);
+            var sprite = this;
+            this.trigger('lifestart');
+            if (this.lifeTimer) {
+                Engine.clearTimeout(this.lifeTimer);
+            }
+            this.lifeTimer = Engine.setTimeout(function(){
+                sprite.endLife();
+                fn && fn.call(sprite);
+            }, millionSec);
+        },
+        endLife: function(){
+            Engine.clearTimeout(this.lifeTimer);
+            this.visible = false;
+            this.trigger('lifeend');
         }
     };
     Engine.Sprite.extend = function(){

@@ -346,7 +346,7 @@
             /**
              * token is the identity of the module you add in
              * obj.module is the moduleName in the environment, such as window.$
-             * obj.name_space is the module's name space, jquery's name space is window
+             * obj.name_space is the module's name spriteLife, jquery's name spriteLife is window
              * obj.require : the other modules it depends on
              * obj.styleList : the css files of this module
              * */

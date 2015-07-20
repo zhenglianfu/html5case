@@ -3,7 +3,7 @@
  */
 
 
-(function(){
+//(function(){
     var childPoints = [100,260,265,250,435,238,100,440,274,440,444,430,116,604,280,604,446,597];
     var evilPoints =  [100,240,277,230,437,220,110,424,290,419,455,413,120,587,295,582,455,576];
     var lockPoints =  [120,250,280,250,450,250,120,450,300,450,460,450,120,610,310,610,460,596];
@@ -29,11 +29,9 @@
         './image/zhanji.png'
     ];
     var startTime = new Date().getTime();
-    var space = 1000;
-    var num = 1;
-    var gameMilliseconds = 30000;
+    var spriteLife = 1500;
+    var gameMilliseconds = 60000;
     var evilRate = 0.3;
-    var drawTimer = null;
     var numIncreaseTimer = null;
     var spaceMinusTimer = null;
     var gameTimeTimer = null;
@@ -41,13 +39,19 @@
     var secondTextSprite = null;
     var timeProcessSprite = null;
     var score = 0;
-    var scoreSprite = null;
+    var scoreOnImgSprite = null;
     var timeProcessWidth = 450;
     var timeProcessHeight = 30;
+    var zhanjiSprite = null;
+    var restartSprite = null;
+    var shareSprite = null;
+    var rankTextSprite = null;
+    var addSpace = 300;
     var evilRectangle = {
         width: 118,
         height: 146
     };
+    var isEnd = false;
     var evilImg = new Image;
     evilImg.src = './image/renwu2.png';
     var childRectangle = {
@@ -88,26 +92,63 @@
         return engine;
     }
     function restore(){
+        restartSprite.visible = false;
+        zhanjiSprite.visible = false;
+        scoreOnImgSprite.visible = false;
+        shareSprite.visible = false;
+        rankTextSprite.visible = false;
         startTime = new Date().getTime();
-        space = 3000;
-        num = 1;
+        spriteLife = 1500;
         score = 0;
         secondTextSprite.text = gameMilliseconds / 1000 + '\'s';
         timeProcessSprite.width = timeProcessWidth;
+        isEnd = false;
     }
     function end(){
-        secondTextSprite.text = '0\'s';
-        engine.draw();
-        engine.end();
-        Engine.clearTimeout(drawTimer);
+        isEnd = true;
         Engine.clearTimeout(numIncreaseTimer);
         Engine.clearTimeout(spaceMinusTimer);
         Engine.clearTimeout(gameTimeTimer);
         Engine.clearTimeout(secondTextTimer);
+        for (var i = 0; i < humanSprites.length; i ++) {
+            humanSprites[i].endLife();
+            humanSprites[i].visible = false;
+            lockSprites[i].visible = false;
+        }
+        secondTextSprite.text = '0\'s';
+        zhanjiSprite.visible = true;
+        scoreOnImgSprite.visible = true;
+        restartSprite.visible = true;
+        shareSprite.visible = true;
+        rankTextSprite.visible = true;
+        scoreOnImgSprite.text = score + '';
+        scoreSprite.text = score + '';
+        timeProcessSprite.width = 0;
+        engine.end();
+        engine.draw();
     }
 
     function touchListener(e){
-        console.log(this.name, this.opts.index, e.clientX, e.clientY);
+        var index = this.opts.index;
+        var sprite = humanSprites[index];
+        sprite.endLife();
+        if (this.clicking) {
+            console.log('clicking');
+            return;
+        }
+        sprite.clicking = true;
+        if (this.name == 'evil') {
+            score --;
+        } else {
+            score ++;
+            sprite.visible = true;
+            Engine.setTimeout(function(){
+                sprite.visible = false;
+            }, 100);
+            lockSprites[index].visible = false;
+        }
+        scoreSprite.text = score + '';
+        Engine.setTimeout(addBlock, addSpace);
     }
 
     function start(){
@@ -115,52 +156,16 @@
         var timerSeconds = seconds;
         var timeProcessMinusWidth = timeProcessWidth / (seconds * 60);
         restore();
-        (function reDraw(){
-            var spend = new Date().getTime() - startTime;
-            // set visible = false
-            for (var i = 0; i < 9; i++) {
-                humanSprites[i].visible = false;
-                lockSprites[i].visible = false;
-            }
-            for (var i = 0; i < num; i++) {
-                var isEvil = Math.random() > 0.7;
-                var index = (Math.random() * 9) >> 0;
-                var sprite = humanSprites[index];
-                if (isEvil) {
-                    sprite.image = evilImg;
-                    sprite.name = 'evil';
-                    sprite.point = {
-                        x : evilPoints[index * 2],
-                        y : evilPoints[index * 2 + 1]
-                    };
-                    sprite.width = evilRectangle.width;
-                    sprite.height = evilRectangle.height;
-                    lockSprites[index].visible = false;
-                } else {
-                    sprite.image = childImg;
-                    sprite.name = 'child';
-                    sprite.point = {
-                        x : childPoints[index * 2],
-                        y : childPoints[index * 2 + 1]
-                    };
-                    sprite.width = childRectangle.width;
-                    sprite.height = childRectangle.height;
-                    lockSprites[index].visible = true;
-                }
-                sprite.visible = true;
-            }
-            drawTimer = Engine.setTimeout(reDraw, space);
-        }());
         (function loop(){
-            num += 1;
+            !isEnd && addBlock();
             numIncreaseTimer = Engine.setTimeout(loop, gameMilliseconds / 5);
         }());
         (function loop(){
-            space /= 1.2;                                                                                                   ;
+            spriteLife /= 1.05;
             spaceMinusTimer = Engine.setTimeout(loop, gameMilliseconds / 5);
         }());
         (function loop(){
-            // ¶ÁÃë
+            // ï¿½ï¿½ï¿½ï¿½
             timeProcessSprite.width -= timeProcessMinusWidth;
             gameTimeTimer = Engine.setTimeout(loop);
         }());
@@ -182,10 +187,36 @@
     }
 
     function addBlock(){
-        var index = (Math.random() * humanSprites.length) >> 0;
-        while(humanSprites[index].visible == false) {
-            var sprite = humanSprites[i];
-
+        var c = 0;
+        while(isEnd == false && (c++ < 100)){
+            var index = (Math.random() * humanSprites.length) >> 0;
+            var sprite = humanSprites[index];
+            if (sprite.visible == false) {
+                sprite.visible = true;
+                sprite.clicking = false;
+                if (calculateIsEvilSprite()) {
+                    sprite.image = evilImg;
+                    sprite.point.x = evilPoints[index * 2];
+                    sprite.point.y = evilPoints[index * 2 + 1];
+                    sprite.width = evilRectangle.width;
+                    sprite.height = evilRectangle.height;
+                    sprite.name = 'evil';
+                } else {
+                    lockSprites[index].visible = true;
+                    sprite.image = childImg;
+                    sprite.point.x = childPoints[index * 2];
+                    sprite.point.y = childPoints[index * 2 + 1];
+                    sprite.width = childRectangle.width;
+                    sprite.height = childRectangle.height;
+                    sprite.name = 'child';
+                }
+                sprite.life(spriteLife, function(){
+                    this.visible = false;
+                    lockSprites[this.opts.index].visible = false;
+                    setTimeout(addBlock, addSpace);
+                });
+                break;
+            }
         }
     }
 
@@ -210,7 +241,6 @@
             name: 'scoreText',
             resType: 'text',
             text: '0',
-            fillStyle: '#fff',
             font: 'normal normal 30px "Microsoft YaHei", "STHeiti Light", sans-serif',
             x: 348,
             y: 128
@@ -230,7 +260,7 @@
         timeProcessSprite = Engine.Sprite($.extend({}, processOpts, {
             name: 'timeProcess',
             fillStyle: '#12A13F',
-            lineWidth: 0,
+            lineWidth: 0
         }));
         engine.addSprite(timeProcessSprite);
         secondTextSprite = Engine.Sprite({
@@ -252,7 +282,7 @@
             });
             // pre load at first
             humanSprites[i].loaded = true;
-            humanSprites[i].on('mousedown,touchstart', touchListener);
+            humanSprites[i].on('touchstart', touchListener);
             engine.addSprite(humanSprites[i]);
             lockSprites[i] = Engine.Sprite({
                 name: 'lock',
@@ -263,11 +293,62 @@
             });
             engine.addSprite(lockSprites[i]);
         }
-        $('#loading').remove();
+        zhanjiSprite = Engine.Sprite({
+            name: 'zhangji',
+            imgSrc: './image/zhanji.png',
+            x: 34,
+            y: 250,
+            visible: false
+        });
+        engine.addSprite(zhanjiSprite);
+        restartSprite = Engine.Sprite({
+            name : 'restart',
+            imgSrc: './image/playagain.png',
+            x: 50,
+            y: 560,
+            visible: false
+        });
+        restartSprite.on('click', function(){
+            start();
+        });
+        engine.addSprite(restartSprite);
+        shareSprite = Engine.Sprite({
+            name : 'share',
+            imgSrc: 'image/share.png',
+            x: 365,
+            y: 560,
+            visible: false
+        });
+        shareSprite.on('click', function(){
+            //mami.share();
+        });
+        engine.addSprite(shareSprite);
+        rankTextSprite = Engine.Sprite({
+            name: 'rankText',
+            resType: 'text',
+            text: '65.0%',
+            x: 280,
+            y: 460,
+            visible: false,
+            font: 'normal normal 32px "Microsoft YaHei", "STHeiti Light", sans-serif'
+        });
+        engine.addSprite(rankTextSprite);
+        scoreOnImgSprite = Engine.Sprite({
+            name : 'scoreOnImg',
+            text : score + '',
+            resType: 'text',
+            x: 430,
+            y: 390,
+            visible: false,
+            font: 'normal normal 32px "Microsoft YaHei", "STHeiti Light", sans-serif'
+        });
+        engine.addSprite(scoreOnImgSprite);
+        engine.preLoad(function(){
+            $('#loading').remove();
+        });
+        resize();
         engine.draw();
     });
-
     window.engine = engine;
     window.onresize = resize;
-    resize();
-}());
+//}());
