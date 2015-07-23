@@ -1,10 +1,35 @@
-(function(){
+(function(global){
     var menuClosed = true,
         $menu = $('.left-menu'),
         $contents = $('.content-wrap'),
         contentHeight = 0,
         contentScrollTop = 0,
-        codePreWidth = 0;
+        codePreWidth = 0,
+        browsers = [{
+            name: 'standard',
+            icon: 'standard',
+            prefix: ''
+        },{
+            name: 'chrome',
+            icon: 'chrome',
+            prefix: '-webkit-'
+        },{
+            name: 'safari',
+            icon: 'safari',
+            prefix: '-webkit-'
+        },{
+            name: 'firefox',
+            icon: 'firefox',
+            prefix: '-moz-'
+        },{
+            name: 'opera',
+            icon: 'opera',
+            prefix: '-o-'
+        },{
+            name: 'spartan',
+            icon: 'ie',
+            prefix: '-ms-'
+        }];
     $menu.find('.expand').click(function(){
         if (menuClosed) {
             $menu.addClass('open');
@@ -44,7 +69,7 @@
         //// resize code width
         codePreWidth = $('.result').width() - 80;
         $('.code').width(codePreWidth);
-
+        global.codePreWidth = codePreWidth;
         var height = document.documentElement.clientHeight;
         contentHeight = height - $('.footer')[0].clientHeight;
         $('.content-wrap, .content').height(contentHeight);
@@ -54,5 +79,27 @@
     }
     resizePanel();
     window.addEventListener('resize', resizePanel);
-}());
+    global.browsers = browsers;
+    global.form2Obj = function form2Obj($content){
+        var obj = {};
+        $content = $($content);
+        $content.find('input, select').each(function(){
+            if (this.name && this.disabled !== true) {
+                var curVal = obj[this.name];
+                var name = this.name;
+                var value = this.value;
+                if (typeof curVal === 'undefined') {
+                    obj[name] = value;
+                } else if (typeof curVal === 'string') {
+                    curVal = [curVal];
+                    curVal.push(value);
+                    obj[name] = curVal;
+                } else {
+                    obj[name].push(value);
+                }
+            }
+        });
+        return obj;
+    }
+}(window));
 // TODO 动态加入五个浏览器的codeline

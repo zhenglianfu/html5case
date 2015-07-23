@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="content-wrap">
-            <div class="gradient content active">
+            <div id="gradient" class="gradient content active">
                 <div class="padding">
                     <h3>CSS3 渐变大法</h3>
                     <div class="clear-fix">
@@ -32,42 +32,42 @@
                                     <h6>基本设定</h6>
                                     <div class="fm-ipt">
                                         <label>渐变方式</label>
-                                        <select>
+                                        <select name="type">
                                             <option class="linear">linear</option>
                                             <option class="radial">radial</option>
                                         </select>
                                     </div>
                                     <div class="fm-ipt">
                                         <label>起始颜色</label>
-                                        <input type="color" class="color-selector" placeholder="example: eee"/>
+                                        <input type="color" name="start" class="color-selector" placeholder="example: eee"/>
                                     </div>
                                     <div class="fm-ipt">
                                         <label>结束颜色</label>
-                                        <input type="color" class="color-selector" placeholder="example: 42a5e2"/>
+                                        <input type="color" name="end" class="color-selector" placeholder="example: 42a5e2"/>
                                     </div>
                                     <div class="fm-ipt">
                                         <label>透明度</label>
-                                        <input type="range" class="range-input">
+                                        <input type="range" name="opacity" class="range-input">
                                     </div>
                                     <div class="fm-ipt">
                                         <label>X轴起始位置</label>
-                                        <input type="text">
+                                        <input type="text" name="sx">
                                     </div>
                                     <div class="fm-ipt">
                                         <label>Y轴起始位置</label>
-                                        <input type="text">
+                                        <input type="text" name="sy">
                                     </div>
                                     <div class="fm-ipt">
                                         <label>X轴结束位置</label>
-                                        <input type="text">
+                                        <input type="text" name="ex">
                                     </div>
                                     <div class="fm-ipt">
                                         <label>Y轴结束位置</label>
-                                        <input type="text">
+                                        <input type="text" name="ey">
                                     </div>
                                     <div class="fm-ipt">
                                         <label>角度</label>
-                                        <input type="text">
+                                        <input type="text" name="angle">
                                     </div>
                                     <div class="fm-ipt">
                                         <div class="text-right">
@@ -78,7 +78,9 @@
                                         <div class="stop-item">
                                             <div class="fm-ipt">
                                                 <label>位置</label>
-                                                <input type="text">
+                                                <input name="stop" type="text" placeholder="百分比：30%">
+                                                <input name="stop" type="text" placeholder="百分比：30%">
+                                                <input name="stop" type="text" placeholder="百分比：30%">
                                             </div>
                                         </div>
                                     </div>
@@ -100,55 +102,14 @@
                             <div>
                                 <div class="title">知术为下 明道为上</div>
                                 <div class="padding">
-                                    <ul class="ul-border-split">
-                                        <li class="clear-fix half-padding">
-                                            <div class="f-left margin-right">
-                                                <i class="browser-icon small chrome"></i>
-                                            </div>
-                                            <div class="f-left">
-                                                <pre class="code">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
-                                            </div>
-                                        </li>
-                                        <li class="clear-fix half-padding">
-                                            <div class="f-left margin-right">
-                                                <i class="browser-icon small safari"></i>
-                                            </div>
-                                            <div class="f-left">
-                                                <pre class="code">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
-                                            </div>
-                                        </li>
-                                        <li class="clear-fix half-padding">
-                                            <div class="f-left margin-right">
-                                                <i class="browser-icon small firefox"></i>
-                                            </div>
-                                            <div class="f-left">
-                                                <pre class="code">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
-                                            </div>
-                                        </li>
-                                        <li class="clear-fix half-padding">
-                                            <div class="f-left margin-right">
-                                                <i class="browser-icon small opera"></i>
-                                            </div>
-                                            <div class="f-left">
-                                                <pre class="code">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
-                                            </div>
-                                        </li>
-                                        <li class="clear-fix half-padding">
-                                            <div class="f-left margin-right">
-                                                <i class="browser-icon small ie"></i>
-                                            </div>
-                                            <div class="f-left">
-                                                <pre class="code">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
-                                            </div>
-                                        </li>
-                                    </ul>
+                                    <ul class="ul-border-split code-list"></ul>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="gradientPlus content">
+            <div id="gradientPlus" class="gradientPlus content">
                 <div class="padding">
                     <h3>CSS3渐变增强版</h3>
                     <div class="clear-fix">
@@ -184,9 +145,9 @@
                     </div>
                 </div>
             </div>
-            <div class="matrix content">
+            <div id="matrix" class="matrix content">
                 <div class="padding">
-                    <h3>Matrix = [黑客帝国]*[死而后生,重装上阵,矩阵革命]</h3>
+                    <h3>Transform Matrix [矩阵革命]</h3>
                     <div class="clear-fix">
                         <div class="ctrl form">
                             <div class="padding-top0 padding">
@@ -213,55 +174,14 @@
                             <div>
                                 <div class="title">CODE透视&时间停止</div>
                                 <div class="padding">
-                                    <ul class="ul-border-split">
-                                        <li class="clear-fix half-padding">
-                                            <div class="f-left margin-right">
-                                                <i class="browser-icon small chrome"></i>
-                                            </div>
-                                            <div class="f-left">
-                                                <pre class="code">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
-                                            </div>
-                                        </li>
-                                        <li class="clear-fix half-padding">
-                                            <div class="f-left margin-right">
-                                                <i class="browser-icon small safari"></i>
-                                            </div>
-                                            <div class="f-left">
-                                                <pre class="code">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
-                                            </div>
-                                        </li>
-                                        <li class="clear-fix half-padding">
-                                            <div class="f-left margin-right">
-                                                <i class="browser-icon small firefox"></i>
-                                            </div>
-                                            <div class="f-left">
-                                                <pre class="code">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
-                                            </div>
-                                        </li>
-                                        <li class="clear-fix half-padding">
-                                            <div class="f-left margin-right">
-                                                <i class="browser-icon small opera"></i>
-                                            </div>
-                                            <div class="f-left">
-                                                <pre class="code">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
-                                            </div>
-                                        </li>
-                                        <li class="clear-fix half-padding">
-                                            <div class="f-left margin-right">
-                                                <i class="browser-icon small ie"></i>
-                                            </div>
-                                            <div class="f-left">
-                                                <pre class="code">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
-                                            </div>
-                                        </li>
-                                    </ul>
+                                    <ul class="ul-border-split code-list"></ul>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="animate content">
+            <div id="animate" class="animate content">
                 <div class="padding">
                     <h3>CSS3 大招</h3>
                     <div class="clear-fix">
@@ -286,48 +206,7 @@
                             <div>
                                 <div class="title">出神入化</div>
                                 <div class="padding">
-                                    <ul class="ul-border-split">
-                                        <li class="clear-fix half-padding">
-                                            <div class="f-left margin-right">
-                                                <i class="browser-icon small chrome"></i>
-                                            </div>
-                                            <div class="f-left">
-                                                <pre class="code">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
-                                            </div>
-                                        </li>
-                                        <li class="clear-fix half-padding">
-                                            <div class="f-left margin-right">
-                                                <i class="browser-icon small safari"></i>
-                                            </div>
-                                            <div class="f-left">
-                                                <pre class="code">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
-                                            </div>
-                                        </li>
-                                        <li class="clear-fix half-padding">
-                                            <div class="f-left margin-right">
-                                                <i class="browser-icon small firefox"></i>
-                                            </div>
-                                            <div class="f-left">
-                                                <pre class="code">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
-                                            </div>
-                                        </li>
-                                        <li class="clear-fix half-padding">
-                                            <div class="f-left margin-right">
-                                                <i class="browser-icon small opera"></i>
-                                            </div>
-                                            <div class="f-left">
-                                                <pre class="code">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
-                                            </div>
-                                        </li>
-                                        <li class="clear-fix half-padding">
-                                            <div class="f-left margin-right">
-                                                <i class="browser-icon small ie"></i>
-                                            </div>
-                                            <div class="f-left">
-                                                <pre class="code">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
-                                            </div>
-                                        </li>
-                                    </ul>
+                                    <ul class="ul-border-split code-list"></ul>
                                 </div>
                             </div>
                         </div>
@@ -353,15 +232,16 @@
     <script type="text/template" id="cssCodeline">
         <li class="clear-fix half-padding">
             <div class="f-left margin-right">
-                <i class="browser-icon small {broClass}"></i>
+                <i class="browser-icon small ${icon}"></i>
             </div>
             <div class="f-left">
-                <pre class="code" style="width:{codeWidth}px;">-webkit-gradient-linear(0,0,rgba(0,0,0,0),rgba(0,0,0,0))</pre>
+                <pre class="code" style="width:${codeWidth}px;">${code}</pre>
             </div>
         </li>
     </script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script type="text/javascript" src="../../javascript/animate.js"></script>
     <script type="text/javascript" src="./js/tool_css3.js"></script>
+    <script type="text/javascript" src="js/gradient-color.js"></script>
 </body>
 </html>

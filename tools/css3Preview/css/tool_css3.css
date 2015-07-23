@@ -2,6 +2,8 @@ body{
     overflow: hidden;
 }
 .container{
+    position: absolute;
+    top: 50%;
     position: relative;
     overflow: hidden;
 }
@@ -66,11 +68,19 @@ body{
     position: absolute;
     left: 100%;
     margin-left: -16px;
-    top: 50%;
     cursor: pointer;
+    height: 100%;
+    top: 0;
+    width: 1rem;
+}
+.left-menu .fa-chevron-right:before {
+    position: absolute;
+    top: 50%;
 }
 .left-menu.open .expand:before{
     content: "\f053";
+    position: absolute;
+    top: 50%;
 }
 body{
     min-width: 800px;
@@ -87,27 +97,33 @@ body{
     height: 32px;
     width: 32px;
 }
-.chrome{
+.browser-icon.standard{
+    background: url("./images/global.png") no-repeat transparent;
+    background-size: 100%;
+}
+.browser-icon.chrome{
     background: url("./images/chrome.png") no-repeat transparent;
     background-size: 100%;
 }
-.safari{
+.browser-icon.safari{
     background: url("./images/safari.png") no-repeat transparent;
     background-size: 100%;
 }
-.firefox{
+.browser-icon.firefox{
     background: url("./images/firefox.png") no-repeat transparent;
     background-size: 100%;
 }
-.opera{
+.browser-icon.opera{
     background: url("./images/opera.png") no-repeat transparent;
     background-size: 100%;
 }
-.ie{
+.browser-icon.spartan,
+.browser-icon.ie{
     background: url("./images/IE.png") no-repeat transparent;
     background-size: 100%;
     position: relative;
 }
+
 .ie:after{
     /*content: '10+';*/
     display: block;
@@ -196,6 +212,8 @@ pre.code{
     overflow: hidden;
 }
 .bottom-expand{
+    width: 100%;
+    display: inline-block;
     color: #fff;
     cursor: pointer;
 }
