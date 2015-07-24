@@ -33,8 +33,8 @@
                                     <div class="fm-ipt">
                                         <label>渐变方式</label>
                                         <select name="type">
-                                            <option class="linear">linear</option>
-                                            <option class="radial">radial</option>
+                                            <option value="linear">linear</option>
+                                            <option value="radial">radial</option>
                                         </select>
                                     </div>
                                     <div class="fm-ipt">
@@ -47,27 +47,27 @@
                                     </div>
                                     <div class="fm-ipt">
                                         <label>透明度</label>
-                                        <input type="range" name="opacity" class="range-input">
+                                        <input type="range" name="opacity" class="range-input" min="0" max="100">
                                     </div>
                                     <div class="fm-ipt">
                                         <label>X轴起始位置</label>
-                                        <input type="text" name="sx">
+                                        <input type="text" name="sx" placeholder="上下左右，px，百分比">
                                     </div>
                                     <div class="fm-ipt">
                                         <label>Y轴起始位置</label>
-                                        <input type="text" name="sy">
+                                        <input type="text" name="sy" placeholder="上下左右，px，百分比">
                                     </div>
                                     <div class="fm-ipt">
                                         <label>X轴结束位置</label>
-                                        <input type="text" name="ex">
+                                        <input type="text" name="ex" placeholder="上下左右，px，百分比">
                                     </div>
                                     <div class="fm-ipt">
                                         <label>Y轴结束位置</label>
-                                        <input type="text" name="ey">
+                                        <input type="text" name="ey" placeholder="上下左右，px，百分比">
                                     </div>
                                     <div class="fm-ipt">
                                         <label>角度</label>
-                                        <input type="text" name="angle">
+                                        <input type="text" name="angle" placeholder="example: 45">
                                     </div>
                                     <div class="fm-ipt">
                                         <div class="text-right">
@@ -78,15 +78,13 @@
                                         <div class="stop-item">
                                             <div class="fm-ipt">
                                                 <label>位置</label>
-                                                <input name="stop" type="text" placeholder="百分比：30%">
-                                                <input name="stop" type="text" placeholder="百分比：30%">
-                                                <input name="stop" type="text" placeholder="百分比：30%">
+                                                <input name="stop" type="text" placeholder="0.3">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="fm-ipt">
                                         <div class="text-center">
-                                            <button class="btn">Run</button>
+                                            <button class="btn submit">Run</button>
                                         </div>
                                     </div>
                                 </div>

@@ -3,6 +3,8 @@
  * js color selector by css3
  * ie10+ chrome firefox ect. must be support CSS3
  */
+
+// js颜色选择器
 (function(){
     function ColorSelector(opts){
         if (!(this instanceof ColorSelector)) {
