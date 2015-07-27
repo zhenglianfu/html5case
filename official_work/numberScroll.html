@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body{
+            font-size: 20px;
+        }
+        ul, ol{
+            list-style: none;
+        }
+        .clearfix{
+            clear: both;
+        }
+        .clearfix:after,
+        .clearfix:before{
+            display: block;
+            content: "";
+            overflow: hidden;
+        }
+        li{
+            float: left;
+            width: 1em;
+            height: 1em;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            margin: 2px;
+            background: #00B2ED;
+            color: #fff;
+        }
+        li span{
+            line-height: 1em;
+            width: 1em;
+            display: block;
+            text-align: center;
+            height: 1em;
+        }
+        .nums{
+            position: absolute;
+            transition: all .3s;
+            top: 0;
+        }
+        .no-transition{
+            transition: none 0s;
+        }
+    </style>
+    <script>
+        var jsAnimate = {
+            animate: function(eles, opts){
+                if (!(this instanceof jsAnimate.animate)) {
+                    return jsAnimate.animate(eles, opts);
+                }
+                this.eles = eles;
+                this.opts = $.extend({}, jsAnimate, opts);
+                this.timer = null;
+            },
+            timing: 'linear',
+            duration: 1000,
+            immediate: false
+        };
+        jsAnimate.animate.prototype = {
+            start: function(){
+
+            },
+            _run: function(){
+
+            },
+            stop: function(){
+
+            }
+        };
+        jsAnimate.tween = {
+            /*
+            * t number time
+            * b number beforeMove
+            * c number changeDistance
+            * d number duration
+            * */
+            linear: function(t, b, c, d){
+                return t / d * c + b;
+            },
+            easeinquad: function easeinquad(t,b,c,d){
+                // quadratic (t^2) easing in - accelerating from zero velocity
+                return c * (t /= d) * t + b;
+            },
+            easeoutquad: function easeoutquad(t,b,c,d){
+                // quadratic (t^2) easing out - decelerating to zero velocity
+                return -c * (t /= d) * (t - 2) + b;
+            },
+            easeinoutquad: function easeinoutquad(t,b,c,d){
+                // quadratic (t^2) easing in/out - acceleration until halfway, then deceleration
+                if ((t/=d/2) < 1) return c/2*t*t + b;
+                return -c / 2 * ((--t) * (t - 2) - 1) + b;
+            },
+            easeincubic: function easeincubic(t,b,c,d){
+                // cubic (t^3) easing in - accelerating from zero velocity
+                return c * (t /= d) * t * t + b;
+            },
+            easeoutcubic: function easeoutcubic(t,b,c,d){
+                // cubic (t^3) easing out - decelerating to zero velocity
+                return c * ((t = t / d - 1) * t * t + 1) + b;
+            },
+
+            easeinoutcubic: function easeinoutcubic(t,b,c,d){
+                // cubic (t^3) easing in/out - acceleration until halfway, then deceleration
+                if ((t/=d/2) < 1) return c / 2 * t * t * t + b;
+                return c / 2 * ((t -= 2) * t * t + 2) + b;
+            },
+            easeinquart: function easeinquart(t,b,c,d) {
+                // quartic (t^4) easing in - accelerating from zero velocity
+                return c * (t /= d) * t * t * t + b;
+            },
+            easeoutquart: function easeoutquart(t,b,c,d) {
+                // quartic (t^4) easing out - decelerating to zero velocity
+                return -c * ((t = t / d - 1) * t * t * t - 1) + b;
+            },
+            easeinoutquart: function easeinoutquart(t,b,c,d){
+                // quartic (t^4) easing in/out - acceleration until halfway, then deceleration
+                if ((t/=d/2) < 1) return c/2*t*t*t*t + b;
+                return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
+            },
+            easeinquint: function easeinquint(t,b,c,d) {
+                // quintic (t^5) easing in - accelerating from zero velocity
+                return c * (t /= d) * t * t * t * t + b;
+            },
+            easeoutquint: function easeoutquint(t,b,c,d) {
+                // quintic (t^5) easing out - decelerating to zero velocity
+                return c * ((t = t / d - 1) * t * t * t * t + 1) + b;
+            },
+            easeinoutquint: function easeinoutquint(t,b,c,d) {
+                // quintic (t^5) easing in/out - acceleration until halfway, then deceleration
+                if ((t/=d/2) < 1) return c/2*t*t*t*t*t + b;
+                return c/2*((t-=2)*t*t*t*t + 2) + b;
+            },
+            easeinsine: function easeinsine(t,b,c,d) {
+                // sinusoidal (sin(t)) easing in - accelerating from zero velocity
+                return -c * Math.cos(t/d * (Math.PI/2)) + c + b;
+            },
+            easeoutsine: function easeoutsine(t,b,c,d) {
+                // sinusoidal (sin(t)) easing out - decelerating to zero velocity
+                return c * Math.sin(t/d * (Math.PI/2)) + b;
+            },
+            easeinoutsine: function easeinoutsine(t,b,c,d) {
+                // sinusoidal (sin(t)) easing in/out - acceleration until halfway, then deceleration
+                return -c/2 * (Math.cos(Math.PI*t/d) - 1) + b;
+            },
+            easeinexpo: function easeinexpo(t,b,c,d) {
+                // exponential (2^t) easing in - accelerating from zero velocity
+                return (t == 0) ? b : c * Math.pow(2, 10 * (t / d - 1)) + b;
+            },
+            easeoutexpo: function easeoutexpo(t,b,c,d) {
+                // exponential (2^t) easing out - decelerating to zero velocity
+                return (t == d) ? b + c : c * ( -Math.pow(2, -10 * t / d) + 1) + b;
+            },
+            easeinoutexpo: function easeinoutexpo(t,b,c,d) {
+                // exponential (2^t) easing in/out - acceleration until halfway, then deceleration
+                if (t==0) return b;
+                if (t==d) return b+c;
+                if ((t/=d/2) < 1) return c/2 * Math.pow(2, 10 * (t - 1)) + b;
+                return c / 2 * ( -Math.pow(2, -10 * --t) + 2) + b;
+            },
+            easeincirc: function easeincirc(t,b,c,d) {
+                // circular (sqrt(1-t^2)) easing in - accelerating from zero velocity
+                return -c * (Math.sqrt(1 - (t /= d) * t) - 1) + b;
+            },
+            easeoutcirc: function easeoutcirc(t,b,c,d) {
+                // circular (sqrt(1-t^2)) easing out - decelerating to zero velocity
+                return c * Math.sqrt(1 - (t = t / d - 1) * t) + b;
+            },
+            easeinoutcirc: function easeinoutcirc(t,b,c,d) {
+                // circular (sqrt(1-t^2)) easing in/out - acceleration until halfway, then deceleration
+                if ((t/=d/2) < 1) return -c/2 * (Math.sqrt(1 - t*t) - 1) + b;
+                return c/2 * (Math.sqrt(1 - (t-=2)*t) + 1) + b;
+            },
+            easeinelastic: function easeinelastic(t,b,c,d) {
+                var s=1,a=1,p=0;
+                // elastic (exponentially decaying sine wave)
+                if (t==0) return b;  if ((t/=d)==1) return b+c;  if (!p) p=d*.3;
+                if (a < Math.abs(c)) { a=c; s=p/4; }
+                else s = p/(2*Math.PI) * Math.asin (c/a);
+                return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin( (t * d - s) * (2 * Math.PI) / p )) + b;
+            },
+            easeoutelastic: function easeoutelastic(t,b,c,d) {
+                var s=1,a=1,p=0;
+                // elastic (exponentially decaying sine wave)
+                if (t==0) return b;  if ((t/=d)==1) return b+c;  if (!p) p=d*.3;
+                if (a < Math.abs(c)) { a=c; s=p/4; }
+                else s = p/(2*Math.PI) * Math.asin (c/a);
+                return a * Math.pow(2, -10 * t) * Math.sin( (t * d - s) * (2 * Math.PI) / p ) + c + b;
+            },
+            easeinoutelastic: function easeinoutelastic(t,b,c,d) {
+                var s=1,a=1,p=0;
+                // elastic (exponentially decaying sine wave)
+                if (t==0) return b;  if ((t/=d/2)==2) return b+c;  if (!p) p=d*(.3*1.5);
+                if (a < Math.abs(c)) { a=c; s=p/4; }
+                else s = p/(2*Math.PI) * Math.asin (c/a);
+                if (t < 1) return -.5*(a*Math.pow(2,10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )) + b;
+                return a * Math.pow(2, -10 * (t -= 1)) * Math.sin( (t * d - s) * (2 * Math.PI) / p ) * .5 + c + b;
+            },
+            easeinback: function easeinback(t,b,c,d) {
+                var s;
+                // Robert Penner's explanation for the s parameter (overshoot ammount):
+                //  s controls the amount of overshoot: higher s means greater overshoot
+                //  s has a default value of 1.70158, which produces an overshoot of 10 percent
+                //  s==0 produces cubic easing with no overshoot
+                // back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing in - backtracking slightly, then reversing direction and moving to target
+                if (s == undefined) s = 1.70158;
+                return c * (t /= d) * t * ((s + 1) * t - s) + b;
+            },
+            easeoutback: function easeoutback(t,b,c,d) {
+                var s;
+                // back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing out - moving towards target, overshooting it slightly, then reversing and coming back to target
+                if (s == undefined)  s = 1.70158;
+                return c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b;
+            },
+            easeinoutback: function easeinoutback(t,b,c,d) {
+                var s;
+                // back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing in/out - backtracking slightly, then reversing direction and moving to target, then overshooting target, reversing, and finally coming back to target
+                if (s == undefined)  s = 1.70158;
+                if ((t/=d/2) < 1) return c/2*(t*t*(((s*=(1.525))+1)*t - s)) + b;
+                return c / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + b;
+            },
+            easeinbounce: function easeinbounce(t,b,c,d) {
+                // This were changed a bit by me (since I'm not using Penner's own Math.* functions)
+                // So I changed it to call getValue() instead (with some different arguments)
+                // bounce (exponentially decaying parabolic bounce) easing in
+                return c - easeoutbounce (d-t,b,c,d) + b;
+            },
+            easeoutbounce: function easeoutbounce(t,b,c,d) {
+                // bounce (exponentially decaying parabolic bounce) easing out
+                if ((t/=d) < (1/2.75)) {
+                    return c*(7.5625*t*t) + b;
+                } else if (t < (2/2.75)) {
+                    return c*(7.5625*(t-=(1.5/2.75))*t + .75) + b;
+                } else if (t < (2.5/2.75)) {
+                    return c*(7.5625*(t-=(2.25/2.75))*t + .9375) + b;
+                } else {
+                    return c*(7.5625*(t-=(2.625/2.75))*t + .984375) + b;
+                }
+            },
+            easeinoutbounce: function easeinoutbounce(t,b,c,d) {
+                // bounce (exponentially decaying parabolic bounce) easing in/out
+                if (t < d/2) return easeinbounce (t*2,b,c,d) * .5 + b;
+                return easeoutbounce(t*2-d,b,c,d) * .5 + c * .5 + b;
+            }
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <ul>
+            <li class="hundred">
+                <div class="nums">
+                    <span data-index="0" class="curr">0</span>
+                    <span data-index="1">1</span>
+                    <span data-index="2">2</span>
+                    <span data-index="3">3</span>
+                    <span data-index="4">4</span>
+                    <span data-index="5">5</span>
+                    <span data-index="6">6</span>
+                    <span data-index="7">7</span>
+                    <span data-index="8">8</span>
+                    <span data-index="9">9</span>
+                    <span data-index="0">0</span>
+                </div>
+            </li>
+            <li class="ten">
+                <div class="nums">
+                    <span class="curr" data-index="0">0</span>
+                    <span data-index="1">1</span>
+                    <span data-index="2">2</span>
+                    <span data-index="3">3</span>
+                    <span data-index="4">4</span>
+                    <span data-index="5">5</span>
+                    <span data-index="6">6</span>
+                    <span data-index="7">7</span>
+                    <span data-index="8">8</span>
+                    <span data-index="9">9</span>
+                    <span data-index="0">0</span>
+                </div>
+            </li>
+            <li class="one">
+                <div class="nums">
+                    <span class="curr" data-index="0">0</span>
+                    <span data-index="1">1</span>
+                    <span data-index="2">2</span>
+                    <span data-index="3">3</span>
+                    <span data-index="4">4</span>
+                    <span data-index="5">5</span>
+                    <span data-index="6">6</span>
+                    <span data-index="7">7</span>
+                    <span data-index="8">8</span>
+                    <span data-index="9">9</span>
+                    <span data-index="0">0</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>
