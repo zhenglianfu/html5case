@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>波形运动</title>
+</head>
+<body>
+    <canvas id="canvas" width="400" height="400"></canvas>
+    <script src="util.js"></script>
+    <script src="ball.js"></script>
+    <script type="text/javascript">
+        window.onload = function(){
+            var canvas = document.getElementById('canvas'),
+                    context = canvas.getContext('2d'),
+                    ball = new Ball,
+                    angle = 0,
+                    centerY = canvas.height,
+                    range = 50,
+                    speedY = 0.05,
+                    speedX = 1;
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+
+            (function drawFrame(){
+                window.requestAnimationFrame(drawFrame, canvas);
+                context.clearRect(0,0,canvas.width, canvas.height);
+                ball.y = centerY / 2 + Math.sin(angle) * range;
+                ball.x += speedX;
+                // 循环
+                if (ball.x > canvas.width + ball.radius) {
+                    ball.x = -ball.radius;
+                }
+                angle += speedY;
+                ball.draw(context);
+            }())
+
+        };
+    </script>
+</body>
+</html>

@@ -60,3 +60,10 @@ util.captureTouch = function(element){
     }, false);
     return touch;
 };
+
+util.parseColor = function(color){
+    if (color.indexOf('#') > -1) {
+        return color;
+    }
+    return color;
+}
