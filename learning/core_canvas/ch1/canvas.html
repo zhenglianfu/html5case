@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>初识canvas</title>
+    <style>
+        #canvas{
+            width: 600px;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <p>
+           <strong>tip:</strong>css控制canvas大小会缩放画布以达到显示大小，而没有更改坐标系，使用canvas属性控制大小会同时改变画布大小和坐标系
+        </p>
+        <div>
+            <canvas width="" height="" id="canvas"></canvas>
+        </div>
+    </div>
+<script>
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    ctx.font = "38pt Arial";
+    ctx.fillStyle = "#40a0fe";
+    ctx.strokeStyle = 'blue';
+    ctx.fillText('Hello Canvas', canvas.width / 2 - 150, canvas.height / 2);
+    ctx.strokeText('Hello Canvas', canvas.width / 2 - 150, canvas.height / 2);
+</script>
+</body>
+</html>
