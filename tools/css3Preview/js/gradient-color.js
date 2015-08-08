@@ -23,6 +23,8 @@
                 case '-webkit-':
                     var args = [obj.type, '0 0','50% 50%','from(' + obj.start + ')', 'to(' + obj.end + ')']
                     style += '-webkit-gradient(' + args.join(", ") + ')';
+                    // new type
+                    style += ';\nbackground-image: -webkit-linear-gradient(-45deg, ' + obj.start + ', ' + obj.end + ');'
                     break;
                 case '-moz-':
                     break;
