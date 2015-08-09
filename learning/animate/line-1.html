@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>draw lines</title>
+</head>
+<body>
+    <div>
+        <h3>draw lines with your mouse</h3>
+        <canvas width="600" height="400" id="lineCanvas" style="border: 1px solid"></canvas>
+    </div>
+    <script type="text/javascript" src="util.js"></script>
+    <script type="text/javascript">
+        window.onload = function(){
+            var canvas = document.getElementById('lineCanvas'),
+                context = canvas.getContext('2d'),
+                mouse = util.captureMouse(canvas);
+            function onMouseove(){
+                context.lineTo(mouse.x, mouse.y);
+                context.stroke();
+            }
+
+            canvas.addEventListener('mousedown', function(){
+                context.beginPath();
+                context.moveTo(mouse.x, mouse.y);
+                canvas.addEventListener('mousemove', onMouseove);
+            }, false);
+            canvas.addEventListener('mouseup', function(){
+                canvas.removeEventListener('mousemove', onMouseove);
+            });
+        }
+    </script>
+</body>
+</html>

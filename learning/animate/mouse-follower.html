@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>鼠标追随者</title>
+</head>
+<body>
+    <div>
+        <h3>玩弄你的鼠标吧</h3>
+        <div>
+            <canvas width="600" height="400" id="canvas"></canvas>
+        </div>
+        <script type="text/javascript" src="util.js"></script>
+        <script type="text/javascript" src="ball.js"></script>
+        <script type="text/javascript">
+            var canvas = util.Canvas('canvas').canvas,
+                    context = canvas.getContext('2d'),
+                    ball = new Ball(3, '#666'),
+                    ball2 = new Ball(3, '#666'),
+                    mouse = util.captureMouse(canvas),
+                    angle = 0,
+                    speed = Math.PI/180 * 8,
+                    radius = 10;
+            (function draw(){
+                window.requestAnimationFrame(draw, canvas);
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                var x = mouse.x + Math.cos(angle) * radius;
+                var  y = mouse.y + Math.sin(angle) * radius;
+                ball.x = x;
+                ball.y = y;
+                ball.draw(context);
+                angle += speed;
+                ball2.x = mouse.x + Math.cos(angle + Math.PI) * radius;
+                ball2.y = mouse.y + Math.sin(angle + Math.PI) * radius;
+                ball2.draw(context);
+            }())
+
+        </script>
+    </div>
+</body>
+</html>
