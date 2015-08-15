@@ -1,0 +1,31 @@
+html,body,p,div,span,i,em,pre,h1,h2,h3,h4,h5,h6,table,tbody,thead,tfoot,tr,th,td,
+form,fieldset,label,input,select,textarea,button,ul,ol,li,dl,dt,dd,image,a,q,nav,footer,header,
+article,canvas,svg{
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+}
+/* html5 */
+header,article,nav,section,footer,canvas{
+    display: block;
+}
+
+/* form */
+.form label{
+    display: inline-block;
+}
+.form button,
+.form input,
+.form select{
+    line-height: 22px;
+    font-size: 16px;
+    padding: 0 5px;
+    margin: 0;
+}
+.form input.error,
+.form select.error,
+.form button.error,
+.form text.error{
+    border-color: #dd0061;
+}

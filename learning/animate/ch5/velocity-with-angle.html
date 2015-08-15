@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>角速度</title>
+    <link rel="stylesheet" type="text/css" href="../style/stylesheet.css">
+    <style>
+        .form{
+            padding: 10px;
+        }
+        .form label{
+            display: inline-block;
+        }
+        .form button,
+        .form input,
+        .form select{
+            line-height: 22px;
+            font-size: 16px;
+            padding: 0 5px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="form" id="form">
+        <label>velocity： <input name="velocity"></label>
+        <label>angle： <input name="angle" placeholder="degree"></label>
+        <button name="submit"> do it </button>
+        <button name="reset"> reset/stop </button>
+    </div>
+    <div class="canvas-body">
+        <canvas id="canvas"></canvas>
+    </div>
+    <script type="text/javascript" src="../util.js"></script>
+    <script type="text/javascript" src="../ball.js"></script>
+    <script type="text/javascript">
+        var w = document.documentElement.clientWidth,
+            h = document.documentElement.clientHeight,
+            canvas_h = h - document.getElementById('form').clientHeight,
+            canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            radius = 10,
+            ball = new Ball(radius);
+        canvas.width = w;
+        canvas.height = canvas_h;
+        var frameRequest = null;
+        function did(){
+            var speed = document.querySelector('input[name="velocity"]').value || 0;
+            var angle = (document.querySelector('input[name="angle"]').value || 0) * Math.PI / 180;
+            var speedX = Math.cos(angle) * speed;
+            var speedY = Math.sin(angle) * speed;
+            reset();
+            (function drawFrame(){
+                frameRequest = window.requestAnimationFrame(drawFrame, canvas);
+                context.clearRect(0,0,canvas.width,canvas.height);
+                if (ball.x - radius < 0 || ball.x + radius > canvas.width) {
+                    speedX = -speedX;
+                }
+                if (ball.y - radius < 0 || ball.y + radius > canvas.height) {
+                    speedY = -speedY;
+                }
+                ball.x += speedX;
+                ball.y += speedY;
+                ball.draw(context);
+            }());
+        }
+        function reset(){
+            window.cancelAnimationFrame(frameRequest);
+            context.clearRect(0,0,canvas.width,canvas.height);
+            ball.x = w / 2;
+            ball.y = canvas_h / 2;
+            ball.draw(context);
+        }
+        // events
+        document.querySelector('button[name="submit"]').addEventListener('click', function(){
+            did();
+        });
+        document.querySelector('button[name="reset"]').addEventListener('click', function(){
+            reset();
+        });
+    </script>
+</body>
+</html>
