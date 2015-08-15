@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>飞船登月</title>
+    <link rel="stylesheet" type="text/css" href="../style/stylesheet.css">
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript" src="../util.js"></script>
+    <script type="text/javascript" src="../ship.js"></script>
+    <script type="text/javascript">
+        var doc = window.document,
+            w = doc.documentElement.clientWidth,
+            h = doc.documentElement.clientHeight,
+            canvas = doc.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            ship = new Ship('#000000'),
+            speedDelta = 0.5,
+            speedX = 0,
+            speedY = 0;
+        ship.x = 10;
+        ship.y = 10;
+        canvas.width = w;
+        canvas.height = h;
+        (function drawFrame(){
+            context.clearRect(0,0,canvas.width,canvas.height);
+            window.requestAnimationFrame(drawFrame, canvas);
+            ship.x += speedX;
+            ship.y += speedY;
+            ship.draw(context);
+        }());
+        doc.body.addEventListener('keydown', function(e){
+            var code = e.keyCode || e.which;
+            switch (code){
+                case 37 :
+                    speedX -= speedDelta;
+                    break;
+                case 39:
+                    speedX += speedDelta;
+                    break;
+                case 38:
+                    speedY -= speedDelta;
+                    break;
+                case 40:
+                    speedY += speedDelta;
+                    break;
+            }
+            ship.showFlame = true;
+            ship.rotation = Math.atan2(speedY, speedX);
+        }, false);
+        doc.body.addEventListener('keyup', function(e){
+            ship.showFlame = false;
+        }, false);
+    </script>
+</body>
+</html>

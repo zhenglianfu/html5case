@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>水平翻转图片</title>
+</head>
+<body>
+    <canvas width="500" height="600" id="canvas"></canvas>
+    <script>
+        var img = new Image;
+        img.src = './image/sample.jpg';
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        img.onload = function(){
+            var rate = img.width / 100;
+            img.width = 100;
+            img.height = img.height / rate;
+            context.drawImage(img, 10, 10, img.width, img.height);
+            reverse();
+        };
+        function reverse(){
+            context.save();
+            context.translate(canvas.width, 0);
+            context.scale(-1, 1);
+            context.drawImage(img, canvas.width - 10 - img.width, img.height + 10, img.width, img.height);
+            context.restore();
+            context.drawImage(img, 10, 2 * img.height, img.width, img.height);
+        }
+    </script>
+</body>
+</html>

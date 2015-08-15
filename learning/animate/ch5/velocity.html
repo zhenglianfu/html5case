@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>控制小球</title>
+    <link rel="stylesheet" href="../style/stylesheet.css">
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript" src="../util.js"></script>
+    <script type="text/javascript" src="../ball.js"></script>
+    <script type="text/javascript">
+        // init canvas's size
+        var w = document.documentElement.clientWidth,
+            h = document.documentElement.clientHeight,
+            canvas = document.getElementById('canvas'),
+            radius = 20,
+            ctx = canvas.getContext('2d'),
+            ball = new Ball(radius, '#000'),
+            speedX = 0,
+            speedY = 0,
+            speedDelta = 1;
+        canvas.width = w;
+        canvas.height = h;
+        ball.x = w / 2;
+        ball.y = h / 2;
+        ball.draw(ctx);
+        document.body.addEventListener('keydown', function(e){
+            var code = e.keyCode || e.which;
+            switch (code){
+                case 37 :
+                    // left
+                    speedX -= speedDelta;
+                    break;
+                case 39:
+                    // right
+                    speedX += speedDelta;
+                    break;
+                case 38:
+                    // up
+                    speedY -= speedDelta;
+                    break;
+                case 40:
+                    speedY += speedDelta;
+                    break;
+            }
+        }, false);
+        (function drawFrame(){
+            window.requestAnimationFrame(drawFrame, canvas);
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            // range
+            if (ball.x - radius < 0 || ball.x + radius > canvas.width) {
+                speedX = -speedX;
+            }
+            if (ball.y - radius < 0 || ball.y + radius > canvas.height) {
+                speedY = -speedY;
+            }
+            ball.x += speedX;
+            ball.y += speedY;
+            ball.draw(ctx);
+        }());
+    </script>
+</body>
+</html>
