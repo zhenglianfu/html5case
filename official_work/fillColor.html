@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<title>svg in path</title>
+		<style type="text/css">
+			svg path:hover{
+				opacity: .6;
+			}
+			#colorPanel{
+                width: 300px;
+				clear: both;
+			}
+			#colorPanel:after,
+			#colorPanel:before{
+				clear: both;
+				content: "";
+				display: block;
+				overflow: hidden;
+			}
+			.colorItem{
+				height: 30px;
+				width: 30px;
+				float: left;
+			}
+			.colorItem.selected{
+				box-sizing: border-box;
+				-webkit-box-sizing: border-box;
+				border: 1px solid #000;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="colorPanel"></div>
+		<svg version="1.1" id="鍥惧眰_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="595.28px" height="841.89px" viewBox="0 0 595.28 841.89" enable-background="new 0 0 595.28 841.89" xml:space="preserve">
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M443.27,131.248c0,44.972-36.456,81.43-81.428,81.43
+				c-44.973,0-81.429-36.458-81.429-81.43c0-44.972,36.456-81.429,81.429-81.429C406.813,49.819,443.27,86.275,443.27,131.248z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M397.674,187.145l-36.137-19.28l-36.368,18.838l7.169-40.326
+				l-29.154-28.767l40.567-5.642l18.35-36.617l17.903,36.838l40.494,6.137l-29.502,28.41L397.674,187.145z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M231.926,376.119c0,44.972-36.456,81.43-81.428,81.43
+				c-44.972,0-81.429-36.458-81.429-81.43c0-44.973,36.457-81.429,81.429-81.429C195.47,294.69,231.926,331.146,231.926,376.119z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M186.113,367.612l-20.764-5.969l-16.036,14.476l-1.492-22.464
+				l-18.429-11.892l19.841-7.915l4.647-21.825l13.752,17.572l21.303-1.597l-11.342,18.774L186.113,367.612z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M170.652,440.148l-20.763-5.969l-16.036,14.475l-1.492-22.463
+				l-18.429-11.892l19.841-7.915l4.646-21.825l13.752,17.572l21.301-1.597l-11.34,18.774L170.652,440.148z"/>
+			<circle opacity="0" fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" cx="157.555" cy="144.713" r="81.428"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M189.654,194.519l-17.794-4.126l-13.486,12.319l-1.575-18.198
+				l-15.884-9.02l16.82-7.122l3.67-17.894l11.971,13.797l18.152-2.039l-9.423,15.648L189.654,194.519z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M131.978,149.171l-17.793-4.126l-13.487,12.319l-1.575-18.197
+				l-15.884-9.02l16.82-7.122l3.67-17.894l11.971,13.797l18.152-2.039l-9.424,15.648L131.978,149.171z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M206.293,123.055l-17.793-4.126l-13.487,12.319l-1.575-18.197
+				l-15.884-9.02l16.82-7.122l3.67-17.894l11.971,13.797l18.152-2.039l-9.424,15.648L206.293,123.055z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M451.84,335.178c0,44.972-36.455,81.429-81.427,81.429
+				c-44.973,0-81.429-36.457-81.429-81.429c0-44.973,36.457-81.429,81.429-81.429C415.385,253.749,451.84,290.205,451.84,335.178z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M356.043,312.467l-9.348-8.223l-12.072,3.039l4.932-11.431
+				l-6.621-10.542l12.396,1.158l7.98-9.555l2.729,12.146l11.553,4.638l-10.708,6.349L356.043,312.467z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M408.949,393.896l-9.348-8.223l-12.072,3.039l4.932-11.432
+				l-6.621-10.542l12.396,1.158l7.98-9.555l2.729,12.146l11.553,4.638l-10.708,6.349L408.949,393.896z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M350.292,376.119l-9.348-8.223l-12.072,3.039l4.932-11.432
+				l-6.621-10.542l12.396,1.158l7.98-9.555l2.729,12.146l11.553,4.638l-10.708,6.349L350.292,376.119z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M408.949,329.8l-9.348-8.223l-12.072,3.039l4.932-11.432
+				l-6.621-10.542l12.396,1.158l7.98-9.555l2.729,12.146l11.553,4.638l-10.708,6.349L408.949,329.8z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M247.649,567.857c0,44.972-36.455,81.429-81.427,81.429
+				c-44.973,0-81.429-36.457-81.429-81.429c0-44.973,36.457-81.429,81.429-81.429C211.194,486.429,247.649,522.885,247.649,567.857z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M150.498,543.571l-14.11-3.615l-10.977,9.575l-0.922-14.537
+				l-12.498-7.481l13.541-5.369l3.253-14.198l9.291,11.219l14.508-1.294l-7.798,12.303L150.498,543.571z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M177.376,635.163l-14.111-3.615l-10.977,9.575l-0.922-14.537
+				l-12.498-7.481l13.541-5.369l3.253-14.198l9.291,11.219l14.508-1.294l-7.799,12.303L177.376,635.163z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M230.036,593.577l-14.111-3.615l-10.977,9.575L204.025,585
+				l-12.498-7.481l13.541-5.369l3.253-14.198l9.291,11.219l14.508-1.294l-7.799,12.303L230.036,593.577z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M132.145,603.483l-14.111-3.615l-10.977,9.575l-0.922-14.537
+				l-12.498-7.481l13.541-5.369l3.253-14.198l9.291,11.219l14.508-1.294l-7.799,12.303L132.145,603.483z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M209.74,543.571l-14.111-3.615l-10.977,9.575l-0.922-14.537
+				l-12.498-7.481l13.541-5.369l3.253-14.198l9.291,11.219l14.508-1.294l-7.799,12.303L209.74,543.571z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M467.268,588.65c0,44.972-36.455,81.429-81.427,81.429
+				c-44.973,0-81.429-36.457-81.429-81.429c0-44.973,36.456-81.429,81.429-81.429C430.813,507.222,467.268,543.678,467.268,588.65z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M370.412,557.951l-9.33-6.044l-10.269,4.259l2.865-10.741
+				l-7.225-8.449l11.102-0.595l5.804-9.481l3.995,10.374l10.811,2.59l-8.631,7.006L370.412,557.951z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M358.434,642.338l-9.33-6.044l-10.269,4.259l2.865-10.741
+				l-7.225-8.449l11.102-0.595l5.804-9.481l3.995,10.374l10.811,2.59l-8.631,7.006L358.434,642.338z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M428.601,604.176l-9.33-6.044l-10.269,4.259l2.865-10.741
+				l-7.225-8.449l11.102-0.595l5.804-9.481l3.995,10.374l10.811,2.59l-8.631,7.006L428.601,604.176z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M358.365,604.176l-9.33-6.044l-10.269,4.259l2.865-10.741
+				l-7.225-8.449l11.102-0.595l5.804-9.481l3.995,10.374l10.811,2.59l-8.631,7.006L358.365,604.176z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M428.601,557.951l-9.33-6.044l-10.269,4.259l2.865-10.741
+				l-7.225-8.449l11.102-0.595l5.804-9.481l3.995,10.374l10.811,2.59l-8.631,7.006L428.601,557.951z"/>
+			<path fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M411.271,651.382l-9.33-6.044l-10.269,4.259l2.865-10.741
+				l-7.225-8.449l11.102-0.595l5.804-9.481l3.995,10.374l10.811,2.59l-8.631,7.006L411.271,651.382z"/>
+		</svg>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script type="text/javascript">
+		var bgcolor = '#fff';
+		var ele_colorPanel = document.getElementById('colorPanel');
+		var red = 255,
+			green = 255,
+			blue = 254;
+		for (var i = 0; i < 10; i ++) {
+			for (var j = 0; j < 10; j++) {
+				var div = document.createElement('div');
+				div.className = 'colorItem';
+				div.style.background = rgb2color(red - (i * 20), green - (i * 10 + j * 10), blue - (i * 5 + j * 15));
+				ele_colorPanel.appendChild(div);
+			}
+		}
+        function gradient(from, to, steps){
+            var rgb = [];
+            for (var i = 0; i < 3; i++) {
+                rgb[i] = from[i]
+            }
+
+        }
+		$('#colorPanel').on('click', '.colorItem', function(){
+				$('#colorPanel .colorItem.selected').removeClass('selected');
+				$(this).addClass('selected');
+				bgcolor = $(this).css('backgroundColor');
+				console.log(bgcolor);
+		});
+		$('svg').on('click', 'path, circle', function(){
+			$(this).css('fill', bgcolor);	
+		});
+		function rgb2color(r,g,b){
+			r = r.toString(16);
+			g = g.toString(16);
+			b = b.toString(16);
+			r = r.length == 1 ? '0' + r : r;
+			g = g.length == 1 ? '0' + g : g;
+			b = b.length == 1 ? '0' + b : b;
+			return '#' + r + g + b;	
+		}	
+		</script>
+	</body>
+</html>

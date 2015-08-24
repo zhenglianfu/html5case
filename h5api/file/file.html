@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>FileReader</title>
+</head>
+<body>
+    <div>
+        <label>
+            check size: <input type="file" id="file">
+        </label>
+    </div>
+    <div>FileSize: <span id="size"></span></div>
+    <script type="text/javascript">
+        var doc = window.document;
+        var ele_ipt = doc.getElementById('file');
+        var ele_size = doc.getElementById('size');
+        ele_ipt.addEventListener('change', fileHandler, false);
+        function fileHandler(e){
+            var file = ele_ipt.files[0];
+            var size = file.size;
+            if (size < 1024) {
+                ele_size.innerText = size + 'bytes';
+            } else if (size < 1024 * 1024) {
+                ele_size.innerText = size / 1024 + 'k';
+            } else {
+                ele_size.innerText = size / (2 << 20) + 'M';
+            }
+            ele_size.innerText = ele_size.innerText + '(' + size + 'bytes)';
+        }
+    </script>
+</body>
+</html>
