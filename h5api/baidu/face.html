@@ -4,19 +4,44 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta charset="UTF-8">
     <title>百度人脸</title>
-    <link type="text/css" href="../../stylesheets/stylesheet.css">
-    <link type="text/css" href="./css/baidu.css">
+    <link rel="stylesheet" type="text/css" href="../../stylesheets/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="./css/baidu.css">
 </head>
 <body>
-    <div>
+    <div class="hide">
+        <p>使用步骤：选择一张你觉得最好看的照片，点注册，上传到图片库，然后可选择你另一张图，点击识别，返回是否同一个人</p>
         <div>
-            <img id="preImg">
-        </div>
-        <div>
-            <input type="file" id="imgIpt" accept="image/*">
+            <div>
+                <img id="preImg">
+            </div>
+            <div>
+                <input type="file" id="imgIpt" accept="image/*">
+            </div>
+            <div>
+                <button id="register">注册</button>
+                <button id="verify">验证</button>
+                <button id="recognition">识别</button>
+            </div>
         </div>
     </div>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
+    <div>
+        <p>打开步骤：选择照片类型，选择两张图片进行比较，得出相似度</p>
+        <label>照片类型: <select id="picType">
+            <option value="3">自拍照</option>
+            <option value="1">证件照</option>
+            <option value="7">其他</option>
+        </select> (然并卵)</label>
+        <div class="clear-fix">
+            <div class="box img-cmp-box" style="width: 150px;min-height: 150px;margin: 0 20px;"><span>+</span></div>
+            <div class="box img-cmp-box" style="width: 150px;min-height: 150px;margin: 0 20px;"><span>+</span></div>
+            <input class="hide" type="file" id="cmpFile">
+        </div>
+        <div id="degree"></div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="button bg-blue" id="compareBtn">开始比较</button>
+        </div>
+    </div>
+    <script type="text/javascript" src="../../javascript/zepto.min.js"></script>
     <script type="text/javascript" src="./js/face.js"></script>
 </body>
 </html>
