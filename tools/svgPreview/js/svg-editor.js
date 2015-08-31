@@ -50,9 +50,11 @@ $(function(){
                 }
                 e.preventDefault();
                 handlerMove(getMousePosition(e), $(this).attr('data-direction'));
-            }).bind('mouseup', function(e){
+            });
+            $('body').bind('mouseup', function(e){
                 drag = false;
             });
+            // resize height width left top
             function handlerMove(nowPosition, direction){
                 switch (direction){
                     case "top":
