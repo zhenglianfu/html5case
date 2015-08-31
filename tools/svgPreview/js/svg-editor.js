@@ -34,6 +34,8 @@ $(function(){
             this._addBehavior();
         },
         _addBehavior: function(){
+            var startPoint = {};
+            var endPoint = {};
             this.$el.bind('mousedown', function(){
 
             }).bind('mousemove', function(){
