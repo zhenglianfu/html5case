@@ -19,7 +19,9 @@ $(function(){
     // 画布类
     function Panel(){
         this.$el = $('<div class="panel" id="panel_' + (Panel.uuid ++) + '">').appendTo($container);
+        //this.$el = $('<div class="panel-content"></div>').appendTo(this.$panel);
         this.$svg = $('<svg xmlns="http://www.w3.org/2000/svg">').appendTo(this.$el);
+        this.events = {};
         this.init();
     };
     Panel.prototype = {
@@ -29,39 +31,108 @@ $(function(){
                 width: this.$el.width() + 'px'
             });
             this._addRangeBlock();
+            this._addBehavior();
+        },
+        _addBehavior: function(){
+            this.$el.bind('mousedown', function(){
+
+            }).bind('mousemove', function(){
+
+            }).bind('mouseup', function(){
+
+            });
+        },
+        destroy: function(){
+            this.$el.remove();
+            $('#panelContainers').off('mousemove', this.events['#panelContainers.mousemove']);
         },
         _addRangeBlock: function(){
             var pos = 'top,left,right,bottom,ne,nw,se,sw'.split(',');
             for (var i = 0, len = pos.length; i < len; i++) {
                 this.$el.append('<div class="resize-bar ' + pos[i] + '" data-direction="' + pos[i] + '"></div>');
             }
-            var $el = this.$el;
+            this.__addResizeEvent(this.$el);
+        },
+        __addResizeEvent: function(){
             var drag = false;
+            var direction = '';
             var mouse = {};
             var rect = {};
+            var $el = this.$el;
             this.$el.find('.resize-bar').bind('mousedown', function(e){
                 drag = true;
+                direction = $(this).attr('data-direction');
                 mouse = getMousePosition(e);
                 rect.height = $el.height();
                 rect.width = $el.width();
-            }).bind('mousemove', function(e){
+                rect.left = parseFloat($el.css('left'));
+                rect.top = parseFloat($el.css('top'));
+            });
+            $('#panelContainers').off('mousemove').bind('mousemove', handlerMove);
+            $('body').bind('mouseup', function(e){
+                drag = false;
+            });
+            this.events['#panelContainers.mousemove'] = handlerMove;
+            var $svg = this.$svg;
+            // resize height width left top
+            function handlerMove(e){
                 if (drag == false) {
                     return;
                 }
                 e.preventDefault();
-                handlerMove(getMousePosition(e), $(this).attr('data-direction'));
-            });
-            $('body').bind('mouseup', function(e){
-                drag = false;
-            });
-            // resize height width left top
-            function handlerMove(nowPosition, direction){
+                var nowPosition = getMousePosition(e);
+                var h = rect.height;
+                var w = rect.width;
                 switch (direction){
                     case "top":
-                        
-                        $el.height(rect.height - (nowPosition.y - mouse.y));
-                        $el.css('top', $el[0].offsetTop + e.clientY - mouse.clientY);
+                        var h = rect.height + mouse.y - nowPosition.y;
+                        $el.height(h);
+                        $el.css('top', rect.top + nowPosition.y - mouse.y + 'px');
+                        break;
+                    case "bottom":
+                        var h = rect.height + (nowPosition.y - mouse.y);
+                        $el.height(h);
+                        break;
+                    case "left":
+                        w = rect.width + (mouse.x - nowPosition.x);
+                        $el.width(w);
+                        $el.css('left', rect.left + (nowPosition.x - mouse.x));
+                        break;
+                    case "right":
+                        w = rect.width + (nowPosition.x - mouse.x);
+                        $el.width(w);
+                        break;
+                    case "nw":
+                        h = rect.height + mouse.y - nowPosition.y;
+                        $el.height(h);
+                        $el.css('top', rect.top + nowPosition.y - mouse.y + 'px');
+                        w = rect.width + (mouse.x - nowPosition.x);
+                        $el.width(w);
+                        $el.css('left', rect.left + (nowPosition.x - mouse.x));
+                        break;
+                    case "ne":
+                        h = rect.height + mouse.y - nowPosition.y
+                        $el.height(h);
+                        $el.css('top', rect.top + nowPosition.y - mouse.y + 'px');
+                        w = rect.width + (nowPosition.x - mouse.x);
+                        $el.width(w);
+                        break;
+                    case "se":
+                        h = rect.height + (nowPosition.y - mouse.y);
+                        $el.height(h);
+                        w = rect.width + (nowPosition.x - mouse.x);
+                        $el.width(w);
+                        break;
+                    case "sw":
+                        h = rect.height + (nowPosition.y - mouse.y);
+                        $el.height(h);
+                        w = rect.width + (mouse.x - nowPosition.x);
+                        $el.width(w);
+                        $el.css('left', rect.left + (nowPosition.x - mouse.x));
+                        break;
                 }
+                $svg.attr('height', h);
+                $svg.attr('width', w);
             }
         }
     };
@@ -81,7 +152,9 @@ $(function(){
     function getMousePosition(e){
         return {
             x: (window.pageXOffset || window.document.body.scrollLeft) + e.clientX,
-            y: (window.pageYOffset || window.document.body.scrollTop) + e.clientY
+            y: (window.pageYOffset || window.document.body.scrollTop) + e.clientY,
+            clientX: e.clientX,
+            clientY: e.clientY
         }
     }
     var SVGTool = {
