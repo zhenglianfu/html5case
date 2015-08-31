@@ -19,6 +19,9 @@
         .padding{
             padding: 10px;
         }
+        .relative{
+            position: relative;
+        }
         svg{
             background: #fff;
         }
@@ -136,6 +139,7 @@
                             <li class="menu-item" id="saveFile">保存为svg</li>
                             <li class="menu-item" id="saveImg">保存为图片</li>
                             <li class="menu-item" id="code">代码输出</li>
+                            <li class="menu-item" id="fullScreen">全屏</li>
                         </ul>
                     </div>
                     <div class="tool-bar">
@@ -173,7 +177,7 @@
                                     <div class="tool-item-content">
                                         <svg width="38px" height="37px">
                                             <!-- 鼠标工具 -->
-                                            <path d="M"></path>
+                                            <path d=""></path>
                                         </svg>
                                     </div>
                                 </li>
@@ -189,9 +193,7 @@
                         <!--<div class="more-tool-icon"></div>-->
                     </div>
                     <div class="panel-wrap">
-                        <div class="panel" id="1_panel_1" style="width: 400px;height: 200px;top: 30px;left: 100px;">
-                            <div class="right"></div>
-                            <div class="bottom"></div>
+                        <div class="relative h100" id="panelContainers">
                         </div>
                     </div>
                 </div>
@@ -203,7 +205,7 @@
             <a href="https://github.com/zhenglianfu">&copy;zhenglianfu@github</a>
         </div>
     </footer>
-    <script type="text/javascript" src="../../javascript/zepto.min.js"></script>
+    <script type="text/javascript" src="../../javascript/jquery.js"></script>
     <script>
         var maxHeight = 100;
         var width = 150;
