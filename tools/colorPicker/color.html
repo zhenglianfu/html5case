@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>HSL<->RGB</title>
+    <link rel="stylesheet" type="text/css" href="../../stylesheets/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../../stylesheets/normalize.css">
+    <style>
+        .color-panel{
+            width: 100px;
+            margin: auto 10px;
+        }
+        .color-item{
+            height: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="clear-fix">
+        <div>
+            <label>
+                饱和度: <input name="saturation" id="saturation">
+            </label>
+        </div>
+        <div>
+            <label>
+                亮 度：<input name="lightness" id="lightness">
+            </label>
+        </div>
+        <div class="color-panel" id="hsl"></div>
+    </div>
+    <div class="color-panel hidden" id="rgb" hidden></div>
+    <script type="text/javascript" src="./js/color-switch.js"></script>
+    <script type="text/javascript">
+        var i = 360,
+                html = '';
+        for (var i = 0; i <= 360; i += 1) {
+            html += '<div class="color-item" style="background: hsl(' + i + ', 100%, 50%);" data-h="' + i + '"></div>';
+        }
+        document.getElementById('hsl').innerHTML = html;
+    </script>
+    <script type="text/javascript">
+        var i = 360, html = '', rgbs;
+        for (var i = 0; i <= 360; i++) {
+            rgbs = hsl2rgb(i, 1, 0.5);
+            html += '<div class="color-item" style="background: rgb(' + rgbs[0] + ',' + rgbs[1] + ',' + rgbs[2] + ');"></div>';
+        }
+        document.getElementById('rgb').innerHTML = html;
+    </script>
+</body>
+</html>
