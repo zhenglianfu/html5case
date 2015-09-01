@@ -7,29 +7,67 @@
     <link rel="stylesheet" type="text/css" href="../../stylesheets/normalize.css">
     <style>
         .color-panel{
+            float: left;
             width: 100px;
             margin: auto 10px;
         }
         .color-item{
             height: 2px;
         }
+        /** form **/
+        form{
+            padding: 20px;
+        }
+        form .fm-lb{
+            display: inline-block;
+            clear: both;
+        }
+        form .fm-lb:after,
+        form .fm-lb:before{
+            display: block;
+            content: "";
+            clear: both;
+            overflow: hidden;
+        }
+        .fm-lb-text{
+            text-align: right;
+        }
     </style>
 </head>
 <body>
     <div class="clear-fix">
-        <div>
-            <label>
-                饱和度: <input name="saturation" id="saturation">
-            </label>
-        </div>
-        <div>
-            <label>
-                亮 度：<input name="lightness" id="lightness">
-            </label>
-        </div>
-        <div class="color-panel" id="hsl"></div>
+        <form>
+            <div class="row">
+                <div class="third one">
+                    <label class="fm-lb row"><span class="fm-lb-text third one">R: </span><input class="third two" type="tel"></label>
+                </div>
+                <div class="third one">
+                    <label class="fm-lb row"><span class="fm-lb-text third one">G: </span><input class="third two" type="tel"></label>
+                </div>
+                <div class="third one">
+                    <label class="fm-lb row"><span class="fm-lb-text third one">B: </span><input class="third two" type="tel"></label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="third one">
+                    <label class="fm-lb row"><span class="fm-lb-text third one">H: </span><input class="third two" type="tel"></label>
+                </div>
+                <div class="third one">
+                    <label class="fm-lb row"><span class="fm-lb-text third one">S: </span><input class="third two" type="tel"></label>
+                </div>
+                <div class="third one">
+                    <label class="fm-lb row"><span class="fm-lb-text third one">L: </span><input class="third two" type="tel"></label>
+                </div>
+            </div>
+            <div class="btn-grp">
+                <button>HSL转RGB</button>
+            </div>
+        </form>
     </div>
-    <div class="color-panel hidden" id="rgb" hidden></div>
+    <div class="clear-fix">
+        <div class="color-panel" id="hsl"></div>
+        <div class="color-panel" id="rgb"></div>
+    </div>
     <script type="text/javascript" src="./js/color-switch.js"></script>
     <script type="text/javascript">
         var i = 360,

@@ -431,9 +431,33 @@ th {
     clear: both;
 }
 .clear-fix:after,
-.clear-fix:before{
+.clear-fix:before,
+.row:after,
+.row:before{
     display: block;
     content: "";
     overflow: hidden;
     clear: both;
+}
+
+/** types **/
+.row{
+  display: block;
+  clear: both;
+  width: 100%;
+}
+.row .half,
+.row .third,
+.row .fourth,
+.row .fifth{
+  float: left;
+}
+.row .half{
+  width: 50%;;
+}
+.row .third{
+  width: 33.33%;
+}
+.row .third.two{
+  width: 66.66%;
 }
