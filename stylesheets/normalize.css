@@ -426,3 +426,14 @@ th {
 .relative{
     position: relative;
 }
+
+.clear-fix{
+    clear: both;
+}
+.clear-fix:after,
+.clear-fix:before{
+    display: block;
+    content: "";
+    overflow: hidden;
+    clear: both;
+}
