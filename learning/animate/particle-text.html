@@ -7,8 +7,44 @@
 <body>
 <!-- 粒子文字 -->
 <canvas id="canvas"></canvas>
+<script type="text/javascript" src="util.js"></script>
+<script type="text/javascript" src="ball.js"></script>
 <script type="text/javascript">
+    // 黑色背景，白色粒子
+    var canvas = document.getElementById('canvas');
+    canvas.width = 600;
+    canvas.height = 400;
+    var maxSpeed = 3;
+    var minSpeed = 1;
+    var particleRadius = 2;
+    var context = canvas.getContext('2d');
+    context.fillStyle = '#000';
+    context.fillRect(0,0,canvas.width, canvas.height);
+    var balls = [];
+    (function generateBall(){
+        window.requestAnimationFrame(generateBall, canvas);
+        // clear canvas
+        context.fillRect(0,0,canvas.width,canvas.height);
+        // add Y distance
+        for (var i = 0, len = balls.length; i < len; i++) {
+            balls[i].y += random(minSpeed, maxSpeed);
+            balls[i].draw(context);
+            if (balls[i].y > canvas.height + 2 * particleRadius) {
+                balls.splice(i, 1);
+                i --;
+                len --;
+            }
+        }
+        var newBall = new Ball(particleRadius, '#fff');
+        newBall.x = Math.random() * canvas.width | 0;
+        balls.push(newBall);
+        console.log(balls.length);
+    }());
+    function random(min, max){
+        return Math.random() * max + min;
+    }
     // 把文字转成图片，检测像素
+
 </script>
 </body>
 </html>

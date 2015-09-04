@@ -17,6 +17,7 @@ function Ball(radius, color){
     this.ratation = 0;
     this.radius = radius;
     this.color = util.parseColor(color);
+    this.color = "rgb(" + this.color[0] + "," + this.color[1] + "," + this.color[2] + ")"
     this.lineWidth = 1;
 }
 /**
