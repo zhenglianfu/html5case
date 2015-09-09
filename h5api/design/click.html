@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>click the asshole</title>
+    <style>
+        .item{
+            float: left;
+            margin: 0px 2% 10px 0;
+            padding: 10px;
+            text-align: center;
+            background: #c4ffd8;
+            cursor: pointer;
+            position: relative;
+            font-family: "Consolas", "Courier New", Courier, mono, sans-serif, serif;
+            overflow: hidden;
+            transition: all .5s;
+        }
+        .ripple{
+            position: absolute;
+            background: rgba(0,0,0,0.3);
+            top: 0;
+            width: 10em;
+            height: 10em;
+            margin-top: -5em;
+            margin-left: -5em;
+            border-radius: 50%;
+            transform: scale(0);
+            -webkit-transform: scale(0);
+            animation: ripple 1s both;
+            -webkit-animation: ripple 1s both;
+            opacity: 1;
+            pointer-events: none;
+        }
+        @keyframes ripple {
+            0%{
+                transform: scale(0);
+                -ms-transform: scale(0);
+                opacity: 1;
+            }
+            75%{
+                transform: scale(3);
+                -ms-transform: scale(3);
+                opacity: .75;
+            }
+            100%{
+                transform: scale(3);
+                -ms-transform: scale(3);
+                opacity: 0;
+            }
+        }
+        @-webkit-keyframes ripple {
+            0%{
+                transform: scale(0);
+                -webkit-transform: scale(0);
+                opacity: 1;
+            }
+            75%{
+                transform: scale(3);
+                -webkit-transform: scale(3);
+                opacity: .75;
+            }
+            100%{
+                transform: scale(3);
+                -webkit-transform: scale(3);
+                opacity: 0;
+            }
+        }
+        #shadowHover{
+            box-shadow: 0 0 0 0 #000 inset;
+        }
+        #shadowHover:hover{
+            box-shadow: 0 0 0 10em #000 inset;
+            color: #fff;
+        }
+        #shadowHoverLeft:before{
+            color: #fff;
+            content: "";
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0%;
+            transition: all .5s;
+            background: #000;
+            opacity: .3;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        #shadowHoverLeft:hover:before{
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="item" id="rippleItem">
+            <span>click me</span>
+        </div>
+        <div class="item" id="shadowHover">
+            <span>hover me</span>
+        </div>
+        <div class="item" id="shadowHoverLeft" data-text="hover me :)">
+            <span>hover me :)</span>
+        </div>
+    </div>
+    <script>
+        var ele_ripple = document.getElementById('rippleItem');
+        ele_ripple.addEventListener('click', function(e){
+            var dom_ripple = document.createElement('div');
+            dom_ripple.className = 'ripple';
+            // set position left & top
+            var ranges = ele_ripple.getBoundingClientRect();
+            dom_ripple.style.left = e.clientX - ranges.left + 'px';
+            dom_ripple.style.top = e.clientY - ranges.top + 'px';
+            ele_ripple.appendChild(dom_ripple);
+            setTimeout(function(){
+                ele_ripple.removeChild(dom_ripple);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

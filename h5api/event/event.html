@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>event</title>
+    <style>
+        .target{
+            width: 100%;
+            height: 300px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="target" id="target">
+    </div>
+    <div id="text"></div>
+    <script type="text/javascript">
+        var ele_target = document.getElementById('target');
+        var ele_text = document.getElementById('text');
+        ele_target.addEventListener('mousedown', function(){
+            ele_text.innerText = 'mousedown';
+        });
+        ele_target.addEventListener('mousemove', function(){
+           ele_text.innerText = 'move';
+        });
+        ele_target.addEventListener('mouseup', function(){
+            ele_text.innerText = 'mouseup';
+        });
+    </script>
+</body>
+</html>
