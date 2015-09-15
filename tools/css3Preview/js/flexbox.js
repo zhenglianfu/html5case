@@ -17,7 +17,9 @@ $('#flexBtn').bind('click', function(){
 });
 
 $('.flex-box').children().each(function(){
+    var color = randomColor();
     $(this).css({
-        'background': randomColor()
+        'background': color,
+        'border-color': color
     });
 });
