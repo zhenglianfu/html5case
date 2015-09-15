@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="../../stylesheets/normalize.css">
     <link rel="stylesheet" type="text/css" href="../../stylesheets/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="./css/tool_css3.css">
+    <link rel="stylesheet" type="text/css" href="css/flexbox.css">
 </head>
 <body>
     <div class="container">
@@ -221,8 +222,15 @@
                                 <div class="border padding">
                                     <h6>基本设定</h6>
                                     <div class="fm-ipt">
-                                        <label>周期</label>
-                                        <input type="text">
+                                        <label>列数</label>
+                                        <input name="column" id="flex-column" type="tel">
+                                    </div>
+                                    <div class="fm-ipt">
+                                        <label>行数</label>
+                                        <input name="row" id="flex-row" type="tel">
+                                    </div>
+                                    <div class="fm-ipt text-center">
+                                        <button type="submit" class="btn" id="flexBtn">do it</button>
                                     </div>
                                 </div>
                             </div>
@@ -231,7 +239,11 @@
                             <div>
                                 <div class="title">Flex姗姗来迟</div>
                                 <div>
-                                    <div class="flex-box target-ele"></div>
+                                    <div class="flex-box target-ele">
+                                        <div></div>
+                                        <div></div>
+                                        <div></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -268,5 +280,6 @@
     <script type="text/javascript" src="../../javascript/animate.js"></script>
     <script type="text/javascript" src="./js/tool_css3.js"></script>
     <script type="text/javascript" src="js/gradient-color.js"></script>
+    <script type="text/javascript" src="js/flexbox.js"></script>
 </body>
 </html>

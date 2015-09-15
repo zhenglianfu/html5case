@@ -51,6 +51,8 @@
             menuClosed = true;
             $menu.removeClass('open');
         }
+        $('.footer').height('1em').find('.bottom-expand').removeClass('open');
+        resizePanel();
     });
     $('.bottom-expand').click(function(){
         if ($(this).hasClass('open')) {
@@ -73,9 +75,9 @@
         var height = document.documentElement.clientHeight;
         contentHeight = height - $('.footer')[0].clientHeight;
         $('.content-wrap, .content').height(contentHeight);
-        // start point
-        scrollToContent(0);
-
+        // scroll to
+        // current point
+        scrollToContent($('.ul-menu li.active').index() || 0);
     }
     resizePanel();
     window.addEventListener('resize', resizePanel);
