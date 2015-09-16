@@ -1,11 +1,58 @@
 .flex-box{
+    overflow: auto;
     display: flex;
     display: flex-box;
     display: -webkit-flex-box;
 }
 .flex-box > div{
+    position: relative;
     height: 100%;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+}
+.flex-box > div > span{
+    position: absolute;
+    background: #ffffff;
+    color: #000;
+    display: inline-block;
+    top: 50%;
+    left: 50%;
+    font-size: 1em;
+    line-height: 1.6em;
+    margin-top: -.8em;
+    margin-left: -.5em;
+}
+
+.shine{
+    animation: bgShine 1s;
+    -webkit-animation: bgShine 1s both;
+    -moz-animation: bgShine 1s both;
+}
+
+@keyframes bgShine {
+    0%{
+        background: rgba(0,0,0,.5);
+    }
+    100%{
+        background: rgba(0,0,0,0);
+    }
+}
+
+@-webkit-keyframes bgShine {
+    0%{
+        background: rgba(0,0,0,.5);
+    }
+    100%{
+        background: rgba(0,0,0,0);
+    }
+}
+
+@-moz-keyframes bgShine {
+    0%{
+        background: rgba(0,0,0,.5);
+    }
+    100%{
+        background: rgba(0,0,0,0);
+    }
 }

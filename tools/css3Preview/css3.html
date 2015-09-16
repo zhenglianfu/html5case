@@ -225,27 +225,43 @@
                                         <label>方向</label>
                                         <select name="direction">
                                             <option value="row">row</option>
+                                            <option value="row-reverse">row-reverse</option>
                                             <option value="column">column</option>
+                                            <option value="column-reverse">column-reverse</option>
                                         </select>
                                     </div>
                                     <div class="fm-ipt">
-                                        <label>列数</label>
-                                        <input name="column" id="flex-column" type="tel">
-                                    </div>
-                                    <div class="fm-ipt">
-                                        <label>行数</label>
-                                        <input name="row" id="flex-row" type="tel">
-                                    </div>
-                                    <div class="fm-ipt">
-                                        <label>宽度</label>
-                                        <input name="width" id="flex-row-width" type="text">
-                                    </div>
-                                    <div class="fm-ipt">
-                                        <label>缩放</label>
-                                        <input name="shrink" id="flex-shrink" type="tel">
+                                        <label>溢出选项</label>
+                                        <select name="wrap">
+                                            <option value="nowrap">nowrap</option>
+                                            <option value="wrap">wrap</option>
+                                            <option value="wrap-reverse">wrap-reverse</option>
+                                        </select>
                                     </div>
                                     <div class="fm-ipt text-center">
-                                        <button type="submit" class="btn" id="flexBtn">do it</button>
+                                        <button type="submit" class="btn" id="flexBtn">init it</button>
+                                    </div>
+                                    <h6>子元素设定</h6>
+                                    <div class="subForm">
+                                    <div class="fm-ipt">
+                                        <label>排列顺序</label>
+                                        <input type="tel" name="order">
+                                    </div>
+                                    <div class="fm-ipt">
+                                        <label>优选宽度</label>
+                                        <input type="text" name="subWidth">
+                                    </div>
+                                    <div class="fm-ipt">
+                                        <label>占位比例</label>
+                                        <input type="tel" name="subExtend">
+                                    </div>
+                                    <div class="fm-ipt">
+                                        <label>缩放比率</label>
+                                        <input type="tel" name="subShrink">
+                                    </div>
+                                    <div class="fm-ipt text-center">
+                                        <button type="submit" class="btn" id="flexAddBtn">add new sub element</button>
+                                    </div>
                                     </div>
                                 </div>
                             </div>

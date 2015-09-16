@@ -16,9 +16,11 @@
     }
 
     $('#flexBtn').bind('click', function(){
-        var params = form2Obj($('.form'));
-        console.log(params);
-        fillFlexBox(params);
+        initFlexBox(form2Obj($('.form')));
+    });
+
+    $('#flexAddBtn').bind('click', function(){
+        addFlexElement(form2Obj($('.form')))
     });
 
     $('.flex-box').children().each(function(){
@@ -29,24 +31,27 @@
         });
     });
 
-    function fillFlexBox(opts){
-        var direction = opts.direction || 'row',
-            row_num = window.parseInt(opts.row) || 1,
-            col_num = window.parseInt(opts.column) || 1,
-            shrink = opts.shrink == "" ? 1 : (parseInt(opts.shrink) || 0),
-            width = opts.width,
+    function initFlexBox(opts){
+        var direction = opts.direction,
+            wrap = opts.wrap,
             $flexBox = $('.flex-box').html('').css({
-                'flex-direction': direction
-            });
-        for (var i = 0; i < row_num * col_num; i++) {
-            var $div = $('<div>').css({
-                "background": randomColor(),
-                "flex-shrink": shrink,
-                width: width
-            });
-            $flexBox.append($div);
-        }
+                'flex-direction': direction,
+                'flex-wrap': wrap
+            }).addClass('shine');
+        setTimeout(function(){
+            $flexBox.removeClass('shine');
+        }, 1000);
+    }
 
+    function addFlexElement(opts){
+        var subWidth = opts.subWidth || '0';
+        var $div = $('<div>').css({
+            "order": opts.order || 0,
+            "background": randomColor(),
+            "flex": [(opts.subExtend || 1), opts.subShrink || 1, subWidth.indexOf('%') == -1 ? window.parseInt(subWidth) + 'px' : subWidth].join(' ')
+        }).html('<span>' + opts.order + '</span>');
+        $('.flex-box').append($div);
+        $('.subForm input').val('');
     }
 }());
 
