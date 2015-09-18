@@ -21,18 +21,21 @@
             var style = 'background-image: ';
             switch (browsers[i].prefix){
                 case '-webkit-':
-                    var args = [obj.type, '0 0','50% 50%','from(' + obj.start + ')', 'to(' + obj.end + ')']
+                    var args = [obj.type, '0 0','50% 50%','from(' + obj.start + ')', 'to(' + obj.end + ')'];
                     style += '-webkit-gradient(' + args.join(", ") + ')';
                     // new type
                     style += ';\nbackground-image: -webkit-linear-gradient(-45deg, ' + obj.start + ', ' + obj.end + ');'
                     break;
                 case '-moz-':
+                    style += '-moz-' + obj.type + '-gradient()';
                     break;
                 case '-o-':
+                    style += '-o-' + obj.type + '-gradient()';
                     break;
                 case '-ms-':
                     break;
                 default :
+                    style += obj.type + '-gradient()';
             }
             csses.push(style);
             $ul.find('li').eq(i).find('.code').text(style);
