@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>click the asshole</title>
     <style>
+        *, *:after, *:before{
+            -webkit-user-select: none;
+        }
         .item{
             float: left;
             margin: 0px 2% 10px 0;
@@ -74,22 +77,14 @@
             box-shadow: 0 0 0 10em #000 inset;
             color: #fff;
         }
-        #shadowHoverLeft:before{
-            color: #fff;
-            content: "";
-            height: 100%;
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 0%;
-            transition: all .5s;
+        #shadowHoverOut{
             background: #000;
-            opacity: .3;
-            overflow: hidden;
-            pointer-events: none;
+            box-shadow: 0 0 0 10em #c4ffd8 inset;
+            color: #000;
         }
-        #shadowHoverLeft:hover:before{
-            width: 100%;
+        #shadowHoverOut:hover{
+            box-shadow: 0 0 0 0 #c4ffd8 inset;
+            color: #fff;
         }
     </style>
 </head>
@@ -101,7 +96,10 @@
         <div class="item" id="shadowHover">
             <span>hover me</span>
         </div>
-        <div class="item" id="shadowHoverLeft" data-text="hover me :)">
+        <div class="item" id="shadowHoverOut" data-text="hover me :)">
+            <span>hover me :)</span>
+        </div>
+        <div class="item" id="shadowHoverRight" data-text="hover me:)">
             <span>hover me :)</span>
         </div>
     </div>
