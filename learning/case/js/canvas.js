@@ -447,12 +447,7 @@ PManager.load('zepto,engine', function(data, error){
                         cx = (canvas.width - imgWidth) / 2;
                         cy = (canvas.height - imgHeight) / 2;
                         engine.clearAll();
-                        engine.drawImg(img, {
-                            x: cx,
-                            y: cy,
-                            width: imgWidth,
-                            height: imgHeight
-                        });
+                        engine.ctx.drawImage(img, cx, cy, imgWidth, imgHeight);
                     }
                 });
             }
@@ -483,8 +478,9 @@ PManager.load('zepto,engine', function(data, error){
             mouseDown = true;
         });
         clipHelper.addEventListener('mousemove', function(e){
+            // 不仅可以移动，可以缩放，向内缩小时不能阻止移动事件冒泡到父级
+            //e.stopPropagation();
             e.preventDefault();
-            e.stopPropagation();
             if (mouseDown) {
                 var deltaX = e.clientX + pageXOffset - originX,
                     deltaY = e.clientY + pageYOffset - originY;
@@ -512,17 +508,18 @@ PManager.load('zepto,engine', function(data, error){
         var blocks = document.querySelectorAll('.block');
         for (var i = 0, len = blocks.length; i < len; i++) {
             blocks[i].addEventListener('mousedown', cliperResize);
-            blocks[i].addEventListener('mousemove', cliperResize, true);
             blocks[i].addEventListener('mouseup', cliperResize);
         }
+        // 位移 委托在剪裁区域中
+        clipHelper.parentNode.addEventListener('mousemove', cliperResize);
         document.body.addEventListener('mouseup', cliperResize);
         var resizeMouseDown = false;
         var width  = 0;
         var height = 0;
+        var className = '';
         // 被父类元素capture住了mousemove事件, 没有dispatch到子元素
         function cliperResize(e){
-            var ele = this,
-                className = ' ' + ele.className + ' ';
+            var ele = this;
             e.preventDefault();
             e.stopPropagation();
             if (e.type == 'mousedown'){
@@ -533,6 +530,7 @@ PManager.load('zepto,engine', function(data, error){
                 top    = parseInt($('#clipHelper').css('top'));
                 left   = parseInt($('#clipHelper').css('left'));
                 resizeMouseDown = true;
+                className = ' ' + e.target.className + ' ';
             } else if (e.type == 'mousemove') {
                 if (resizeMouseDown) {
                     var deltaX = e.clientX + pageXOffset - originPositionX,
@@ -554,6 +552,7 @@ PManager.load('zepto,engine', function(data, error){
                     } else if (className.indexOf(' south-west ') > -1) {
                         $('#clipHelper').height(height + deltaY).width(width - deltaX).css('left', left + deltaX);
                     }
+                    console.log(className);
                 }
             } else if (e.type == 'mouseup') {
                 resizeMouseDown = false;

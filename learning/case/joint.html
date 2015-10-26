@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>图片拼接</title>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/normalize.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/main.css">
+    <link rel="stylesheet" type="text/css" href="./css/case.css">
+    <style>
+        img{
+            width: 100%;
+        }
+        .wrap{
+            position: relative;
+        }
+    </style>
+</head>
+<body class="response-body mobile">
+    <h5>web canvas 图片蒙板</h5>
+    <div class="box">
+        <div class="wrap" id="canvasWrap">
+            <canvas id="canvas" width="" height=""></canvas>
+        </div>
+        <div class="templates">
+            <div class="flex-box flex-row flex-avg">
+                <div class="padding template" data-src="img/1.png" data-params='[{"x":228,"y":269,"w":371,"h":551}]'>
+                    <img src="img/1.png">
+                </div>
+                <div class="padding template" data-src="img/2.png" data-params='[{"x":96,"y":205,"w":438,"h":322}]'>
+                    <img src="img/2.png">
+                </div>
+                <div class="padding template" data-src="img/3.png" data-params='[{"x":0,"y":214,"w":640,"h":468}]'>
+                    <img src="img/3.png">
+                </div>
+                <div class="padding template" data-src="img/4.png" data-params='[{"x":132,"y":163,"w":394,"h":413}]'>
+                    <img src="img/4.png">
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="file" name="" id="fileInput" class="hide" accept="image/*">
+<script type="text/javascript" src="/javascript/jquery.js"></script>
+<script type="text/javascript" src="js/joint.js"></script>
+<script src="http://192.168.1.8:9999/target/target-script-min.js#anonymous"></script>
+</body>
+</html>

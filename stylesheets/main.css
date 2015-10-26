@@ -18,6 +18,18 @@ header,nav,footer,section,article,aside{
 ul,ol,li{
     list-style: none;
 }
+.response-body{
+    margin: auto;
+}
+.response-body.mobile{
+    max-width: 640px;
+}
+.response-body.pc{
+    max-width: 1024px;
+}
+.response-body.tab{
+    max-width: 720px;
+}
 input,select,textarea,button{
     outline: none;
 }
@@ -28,6 +40,9 @@ button{
 body{
     font-size: 12px;
     font-family: "Microsoft YaHei","MicrosoftJhengHei",STHeiti,MingLiu,Helvetica,Arial,Geneva,sans-serif;
+}
+.hide{
+    display: none;
 }
 h1,h2,h3,h4,h5,h6{
     font-size: 1em;
@@ -77,6 +92,18 @@ h6{
 .box{
     padding: 10px;
     border: 1px solid #ccc;
+}
+.flex-box{
+    display: flex-box;
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: row;
+}
+.flex-row{
+    flex-direction: row;
+}
+.flex-avg.flex-row>div{
+    flex: 1 1 0;
 }
 .text-center{
     text-align: center;

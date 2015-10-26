@@ -25,6 +25,8 @@ $(function(){
         this.init();
     };
     Panel.prototype = {
+        minWidth : 30,
+        minHeight: 30,
         init: function(){
             this.$svg.attr({
                 height: this.$el.height() + 'px',
@@ -61,6 +63,8 @@ $(function(){
             var mouse = {};
             var rect = {};
             var $el = this.$el;
+            var minWidth = this.minWidth;
+            var minHeight = this.minHeight;
             this.$el.find('.resize-bar').bind('mousedown', function(e){
                 drag = true;
                 direction = $(this).attr('data-direction');
@@ -76,6 +80,26 @@ $(function(){
             });
             this.events['#panelContainers.mousemove'] = handlerMove;
             var $svg = this.$svg;
+            // 控制在最大最小值范围内
+            var adjustSize = function(style, value, distance){
+                var direction = '',
+                    accordValue = 0;
+                if (style == 'width') {
+                    accordValue = minWidth;
+                    direction = 'left';
+                } else {
+                    accordValue = minHeight;
+                    direction = 'top';
+                }
+                if (value < accordValue) {
+                    $el[style](accordValue);
+                } else {
+                    var css = {};
+                    css[direction] = distance + 'px';
+                    distance === undefined ? '' : $el.css(css);
+                    $el[style](value);
+                }
+            };
             // resize height width left top
             function handlerMove(e){
                 if (drag == false) {
@@ -87,54 +111,48 @@ $(function(){
                 var w = rect.width;
                 switch (direction){
                     case "top":
-                        var h = rect.height + mouse.y - nowPosition.y;
-                        $el.height(h);
-                        $el.css('top', rect.top + nowPosition.y - mouse.y + 'px');
+                        h = rect.height + mouse.y - nowPosition.y;
+                        adjustSize('height', h, rect.top + nowPosition.y - mouse.y);
                         break;
                     case "bottom":
-                        var h = rect.height + (nowPosition.y - mouse.y);
-                        $el.height(h);
+                        h = rect.height + (nowPosition.y - mouse.y);
+                        adjustSize('height', h);
                         break;
                     case "left":
                         w = rect.width + (mouse.x - nowPosition.x);
-                        $el.width(w);
-                        $el.css('left', rect.left + (nowPosition.x - mouse.x));
+                        adjustSize('width', w, rect.left + (nowPosition.x - mouse.x));
                         break;
                     case "right":
                         w = rect.width + (nowPosition.x - mouse.x);
-                        $el.width(w);
+                        adjustSize('width', w);
                         break;
                     case "nw":
                         h = rect.height + mouse.y - nowPosition.y;
-                        $el.height(h);
-                        $el.css('top', rect.top + nowPosition.y - mouse.y + 'px');
+                        adjustSize('height', h, rect.top + nowPosition.y - mouse.y);
                         w = rect.width + (mouse.x - nowPosition.x);
-                        $el.width(w);
-                        $el.css('left', rect.left + (nowPosition.x - mouse.x));
+                        adjustSize('width', w, rect.left + (nowPosition.x - mouse.x));
                         break;
                     case "ne":
                         h = rect.height + mouse.y - nowPosition.y
-                        $el.height(h);
-                        $el.css('top', rect.top + nowPosition.y - mouse.y + 'px');
+                        adjustSize('height', h, rect.top + nowPosition.y - mouse.y);
                         w = rect.width + (nowPosition.x - mouse.x);
-                        $el.width(w);
+                        adjustSize('width', w);
                         break;
                     case "se":
                         h = rect.height + (nowPosition.y - mouse.y);
-                        $el.height(h);
+                        adjustSize('height', h);
                         w = rect.width + (nowPosition.x - mouse.x);
-                        $el.width(w);
+                        adjustSize('width', w);
                         break;
                     case "sw":
                         h = rect.height + (nowPosition.y - mouse.y);
-                        $el.height(h);
+                        adjustSize('height', h);
                         w = rect.width + (mouse.x - nowPosition.x);
-                        $el.width(w);
-                        $el.css('left', rect.left + (nowPosition.x - mouse.x));
+                        adjustSize('width', w, rect.left + (nowPosition.x - mouse.x));
                         break;
                 }
-                $svg.attr('height', h);
-                $svg.attr('width', w);
+                $svg.attr('height', Math.max(h, minHeight));
+                $svg.attr('width', Math.max(w, minWidth));
             }
         }
     };
