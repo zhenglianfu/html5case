@@ -154,3 +154,7 @@ body{
 #filter-canvas{
     border: 1px solid #ccc;
 }
+
+#video-canvas{
+    border: 1px solid #ccc;
+}

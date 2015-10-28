@@ -560,6 +560,39 @@ PManager.load('zepto,engine', function(data, error){
         }
     }());
 
+    /** canvas play video */
+    (function(){
+        var videoSrc = './videos/mov_bbb.mp4';
+        var v = document.createElement('VIDEO');
+        var videoCanvas = document.getElementById('video-canvas');
+        var ctx = videoCanvas.getContext('2d');
+        var drawTimer = 0;
+        var play = false;
+        v.src = videoSrc;
+        v.load();
+        videoCanvas.width = 270;
+        videoCanvas.height = 135;
+        v.addEventListener('play', function(){
+            drawTimer = setInterval(function(){
+                ctx.drawImage(v, 0, 0, 270, 135);
+            }, 17);
+        });
+        v.addEventListener('pause', function(){
+            clearInterval(drawTimer);
+        });
+        v.addEventListener('ended', function(){
+            clearInterval(drawTimer);
+        });
+        videoCanvas.addEventListener('click', function(){
+            if (play) {
+                v.pause();
+            } else {
+                v.play();
+            }
+            play = !play;
+        });
+    }());
+
     // common functions
     function readFileAsURL(file, fun){
         if (window.URL && URL.createObjectURL) {

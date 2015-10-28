@@ -14,6 +14,11 @@
         .wrap{
             position: relative;
         }
+        #canvas{
+            position: absolute;
+            top: 0;
+            background-color: #fff;
+        }
     </style>
 </head>
 <body class="response-body mobile">
@@ -21,6 +26,7 @@
     <div class="box">
         <div class="wrap" id="canvasWrap">
             <canvas id="canvas" width="" height=""></canvas>
+            <canvas id="canvasBuffer" width="" height=""></canvas>
         </div>
         <div class="templates">
             <div class="flex-box flex-row flex-avg">
@@ -30,11 +36,14 @@
                 <div class="padding template" data-src="img/2.png" data-params='[{"x":96,"y":205,"w":438,"h":322}]'>
                     <img src="img/2.png">
                 </div>
-                <div class="padding template" data-src="img/3.png" data-params='[{"x":0,"y":214,"w":640,"h":468}]'>
+                <!--<div class="padding template" data-src="img/3.png" data-params='[{"x":0,"y":214,"w":640,"h":468}]'>
                     <img src="img/3.png">
                 </div>
                 <div class="padding template" data-src="img/4.png" data-params='[{"x":132,"y":163,"w":394,"h":413}]'>
                     <img src="img/4.png">
+                </div>-->
+                <div class="padding template" data-src="img/6.png" data-params='[{"x":2,"y":2,"w":266,"h":357},{"x":303,"y":2,"w":334,"h":357},{"x":2,"y":404,"w":267,"h":463},{"x":303,"y":404,"w":334,"h":463}]'>
+                    <img src="img/6.png">
                 </div>
             </div>
         </div>
@@ -42,6 +51,5 @@
     <input type="file" name="" id="fileInput" class="hide" accept="image/*">
 <script type="text/javascript" src="/javascript/jquery.js"></script>
 <script type="text/javascript" src="js/joint.js"></script>
-<script src="http://192.168.1.8:9999/target/target-script-min.js#anonymous"></script>
 </body>
 </html>

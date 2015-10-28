@@ -41,6 +41,12 @@ body{
     font-size: 12px;
     font-family: "Microsoft YaHei","MicrosoftJhengHei",STHeiti,MingLiu,Helvetica,Arial,Geneva,sans-serif;
 }
+.fav-bg{
+    background-color: rgba(53,115,137,0.89);
+    background-image: radial-gradient(10% 0, farthest-side ellipse, rgba(119,157,207,0.8) 30%, rgba(174,180,186,0.8) 76%, rgba(199,175,156,0.8));
+    background-image: -webkit-radial-gradient(10% 0, farthest-side ellipse, rgba(119,157,207,0.8) 30%, rgba(174,180,186,0.8) 76%, rgba(199,175,156,0.8));
+    background-image: -moz-radial-gradient(10% 0, farthest-side ellipse, rgba(119,157,207,0.8) 30%, rgba(174,180,186,0.8) 76%, rgba(199,175,156,0.8));
+}
 .hide{
     display: none;
 }

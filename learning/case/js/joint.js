@@ -6,9 +6,12 @@
         $canvas = $('#canvas'),
         canvas = $canvas[0],
         width = $wrap.width(),
-        context2D = canvas.getContext('2d');
-    canvas.width  = width;
-    canvas.height = width * 1.33;
+        context2D = canvas.getContext('2d'),
+        $canvasBuffer = $('#canvasBuffer'),
+        canvasBuffer = $canvasBuffer[0],
+        context2DBuffer = canvasBuffer.getContext('2d');
+    canvasBuffer.width  = canvas.width  = width;
+    canvasBuffer.height = canvas.height = width * 1.33;
     // functions and position info
     var imgPositions = [];
     var templatePosition = {};
@@ -36,7 +39,9 @@
                 y : (canvas_h - sheight) / 2,
                 w : swidth,
                 h : sheight,
-                img : img
+                img : img,
+                scaleX: swidth / w,
+                scaleY: sheight / h
             };
             // clear at first
             context2D.clearRect(0,0,canvas.width,canvas.height);
@@ -50,8 +55,8 @@
         img.onload = drawTemplateHelper;
     };
     var positionImg = function(templatePosition, params){
-        var scaleX = templatePosition.w / templatePosition.nw,
-            scaleY = templatePosition.h / templatePosition.nh;
+        var scaleX = templatePosition.scaleX,
+            scaleY = templatePosition.scaleY;
         imgPositions = [];
         for (var i = 0, len = params.length; i < len; i+=1) {
             var item = params[i];
@@ -75,21 +80,31 @@
         }
     };
     var redraw = function redraw(){
-        context2D.clearRect(0,0,canvas.width,canvas.height);
+        //context2D.clearRect(0,0,canvas.width,canvas.height);
         for (var i = 0, len = imgPositions.length; i < len; i++) {
             var cus = imgPositions[i],
                 scale = cus.scale,
-                x = cus.img_x + (1 - scale) / 2 * cus.img_w,
-                y = cus.img_y + (1 - scale) / 2 * cus.img_h,
-                w = cus.img_w * scale,
-                h = cus.img_h * scale;
-            context2D.save();
-            context2D.translate(x + w / 2, y + h / 2);
-            context2D.rotate(cus.rotate);
-            context2D.drawImage(cus.custImg.img, -(w / 2), -(h / 2), cus.img_w * scale, cus.img_h * scale);
-            context2D.restore();
+                x = (cus.img_x + (1 - scale) / 2 * cus.img_w + 0.5) >> 0,
+                y = (cus.img_y + (1 - scale) / 2 * cus.img_h + 0.5) >> 0,
+                w = (cus.img_w * scale + 0.5) >> 0,
+                h = (cus.img_h * scale + 0.5) >> 0;  // 所有位置取整数
+            // 清空当前绘制区域
+            context2DBuffer.clearRect(cus.x, cus.y, cus.w, cus.h);
+            // 在自己的区域内放置图片  利用第二个canvas getImageData then putImageData
+            context2DBuffer.save();
+            context2DBuffer.translate(x + w / 2, y + h / 2);
+            context2DBuffer.rotate(cus.rotate);
+            context2DBuffer.drawImage(cus.custImg.img, -(w / 2), -(h / 2), cus.img_w * scale, cus.img_h * scale);
+            context2DBuffer.restore();
+            context2D.putImageData(context2DBuffer.getImageData(cus.x, cus.y, cus.w, cus.h), cus.x, cus.y);
+            //context2D.save();
+            //context2D.translate(x + w / 2, y + h / 2);
+            //context2D.rotate(cus.rotate);
+            //context2D.drawImage(cus.custImg.img, -(w / 2), -(h / 2), cus.img_w * scale, cus.img_h * scale);
+            //context2D.restore();
         }
-        context2D.drawImage(templatePosition.img, templatePosition.x, templatePosition.y, templatePosition.w, templatePosition.h);
+        //context2D.drawImage(templatePosition.img, templatePosition.x, templatePosition.y, templatePosition.w, templatePosition.h);
+        context2DBuffer.clearRect(0,0,canvasBuffer.width, canvasBuffer.height);
     };
     // customer image Object with position
     var CustomImg = function CustomImg(opts){
@@ -210,8 +225,8 @@
             }
         },
         moveHandler = function(e, originEvent){
-            var custImg = null;
-            if (focuson && inrange && (custImg = checkClientPosition(e))) {
+            var custImg = currentImg;
+            if (focuson && custImg) {
                 // distance / rotate
                 custImg.img_x = originalPosition.x + (e.clientX - movestart.x);
                 custImg.img_y = originalPosition.y + (e.clientY - movestart.y);
@@ -228,8 +243,10 @@
         initialScale = 1,
         initialRotate = 0,
         custRotate = 0,
+        moveTimer = null,
+        currentImg = null,
         scaleHandler = function(e, originEvent){
-            var custImg = checkFingers(originEvent);
+            var custImg = checkFingers(originEvent) || currentImg;
             if (custImg) {
                 var points = calculateScalePoints(originEvent),
                     distance = Math.sqrt(Math.pow((points.scaleStart.rectX - points.scaleEnd.rectX), 2) + Math.pow((points.scaleStart.rectY - points.scaleEnd.rectY), 2));
@@ -238,11 +255,10 @@
                     deltaScale = Math.abs(custImg.scale - scale),
                     rotate = custRotate + Math.atan2(points.scaleStart.rectY - points.scaleEnd.rectY, points.scaleStart.rectX - points.scaleEnd.rectX) - initialRotate,
                     deltaRotate = Math.abs(rotate - custImg.rotate);
-                console.log(deltaRotate, deltaScale, );
                 if (deltaRotate + deltaScale != 0) {
-                    if (deltaRotate / (deltaRotate + deltaScale) > 0.7) {
+                    if (deltaRotate / (deltaRotate + deltaScale) > 0.65) {
                         custImg.rotate = rotate;
-                    } else if (deltaScale / (deltaRotate + deltaScale) > 0.7) {
+                    } else if (deltaScale / (deltaRotate + deltaScale) > 0.65) {
                         custImg.scale = scale;
                     }
                 } else {
@@ -298,6 +314,7 @@
             e = originEvent.changedTouches[0];
         }
         if (custImg = checkClientPosition(e)) {
+            currentImg = custImg;
             inrange = true;
             movestart.y = e.clientY;
             movestart.x = e.clientX;
@@ -305,8 +322,17 @@
             originalPosition.y = custImg.img_y;
         }
     }).bind(clientEvents[1], function(e){
+        if (moveTimer) {
+          return;
+        };
+        moveTimer = setTimeout(function(){
+            moveTimer = null;
+        }, 17);
         move = true;
         var originEvent = e.originalEvent;
+        if (currentImg == null) {
+            return;
+        }
         if (scale == false && e.type == 'touchmove' && originEvent.touches.length > 1) {
             scale = true;
             initScaleState(originEvent);
@@ -323,6 +349,7 @@
         focuson = false;
         inrange = false;
         scale = false;
+        currentImg = null;
         if (move) {
             // 滑动事件 阻止冒泡
             e.stopPropagation();
