@@ -85,7 +85,43 @@
                 </div>
             </div>
         </section>
+        <section>
+            <h3>canvas image shrink</h3>
+            <div>
+                <div class="shrink-wrap">
+                    <canvas id="shrink-canvas"></canvas>
+                </div>
+            </div>
+            <div class="ctrl-btns">
+                <div><label>上传图片<input accept="image/*" type="file" name="shrinkFile" id="shrinkFile"></label></div>
+                <div>
+                    <label>file size: <em id="fileSize"></em></label>
+                    <label>natural height: <em id="naturalHeight"></em></label>
+                    <label>natural width: <em id="naturalWidth"></em></label>
+                </div>
+                <div>
+                    <label>width: <input type="text" id="newWidth" name="width"></label>
+                    <label>type:<select id="imageType">
+                        <option value="image/png">png</option>
+                        <option value="image/jpeg">jpeg</option>
+                    </select></label>
+                    <label>rate: <input type="text" placeholder="0.0~1.0" id="rate"/></label>
+                    <label><button class="btn" id="shrink">shrink</button></label>
+                </div>
+                <div>
+                    <div>
+                        <label>压缩输出&nbsp;&nbsp;&nbsp;</label>
+                        <label>width:<em id="distWidth"></em></label>
+                        <label>height:<em id="distHeight"></em></label>
+                        <label>fileSize: <em id="distFileSize"></em></label>
+                        <label>less:<em id="less"></em></label>
+                    </div>
+                    <img id="dist">
+                </div>
+            </div>
+        </section>
     </article>
+    <script type="text/javascript" src="../../javascript/base64.js"></script>
     <script type="text/javascript" src="../../javascript/js_loader.js"></script>
     <script type="text/javascript" src="./js/jsCog.js"></script>
     <script type="text/javascript" src="./js/canvas.js"></script>

@@ -593,6 +593,70 @@ PManager.load('zepto,engine', function(data, error){
         });
     }());
 
+    // canvas shrink
+    (function(){
+        var canvas = document.getElementById('shrink-canvas'),
+            engine = new Engine(canvas),
+            file = null,
+            image = new Image,
+            height,
+            width,
+            imageBase64 = 0,
+            canvasBuffer = document.createElement('canvas'),
+            ctxBuffer = canvasBuffer.getContext('2d');
+        var caculateFileSize = function(size){
+            var units = ['B', 'K', 'M','G','T'],
+                i = 0;
+            while(size >= 1024){
+                size /= 1024;
+                i++;
+            }
+            return size.toFixed(1) + units[i];
+        };
+        $('#shrinkFile').bind('change', function(){
+            file = this.files[0];
+            if (file) {
+                var size = file.size;
+                $('#fileSize').text(caculateFileSize(size));
+                var fr = new FileReader;
+                fr.onload = function(){
+                    imageBase64 = image.src = fr.result;
+                    console.log(fr.result.length);
+                };
+                fr.readAsDataURL(file);
+            }
+        });
+        $('#shrink').bind('click', function(){
+            var n_width = $('#newWidth').val();
+            var type = $('#imageType').val();
+            var rate = $('#rate').val() || 1;
+            rate = Math.min(rate, 1);
+            var n_height;
+            if (n_width && n_width > 0 && n_width < width) {
+                n_height = ((n_width / width) * height + 0.5) >> 0;
+                canvasBuffer.height = n_height;
+                canvasBuffer.width = n_width;
+                ctxBuffer.drawImage(image, 0, 0, n_width, n_height);
+                var url = canvasBuffer.toDataURL(type, rate);
+                $('#dist').attr('src', url);
+                $('#distWidth').text(n_width + 'px');
+                $('#distHeight').text(n_height + 'px');
+                var binaryStr = base64decode(url.substr(url.indexOf(',') + 1));
+                $('#distFileSize').text(caculateFileSize(binaryStr.length));
+                $('#less').text(((100 - (binaryStr.length / file.size) * 100) | 0) + '%');
+            } else {
+                alert('width must be in range(0, ' + width + ')');
+            }
+        });
+        image.onload = function(){
+            $('#naturalHeight').text(image.naturalHeight + 'px');
+            $('#naturalWidth').text(image.naturalWidth + 'px');
+            width = canvas.width = image.naturalWidth;
+            height = canvas.height = image.naturalHeight;
+            engine.ctx.drawImage(image, 0, 0, width, height);
+        };
+    }());
+
     // common functions
     function readFileAsURL(file, fun){
         if (window.URL && URL.createObjectURL) {
