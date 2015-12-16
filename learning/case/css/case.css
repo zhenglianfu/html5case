@@ -3,6 +3,13 @@
 body{
     font-size: 14px;
 }
+section{
+    margin-bottom: 5%;
+}
+canvas{
+    display: block;
+    margin: auto;
+}
 .padding,.box{
     padding: 10px;
 }
