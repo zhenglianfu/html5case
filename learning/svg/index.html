@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>learning SVG</title>
+    <link href="/stylesheets/normalize.css" rel="stylesheet">
+    <link href="/stylesheets/main.css" rel="stylesheet">
+    <style>
+        #cover,
+        #cover img{
+            width: 200px;
+        }
+        #points li{
+            margin-bottom: 20px;
+        }
+        .point{
+            color: #ff4136;
+            font-weight: bold;
+        }
+        .border-box{
+            border: 1px solid #ccc;
+        }
+        .f-left svg{
+            display: block;
+            float: left;
+        }
+        .footer{
+            padding: 20px 0;
+        }
+        .svg-box svg{
+            display: inline-block;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <section>
+        <div class="padding">
+            <h5>SVG 精髓(第二版)</h5>
+            <div id="cover">
+                <img src="http://www.ituring.com.cn/bookcover/1542.738.big.jpg" alt="svg 精髓">
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="padding">
+            <h6>Points</h6>
+            <ul id="points">
+                <li>
+                    <p>1. Hello SVG</p>
+                    <div>
+                        <svg id="cat" width="140" height="170" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink">
+                            <title>Cat</title>
+                            <desc>Stick Figure of a cat</desc>
+                            <circle cx="70" cy="95" r="50" style="stroke: black; fill: none;"></circle>
+                            <circle cx="55" cy="80" r="5" fill="#333" stroke="none"></circle>
+                            <circle cx="85" cy="80" r="5" fill="#333" stroke="none"></circle>
+                            <!-- define a group -->
+                            <g id="whiskers">
+                                <line x1="75" y1="95" x2="135" y2="85" style="stroke: black"></line>
+                                <line x1="75" y1="95" x2="135" y2="105" style="stroke: black"></line>
+                            </g>
+                            <use xlink:href="#whiskers" transform="scale(-1 1) translate(-140 0)"></use>
+                            <polyline points="108 62, 90 10, 70 45, 50 10, 32 62" stroke="black" fill="none"></polyline>
+                            <polyline points="35 110, 45 120, 95 120, 105 110" fill="none" stroke="black"></polyline>
+                            <!-- nose -->
+                            <path d="M 75 90 L 65 90 A 5 10 0 0 0 75 90" fill="#ffcccc" stroke="black"></path>
+                            <text x="60" y="165" style="font-size: 14pt;" stroke="none" fill="black">Cat</text>
+                        </svg>
+                    </div>
+                </li>
+                <li>
+                    <p>2. 使用SVG的四种方式</p>
+                    <div class="padding">
+                        <p>
+                            a: 将svg作为图片引入&lt;img src="*.svg"&gt;
+                        </p>
+                        <p>b: css中引用svg</p>
+                        <p>c: 将svg作为应用程序,使用标签object/embed</p>
+                        <p>d: 混合文档, svg和(x)html混合</p>
+                    </div>
+                </li>
+                <li>
+                    <p>3. <span class="point">坐标系统</span></p>
+                    <p><span class="point">viewBox = x y width height</span></p>
+                    <p>x,y: viewbox叠加在视窗上的用户坐标系统x轴距离和y轴距离（即将开始叠加的点偏移到viewbox的x，y）; &nbsp;width,height：viewbox的宽高</p>
+                    <div>
+                        <div class="svg-box">
+                            <p>viewbox起始叠加点坐标（0，0）</p>
+                            <svg width="60" height="60" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink" viewBox="0 0 90 90">
+                                <circle cx="45" cy="45" r="45" fill="#0074d9" stroke="#333"></circle>
+                            </svg>
+                        </div>
+                        <div class="svg-box">
+                            <p>viewbox起始叠加点坐标（15，15）</p>
+                            <svg width="60" height="60" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink" viewBox="15 15 90 90">
+                                <circle cx="45" cy="45" r="45" fill="#0074d9" stroke="#333"></circle>
+                            </svg>
+                        </div>
+                        <div class="svg-box">
+                            <p>viewbox起始叠加点坐标（-15，-15）</p>
+                            <svg width="60" height="60" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink" viewBox="-15 -15 90 90">
+                                <circle cx="45" cy="45" r="45" fill="#0074d9" stroke="#333"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="point">viewbox and preserveAspectRatio</p>
+                    <p>preserveAspectRatio = alignment meet（小尺寸缩放，显示全部）</p>
+                    <div>
+                        <div class="svg-box">
+                            <svg width="180" height="60" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink" viewBox="0 0 90 90" preserveAspectRatio="xMinYMid meet">
+                                <circle cx="45" cy="45" r="45" fill="#0074d9" stroke="#333"></circle>
+                                <text x="21" y="45" style="font-size: 12px;" fill="#000" stroke="none">xMin</text>
+                            </svg>
+                        </div>
+                        <div class="svg-box">
+                            <svg width="180" height="60" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink" viewBox="0 0 90 90" preserveAspectRatio="xMidYMid meet">
+                                <circle cx="45" cy="45" r="45" fill="#0074d9" stroke="#333"></circle>
+                                <text x="21" y="45" style="font-size: 12px;" fill="#000" stroke="none">xMid</text>
+                            </svg>
+                        </div>
+                        <div class="svg-box">
+                            <svg width="180" height="60" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink" viewBox="0 0 90 90" preserveAspectRatio="xMaxYMid meet">
+                                <circle cx="45" cy="45" r="45" fill="#0074d9" stroke="#333"></circle>
+                                <text x="21" y="45" style="font-size: 12px;" fill="#000" stroke="none">xMax</text>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="clear-fix">
+                        <div class="svg-box f-left">
+                            <svg width="60" height="180" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink" viewBox="0 0 90 90" preserveAspectRatio="xMidYMin meet">
+                                <circle cx="45" cy="45" r="45" fill="#0074d9" stroke="#333"></circle>
+                                <text x="21" y="45" style="font-size: 12px;" fill="#000" stroke="none">yMin</text>
+                            </svg>
+                        </div>
+                        <div class="svg-box f-left">
+                            <svg width="60" height="180" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink" viewBox="0 0 90 90" preserveAspectRatio="xMidYMid meet">
+                                <circle cx="45" cy="45" r="45" fill="#0074d9" stroke="#333"></circle>
+                                <text x="21" y="45" style="font-size: 12px;" fill="#000" stroke="none">yMid</text>
+                            </svg>
+                        </div>
+                        <div class="svg-box f-left">
+                            <svg width="60" height="180" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink" viewBox="0 0 90 90" preserveAspectRatio="xMidYMax meet">
+                                <circle cx="45" cy="45" r="45" fill="#0074d9" stroke="#333"></circle>
+                                <text x="21" y="45" style="font-size: 12px;" fill="#000" stroke="none">yMax</text>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <p>preserveAspectRatio = alignment slice（大尺寸缩放，显示部分）</p>
+                        <div class="clear-fix">
+                            <div class="svg-box f-left">
+                                <svg width="60" height="180" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink" viewBox="0 0 90 90" preserveAspectRatio="xMinYMid slice">
+                                    <circle cx="45" cy="45" r="45" fill="#0074d9" stroke="#333"></circle>
+                                    <text x="0" y="45" style="font-size: 12px;" fill="#000" stroke="none">xMin</text>
+                                </svg>
+                            </div>
+                            <div class="svg-box f-left">
+                                <svg width="60" height="180" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink" viewBox="0 0 90 90" preserveAspectRatio="xMidYMid slice">
+                                    <circle cx="45" cy="45" r="45" fill="#0074d9" stroke="#333"></circle>
+                                    <text x="30" y="45" style="font-size: 12px;" fill="#000" stroke="none">xMid</text>
+                                </svg>
+                            </div>
+                            <div class="svg-box f-left">
+                                <svg width="60" height="180" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink" viewBox="0 0 90 90" preserveAspectRatio="xMaxYMid slice">
+                                    <circle cx="45" cy="45" r="45" fill="#0074d9" stroke="#333"></circle>
+                                    <text x="60" y="45" style="font-size: 12px;" fill="#000" stroke="none">xMax</text>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="svg-box">
+                            <svg width="180" height="60" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink" viewBox="0 0 90 90" preserveAspectRatio="xMidYMin slice">
+                                <circle cx="45" cy="45" r="45" fill="#0074d9" stroke="#333"></circle>
+                                <text x="30" y="15" style="font-size: 12px;" fill="#000" stroke="none">yMin</text>
+                            </svg>
+                        </div>
+                        <div class="svg-box">
+                            <svg width="180" height="60" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink" viewBox="0 0 90 90" preserveAspectRatio="xMidYMid slice">
+                                <circle cx="45" cy="45" r="45" fill="#0074d9" stroke="#333"></circle>
+                                <text x="30" y="50" style="font-size: 12px;" fill="#000" stroke="none">yMid</text>
+                            </svg>
+                        </div>
+                        <div class="svg-box">
+                            <svg width="180" height="60" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink" viewBox="0 0 90 90" preserveAspectRatio="xMidYMax slice">
+                                <circle cx="45" cy="45" r="45" fill="#0074d9" stroke="#333"></circle>
+                                <text x="30" y="80" style="font-size: 12px;" fill="#000" stroke="none">yMax</text>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <p>preserveAspectRatio = none（不缩放，拉伸铺满视窗）</p>
+                        <div class="svg-box">
+                            <svg width="180" height="60" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 90" preserveAspectRatio="none">
+                                <circle cx="45" cy="45" r="45" stroke="#333" fill="#0074d9"></circle>
+                            </svg>
+                        </div>
+                        <div class="svg-box">
+                            <svg width="60" height="180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 90" preserveAspectRatio="none">
+                                <circle cx="45" cy="45" r="45" stroke="#333" fill="#0074d9"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="point">嵌套坐标系统</p>
+                        <div class="svg-box">
+                            <svg width="200" height="180" viewBox="0 0 200 200">
+                                <circle r="25" cx="25" cy="25" fill="none" stroke="#333"></circle>
+                                <rect height="80" width="30" x="100" y="5" stroke="blue" fill="none"></rect>
+                                <svg x="100" y="5" width="30" height="80" viewBox="0 0 50 50" preserveAspectRatio="xMaxYMax" meet>
+                                    <circle r="25" cx="25" cy="25" fill="none" stroke="#333"></circle>
+                                </svg>
+                            </svg>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <p>4. 基本形状</p>
+                    <div>
+                        <p>a. LINE</p>
+                        <div class="svg-box">
+                            <svg width="100" height="100" viewBox="0 0 50 50">
+                                <line x1="0" y1="22" x2="50" y2="22" stroke-width="6" stroke="#000"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <p>b. RECT</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </section>
+    <footer></footer>
+</body>
+</html>

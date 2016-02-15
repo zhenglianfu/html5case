@@ -2,8 +2,6 @@ body{
     overflow-y: hidden;
 }
 .container{
-    position: absolute;
-    top: 50%;
     position: relative;
     overflow: hidden;
 }

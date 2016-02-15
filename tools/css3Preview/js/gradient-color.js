@@ -48,7 +48,7 @@
         var liTpl = $('#cssCodeline').html();
         var liHTML = [];
         for (var i = 0; i < browsers.length; i ++) {
-            liHTML[i] = liTpl.replace('${icon}', browsers[i].icon).replace('${codeWidth}', global.codePreWidth).replace('${code}', browsers[i].prefix || '');
+            liHTML[i] = liTpl.replace('${icon}', browsers[i].icon).replace('${codeWidth}', /*global.codePreWidth*/ '-1').replace('${code}', browsers[i].prefix || '');
         }
         $ul.html(liHTML.join(''));
     }());

@@ -70,7 +70,7 @@
     function resizePanel(){
         //// resize code width
         codePreWidth = $('.result').width() - 80;
-        $('.code').width(codePreWidth);
+        //$('.code').width(codePreWidth);
         global.codePreWidth = codePreWidth;
         var height = document.documentElement.clientHeight;
         contentHeight = height - $('.footer')[0].clientHeight;
