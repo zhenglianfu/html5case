@@ -351,8 +351,45 @@
                             <use xlink:href="#man" x="60" y="0" style="fill: #4a5;"></use>
                             <use xlink:href="#man" x="90" y="0" style="fill: #64c;"></use>
                             <use xlink:href="#man" x="120" y="0" style="fill: #7b0;"></use>
-                            <use xlink:href="#man" x="150" y="0" style="fill: #c5d;"></use>c
+                            <use xlink:href="#man" x="150" y="0" style="fill: #c5d;"></use>
                             <use xlink:href="#man" x="180" y="0" style="fill: #f60;"></use>
+                        </svg>
+                    </div>
+                    <div>使用&lt;symbol>元素实现另一种组合方式, symbol不会显示，所以无放置到需defs元素内,习惯上依旧用defs包裹symbol, <span class="point">symbol可以使用viewbox，preserveAspectRatio</span></div>
+                    <div class="svg-box">
+                        <svg width="300" height="120" viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink">
+                            <defs>
+                                <g id="angle">
+                                    <title>hehe</title>
+                                    <desc>hehe</desc>
+                                    <polygon points="15 0 30 18 0 18"></polygon>
+                                </g>
+                                <symbol id="symbol-angle" viewBox="0 0 30 18" preserveAspectRatio="xMaxYMax meet">
+                                    <polygon points="15 0 30 18 0 18"></polygon>
+                                </symbol>
+                            </defs>
+                            <use xlink:href="#angle" style="fill:#ccc; stroke: #333;"></use>
+                            <use xlink:href="#symbol-angle" x="30" y="0" height="36" width="30" style="fill:#ccc; stroke: #333;"></use>
+                        </svg>
+                    </div>
+                </li>
+                <li>
+                    <p>6. 坐标系统变换</p>
+                    <div>transform之translate, 此translate与canvas中的translate一致，移动画布而不是矩形</div>
+                    <div class="svg-box">
+                        <svg width="300" height="120" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink">
+                            <g id="square" style="fill:none; stroke: #333;">
+                                <rect x="10" y="10" width="30" height="30"></rect>
+                            </g>
+                            <use xlink:href="#square" x="0" y="0" transform="translate(30, 30)"></use>
+                            <use xlink:href="#square" x="10" y="0" transform="translate(60, 0)"></use>
+                        </svg>
+                    </div>
+                    <div>transform之scale</div>
+                    <div class="svg-box">
+                        <div>偏移量也被放大了，呵呵(引用上图中的rect)</div>
+                        <svg width="300" height="120" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink">
+                            <use xlink:href="#square" x="0" y="0" transform="scale(2 2)"></use>
                         </svg>
                     </div>
                 </li>
