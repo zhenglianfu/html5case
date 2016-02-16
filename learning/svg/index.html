@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>learning SVG</title>
+    <link rel="shortcut icon" type="image/png" href="">
     <link href="/stylesheets/normalize.css" rel="stylesheet">
     <link href="/stylesheets/main.css" rel="stylesheet">
     <style>
@@ -30,7 +31,7 @@
         }
         .svg-box svg{
             display: inline-block;
-            border: 1px solid #ccc;
+            border: 1px solid #333;
         }
     </style>
 </head>
@@ -223,14 +224,157 @@
                                 <line x1="0" y1="22" x2="50" y2="22" stroke-width="6" stroke="#000"></line>
                             </svg>
                         </div>
+                        <div class="svg-box">
+                            <svg width="320" height="220" viewBox="0 0 320 220">
+                                <title>lines</title>
+                                <desc>fill with lines</desc>
+                                <line x1="0" y1="20" x2="320" y2="20" stroke="#000"></line>
+                                <line x1="20" y1="0" x2="20" y2="220" stroke="#000"></line>
+                                <svg id="grid" width="300" height="200" x="20" y="20">
+                                    <line x1="0" y1="20" x2="300" y2="20" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="40" x2="300" y2="40" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="60" x2="300" y2="60" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="80" x2="300" y2="80" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="100" x2="300" y2="100" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="120" x2="300" y2="120" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="140" x2="300" y2="140" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="160" x2="300" y2="160" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="180" x2="300" y2="180" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="20" y1="0" x2="20" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="40" y1="0" x2="40" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="60" y1="0" x2="60" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="80" y1="0" x2="80" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="100" y1="0" x2="100" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="120" y1="0" x2="120" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="140" y1="0" x2="140" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="160" y1="0" x2="160" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="180" y1="0" x2="180" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="200" y1="0" x2="200" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="220" y1="0" x2="220" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="240" y1="0" x2="240" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="260" y1="0" x2="260" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="280" y1="0" x2="280" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                </svg>
+                            </svg>
+                        </div>
+                        <div class="svg-box">
+                            <p>虚线设置 dasharray dashoffset</p>
+                            <svg width="200" height="80">
+                                <line x1="0" x2="200" y1="10" y2="10" stroke-width="4" stroke="#333" stroke-dasharray="10 10"></line>
+                                <line x1="0" x2="200" y1="30" y2="30" stroke-width="4" stroke="#333" stroke-dasharray="10 5 5 5"></line>
+                                <line x1="0" x2="200" y1="50" y2="50" stroke-width="4" stroke="#333" stroke-dasharray="10 5 10"></line>
+                                <line x1="0" x2="200" y1="70" y2="70" stroke-width="4" stroke="#333" stroke-dasharray="100" stroke-dashoffset="-90"></line>
+                            </svg>
+                        </div>
                     </div>
                     <div>
                         <p>b. RECT</p>
+                        <div class="svg-box">
+                            <svg width="300" height="100" viewBox="0 0 300 100" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+                                <rect stroke="#000" stroke-dasharray="10 5" x="10" y="10" width="50" height="50" fill="#00669d" fill-opacity=".5"></rect>
+                                <rect stroke="#333" x="70" y="10" rx="15" ry="10" width="50" height="50" fill="#ccc" fill-opacity="1"></rect>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <p>c. CIRCLE, Ellipse</p>
+                        <div class="svg-box">
+                            <svg height="140" width="300" viewBox="0 0 300 140" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink">
+                                <circle cx="27" cy="27" r="25" fill="none" stroke="#333" stroke-width="4"></circle>
+                                <ellipse cx="52" cy="85" rx="50" ry="25" fill="none" stroke="#333" stroke-width="1"></ellipse>
+                                <ellipse cx="150" cy="70" rx="25" ry="50" fill="#e3a" fill-opacity=".6" stroke-width="1" stroke="#333"></ellipse>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <p>d. Polygon</p>
+                        <div class="svg-box">
+                            <svg width="300" height="120" viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="15 10 55 10 45 20 5 20" style="fill: none; stroke: #333;"></polygon>
+                                <polygon points="60 89 56 48 78 89 85 45" style="fill: none; stroke: #333"></polygon>
+                             </svg>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <p>5. 文档结构</p>
+                    <div>文档和表现分离，使用css控制svg样式</div>
+                    <div class="svg-box">
+                        <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <style type="text/css"><![CDATA[
+                               .circle{
+                                    fill: red;
+                                }
+                                ]]></style>
+                            </defs>
+                            <circle class="circle" cx="20" cy="20" r="20" fill="green" stroke="#333"></circle>
+                        </svg>
+                    </div>
+                    <div>分组和引用对象 use &lt;g&gt;</div>
+                    <div class="svg-box">
+                        <div>使用&lt;use&gt;引用分组时，定位（x,y）是基于所引用的g来确定的</div>
+                        <svg width="300" height="100" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink">
+                            <title>use &lt;g> and &lt;use></title>
+                            <g style="stroke: #333; fill: none;" id="little_man">
+                                <desc>little man</desc>
+                                <circle cx="20" cy="20" r="15"></circle>
+                                <line x1="6" y1="40" x2="36" y2="40"></line>
+                                <line x1="20" y1="36" x2="20" y2="56"></line>
+                                <line x1="20" y1="56" x2="10" y2="76"></line>
+                                <line x1="20" y1="56" x2="30" y2="76"></line>
+                            </g>
+                            <use xlink:href="#little_man" x="15" y="0"></use>
+                            <use xlink:href="#little_man" x="30" y="0"></use>
+                            <use xlink:href="#little_man" x="45" y="0"></use>
+                            <use xlink:href="#little_man" x="60" y="0"></use>
+                        </svg>
+                    </div>
+                    <div>使用&lt;defs>来定义分组，不显示，use定位坐标依据用户坐标确定</div>
+                    <div class="svg-box">
+                        <svg width="300" height="120" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink">
+                            <title>defs a group</title>
+                            <desc>JUST DEFINE A GROUP</desc>
+                            <defs>
+                                <g id="man" style="stroke: #333;">
+                                    <title>a man</title>
+                                    <desc>a little man</desc>
+                                    <circle cx="16" cy="16" r="15"></circle>
+                                    <line x1="1" y1="36" x2="31" y2="36"></line>
+                                    <line x1="16" y1="32" x2="16" y2="48"></line>
+                                    <line x1="16" y1="48" x2="8" y2="56"></line>
+                                    <line x1="16" y1="48" x2="24" y2="56"></line>
+                                </g>
+                            </defs>
+                            <use xlink:href="#man" x="0" y="0" style="fill: #00669d;"></use>
+                            <use xlink:href="#man" x="30" y="0" style="fill: #111;"></use>
+                            <use xlink:href="#man" x="60" y="0" style="fill: #4a5;"></use>
+                            <use xlink:href="#man" x="90" y="0" style="fill: #64c;"></use>
+                            <use xlink:href="#man" x="120" y="0" style="fill: #7b0;"></use>
+                            <use xlink:href="#man" x="150" y="0" style="fill: #c5d;"></use>c
+                            <use xlink:href="#man" x="180" y="0" style="fill: #f60;"></use>
+                        </svg>
                     </div>
                 </li>
             </ul>
         </div>
     </section>
     <footer></footer>
+    <script type="text/javascript">
+        // set shortcut icon
+        var canvas = document.createElement('canvas');
+        canvas.width=50;
+        canvas.height=50;
+        var ctx = canvas.getContext('2d');
+        ctx.font = 'normal normal 20px "Microsoft YaHei", "STHeiti Light", sans-serif';
+        ctx.fillStyle = 'transparent';
+        ctx.strokeStyle = '#000';
+        ctx.strokeText('SVG', 4, 30);
+        ctx.rect(0, 0, 50, 50);
+        ctx.stroke();
+        // set shortcut icon
+        var link = document.getElementsByTagName('link')[0];
+        link.href = canvas.toDataURL('image/png',.8);
+    </script>
 </body>
 </html>
