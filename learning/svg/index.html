@@ -219,17 +219,19 @@
                     <p>4. 基本形状</p>
                     <div>
                         <p>a. LINE</p>
+                        <p class="point">线段绘制坐标点连线，在线段的中央位置, (0,10) to (20, 10)在坐标10px处绘制20px长度的线，上下各1/2线段宽度，不存在0.5个像素长度</p>
                         <div class="svg-box">
                             <svg width="100" height="100" viewBox="0 0 50 50">
                                 <line x1="0" y1="22" x2="50" y2="22" stroke-width="6" stroke="#000"></line>
                             </svg>
                         </div>
+                        <p>下图实线和虚线宽都为1px, 实线坐标落在一个像素的中央即*.5px处，虚线坐标都为整数</p>
                         <div class="svg-box">
                             <svg width="320" height="220" viewBox="0 0 320 220">
                                 <title>lines</title>
                                 <desc>fill with lines</desc>
-                                <line x1="0" y1="20" x2="320" y2="20" stroke="#000"></line>
-                                <line x1="20" y1="0" x2="20" y2="220" stroke="#000"></line>
+                                <line x1="0" y1="20.5" x2="320" y2="20.5" stroke="#000"></line>
+                                <line x1="20.5" y1="0" x2="20.5" y2="220" stroke="#000"></line>
                                 <svg id="grid" width="300" height="200" x="20" y="20">
                                     <line x1="0" y1="20" x2="300" y2="20" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
                                     <line x1="0" y1="40" x2="300" y2="40" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
@@ -256,6 +258,71 @@
                                     <line x1="280" y1="0" x2="280" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
                                 </svg>
                             </svg>
+                        </div>
+                        <p>下图实线虚线坐标都在像素中央位置，刚好填满1个像素</p>
+                        <div class="svg-box">
+                            <svg width="320" height="220" viewBox="0 0 320 220">
+                                <title>lines</title>
+                                <desc>fill with lines</desc>
+                                <line x1="0" y1="20.5" x2="320" y2="20.5" stroke="#000"></line>
+                                <line x1="20.5" y1="0" x2="20.5" y2="220" stroke="#000"></line>
+                                <svg id="grid" width="300" height="200" x="20.5" y="20.5">
+                                    <line x1="0" y1="20" x2="300" y2="20" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="40" x2="300" y2="40" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="60" x2="300" y2="60" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="80" x2="300" y2="80" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="100" x2="300" y2="100" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="120" x2="300" y2="120" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="140" x2="300" y2="140" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="160" x2="300" y2="160" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="0" y1="180" x2="300" y2="180" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="20" y1="0" x2="20" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="40" y1="0" x2="40" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="60" y1="0" x2="60" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="80" y1="0" x2="80" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="100" y1="0" x2="100" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="120" y1="0" x2="120" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="140" y1="0" x2="140" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="160" y1="0" x2="160" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="180" y1="0" x2="180" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="200" y1="0" x2="200" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="220" y1="0" x2="220" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="240" y1="0" x2="240" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="260" y1="0" x2="260" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                    <line x1="280" y1="0" x2="280" y2="200" stroke="#111" stroke-width="0.5" stroke-dasharray="2"></line>
+                                </svg>
+                            </svg>
+                        </div>
+                        <div>
+                            <div>教你绘制一条精确宽度的线段, 只绘制半个像素太牛逼而臣妾做不到</div>
+                            <div class="svg-box">
+                                <svg height="120" width="320" viewBox="0 0 320 120">
+                                    <line id="accurateLine" x1="0" y1="60" x2="320" y2="60" stroke="#111" stroke-width="1"></line>
+                                </svg>
+                            </div>
+                            <div>
+                                <input type="tel" id="lineWidth" placeholder="大于0的整数">
+                            </div>
+                            <script type="text/javascript">
+                                (function(){
+                                    var w = 320, h = 120;
+                                    var el_accurateLine = document.getElementById('accurateLine'),
+                                            el_lineWidth = document.getElementById('lineWidth');
+                                    el_lineWidth.addEventListener('change', function(){
+                                        var width = +el_lineWidth.value;
+                                        if (!isNaN(width)) {
+                                            if (width % 2 == 0) {
+                                                el_accurateLine.setAttribute('y1', h / 2);
+                                                el_accurateLine.setAttribute('y2', h / 2);
+                                            } else {
+                                                el_accurateLine.setAttribute('y1', h / 2 + 0.5);
+                                                el_accurateLine.setAttribute('y2', h / 2 + 0.5);
+                                            }
+                                            el_accurateLine.setAttribute('stroke-width', width);
+                                        }
+                                    });
+                                }())
+                            </script>
                         </div>
                         <div class="svg-box">
                             <p>虚线设置 dasharray dashoffset</p>
