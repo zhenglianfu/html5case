@@ -82,33 +82,16 @@
     </style>
 </head>
 <body>
-    <div>
-        <svg width="300px" height="200px">
-            <g>
-                <path d="M0 50C50 0 100 100 150 50" style="fill:#fff;stroke:red;stroke-width:2;"></path>
-            </g>
-            <g class="hide">
-                <path d="M0 200C50 150 100 250 150 200M150 200C200 150 250 250 300 200" style="fill:#fff;stroke:red;stroke-width:2;"></path>
-            </g>
-        </svg>
-        <svg width="100" height="100">
-            <g>
-                <path d="M50,5A45,45,0,1,1,49.99,5" style="fill:transparent;stroke: #ccc;stroke-width: 10px;"></path>
-                <path d="M50,5A45,45,0,1,1,49.99,5" style="fill:transparent;stroke: #50eea0;stroke-width: 10px;stroke-dasharray: 300">
-                    <animate attributeName="stroke-dashoffset" from="300" to="0" dur="2s"></animate>
-                </path>
-            </g>
-        </svg>
-    </div>
     <div class="bg-gray padding">
         <div class="center" style="width: 500px;">
-            <svg width="500" height="300" id="twice_bezier">
+            <svg width="500" height="300" id="twice_bezier" viewBox="0 0 500 300">
                 <circle cx="50" cy="200" r="5" id="m" class="control-point"></circle>
                 <circle cx="200" cy="50" r="5" id="c" class="control-point"></circle>
                 <circle cx="450" cy="200" r="5" id="r" class="control-point"></circle>
                 <polyline points="50,200 200,50 450,200" class="hp-line"></polyline>
                 <path d="M50,200Q200,50 450,200" class="bezier-path"></path>
                 <text x="200" y ="25">二次曲线演示</text>
+                <text id="twice_bezier_path" x="140" y="280">path(50,200 200,50 450,200)</text>
             </svg>
         </div>
         <div class="center" style="width: 500px;">
@@ -120,6 +103,7 @@
                 <polyline points="50,200 200,100 300,100 450,200" class="hp-line"></polyline>
                 <path d="M50,200C200,100 300,100 450,200" class="bezier-path"></path>
                 <text x="200" y="25">三次曲线演示</text>
+                <text id="cube_bezier_path" x="120" y="280">path(50,200 200,100 300,100 450,200)</text>
             </svg>
         </div>
     </div>
@@ -140,12 +124,37 @@
                             <li class="menu-item" id="saveImg">保存为图片</li>
                             <li class="menu-item" id="code">代码输出</li>
                             <li class="menu-item" id="fullScreen">全屏</li>
+                            <!-- 画布信息 -->
+                            <li class="menu-item info-item" id="svgInfo">
+                                <label>x: <input type="tel" id="svg_x"></label>
+                                <label>y: <input type="tel" id="svg_y"></label>
+                                <label>w: <input type="tel" id="svg_w"></label>
+                                <label>h: <input type="tel" id="svg_h"></label>
+                            </li>
+                            <li class="menu-item disabled" id="revert">撤销</li>
+                            <li class="menu-item disabled" id="redo">重做</li>
                         </ul>
                     </div>
                     <div class="tool-bar">
                         <div class="box-title">工具箱</div>
                         <div class="tool-list-wrap">
                             <ul class="tool-list">
+                                <li class="tool-item" id="mouse">
+                                    <div class="tool-item-content">
+                                        <svg width="38px" height="37px">
+                                            <!-- 鼠标工具 -->
+                                            <path d=""></path>
+                                        </svg>
+                                    </div>
+                                </li>
+                                <li class="tool-item even" id="arc">
+                                    <div class="tool-item-content">
+                                        <svg width="38px" height="37px">
+                                            <!-- 曲线 -->
+                                            <path d=""></path>
+                                        </svg>
+                                    </div>
+                                </li>
                                 <li class="tool-item" id="line">
                                     <div class="tool-item-content">
                                         <svg width="38px" height="37px">
@@ -170,14 +179,6 @@
                                             <g>
                                                 <circle r="10" cx="19" cy="18" class="default-stroke"></circle>
                                             </g>
-                                        </svg>
-                                    </div>
-                                </li>
-                                <li class="tool-item even">
-                                    <div class="tool-item-content">
-                                        <svg width="38px" height="37px">
-                                            <!-- 鼠标工具 -->
-                                            <path d=""></path>
                                         </svg>
                                     </div>
                                 </li>
@@ -248,6 +249,7 @@
 //        shake(0);
     </script>
     <script>
+        /* 曲线 */
         $(function(){
             var $svg = $('#twice_bezier');
             function pointEvent(point, fn){
@@ -278,11 +280,14 @@
                 $svg.find('.hp-line').attr('points', points);
             }
             function reDrawBezierPath(){
-                var path = '';
+                var path = '',
+                    points = [];
                 $svg.find('circle').each(function(index){
                     path += (index == 0 ? 'M' : '') + (index == 1 ? 'Q' : '') + $(this).attr('cx') + ' ' + $(this).attr('cy') + ' ';
+                    points[index] = $(this).attr('cx') + ',' + $(this).attr('cy');
                 });
                 $svg.find('.bezier-path').attr('d', path);
+                $('#twice_bezier_path').text('path(' + points.join(' ') + ')');
             }
             $svg.find('.control-point').each(function(){
                 pointEvent($(this), function(){
@@ -300,11 +305,16 @@
                 $cubeSvg.find('.hp-line').attr('points', points.join(' '));
             }
             function reDrawCubeBezierPath(){
-                var path = '';
+                var path = '',
+                    points = [];
                 $cubeSvg.find('circle').each(function(index){
-                    path += (index == 0 ? 'M' : '') + (index == 1 ? 'C' : '') + $(this).attr('cx') + ' ' + $(this).attr('cy') + ' ';
+                    var x = $(this).attr('cx'),
+                        y = $(this).attr('cy');
+                    path += (index == 0 ? 'M' : '') + (index == 1 ? 'C' : '') + x + ' ' + y + ' ';
+                    points[index] = x + ',' + y;
                 });
                 $cubeSvg.find('.bezier-path').attr('d', path);
+                $('#cube_bezier_path').text('path(' + points.join(' ') + ')');
             }
             $cubeSvg.find('.control-point').each(function(){
                 pointEvent($(this), function(){

@@ -145,6 +145,24 @@
 .menu-list .menu-item:hover{
     background: #eee;
 }
+.menu-list .menu-item.info-item:hover{
+    background: inherit;
+}
+.menu-item.info-item{
+    padding: 5px 10px;
+}
+.menu-item.disabled{
+    background: #c0c0c0;
+    color: #eee;
+}
+.menu-item.disabled:hover{
+    background: #c0c0c0;
+}
+#svgInfo input{
+    border: 1px solid #ccc;
+    padding: 3px 5px;
+    width: 50px;
+}
 .tool-bar{
     position: absolute;
     width: 80px;
@@ -160,12 +178,11 @@
     font-size: 14px;
 }
 .tool-list-wrap{
-    height: 195px;
     overflow: hidden;
     position: relative;
 }
 .tool-list{
-    position: absolute;
+    position: relative;
 }
 .tool-list .tool-item{
     float: left;

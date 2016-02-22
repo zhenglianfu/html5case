@@ -21,19 +21,77 @@ $(function(){
         this.$el = $('<div class="panel" id="panel_' + (Panel.uuid ++) + '">').appendTo($container);
         //this.$el = $('<div class="panel-content"></div>').appendTo(this.$panel);
         this.$svg = $('<svg xmlns="http://www.w3.org/2000/svg">').appendTo(this.$el);
+        this.operaStack = [], /* 操作栈 记录所有操作 {x,y,w,h,innerHTML}*/
+        this.revertQueue = [], /* 重做队列 记录被撤销的 */
         this.events = {};
+        this.clientRect = {};
+        this.resizeListener = [];
         this.init();
+    };
+    Panel.EDIT_MODE = {
+        MOUSE: 'mouse',
+        LINE: 'line',
+        PEN: 'pen',
+        CIRCLE: 'circle'
     };
     Panel.prototype = {
         minWidth : 30,
         minHeight: 30,
         init: function(){
+            var w = this.$el.width() | 0,
+                h = this.$el.height() | 0;
             this.$svg.attr({
-                height: this.$el.height() + 'px',
-                width: this.$el.width() + 'px'
+                width:  w,
+                height: h,
+               'viewbox': '0 0 ' + w + ' ' + h
             });
+            this.clientRect.w = w;
+            this.clientRect.h = h;
+            this.clientRect.x = this.$el[0].offsetLeft;
+            this.clientRect.y = this.$el[0].offsetTop;
             this._addRangeBlock();
             this._addBehavior();
+            this.updateSvgSizeInfo(this.clientRect.x, this.clientRect.y, w, h);
+            this.editMode = Panel.EDIT_MODE.MOUSE;
+        },
+        updateSvgSizeInfo: function(x, y, w, h){
+            if (arguments.length) {
+                var x = (isNaN(x) ? this.clientRect.x : x) | 0,
+                    y = (isNaN(y) ? this.clientRect.y : y) | 0,
+                    w = (isNaN(w) ? this.clientRect.w : w) | 0,
+                    h = (isNaN(h) ? this.clientRect.h : h) | 0;
+                // changed
+                if (x != this.clientRect.x || y != this.clientRect.y || w != this.clientRect.w || h != this.clientRect.h){
+                    this.$svg.attr({
+                        width: w,
+                        height: h,
+                        viewbox: '0 0 ' + w + ' ' + h
+                    });
+                    this.$el.css({
+                        width: w,
+                        height: h,
+                        top: y,
+                        left: x
+                    });
+                    for (var i = 0, len = this.resizeListener.length; i < len; i++) {
+                        this.resizeListener[i].call(this, {
+                            x: x,
+                            y: y,
+                            w: w,
+                            h: h,
+                            oldX: this.clientRect.x,
+                            oldY: this.clientRect.y,
+                            oldW: this.clientRect.w,
+                            oldH: this.clientRect.h
+                        });
+                    }
+                    this.clientRect.x = x;
+                    this.clientRect.y = y;
+                    this.clientRect.w = w;
+                    this.clientRect.h = h;
+                }
+            }
+            return $.extend({}, this.clientRect);
         },
         _addBehavior: function(){
             var startPoint = {};
@@ -57,11 +115,20 @@ $(function(){
             }
             this.__addResizeEvent(this.$el);
         },
+        // common event listener interface
+        on: function(){
+
+        },
+        addResizeListener: function(fn){
+            this.resizeListener.push(fn);
+        },
         __addResizeEvent: function(){
+            var self = this;
             var drag = false;
             var direction = '';
             var mouse = {};
             var rect = {};
+            var offset = {};
             var $el = this.$el;
             var minWidth = this.minWidth;
             var minHeight = this.minHeight;
@@ -71,8 +138,8 @@ $(function(){
                 mouse = getMousePosition(e);
                 rect.height = $el.height();
                 rect.width = $el.width();
-                rect.left = parseFloat($el.css('left'));
-                rect.top = parseFloat($el.css('top'));
+                offset.left = rect.left = parseInt($el.css('left'));
+                offset.top = rect.top = parseInt($el.css('top'));
             });
             $('#panelContainers').off('mousemove').bind('mousemove', handlerMove);
             $('body').bind('mouseup', function(e){
@@ -98,6 +165,7 @@ $(function(){
                     css[direction] = distance + 'px';
                     distance === undefined ? '' : $el.css(css);
                     $el[style](value);
+                    distance && (offset[direction] = distance);
                 }
             };
             // resize height width left top
@@ -109,6 +177,8 @@ $(function(){
                 var nowPosition = getMousePosition(e);
                 var h = rect.height;
                 var w = rect.width;
+                var x = offset.left;
+                var y = offset.top;
                 switch (direction){
                     case "top":
                         h = rect.height + mouse.y - nowPosition.y;
@@ -151,8 +221,14 @@ $(function(){
                         adjustSize('width', w, rect.left + (nowPosition.x - mouse.x));
                         break;
                 }
-                $svg.attr('height', Math.max(h, minHeight));
-                $svg.attr('width', Math.max(w, minWidth));
+                w = Math.max(w, minWidth) | 0;
+                h = Math.max(h, minHeight) | 0;
+                self.updateSvgSizeInfo(offset.left, offset.top, w, h);
+            }
+        },
+        setMode: function(mode){
+            if (mode) {
+                this.editMode = mode;
             }
         }
     };
@@ -167,7 +243,7 @@ $(function(){
             ele.requestFullScreen();
         } else {
             alert("无法全屏");
-        };
+        }
     }
     function getMousePosition(e){
         return {
@@ -178,8 +254,8 @@ $(function(){
         }
     }
     var SVGTool = {
-        type  : 'selector',
         index : 0,
+        currentPanel: null,
         init : function(){
             this.bindEvent();
         },
@@ -195,8 +271,19 @@ $(function(){
                 _add();
             }
             function _add(){
-                var panel=  new Panel();
+                $('.tool-item').removeClass('active');
+                SVGTool.currentPanel=  new Panel();
+                SVGTool.currentPanel.addResizeListener(SVGTool.updateSizeInfo);
+                SVGTool.updateSizeInfo(SVGTool.currentPanel.updateSvgSizeInfo());
+                SVGTool.operaStack = [];
+                SVGTool.revertQueue = [];
             }
+        },
+        updateSizeInfo: function(clientRect){
+            $('#svg_x').val(clientRect.x);
+            $('#svg_y').val(clientRect.y);
+            $('#svg_w').val(clientRect.w);
+            $('#svg_h').val(clientRect.h);
         },
         menuHandler : function(name){
             switch (name) {
@@ -205,6 +292,19 @@ $(function(){
                     break;
                 case "fullScreen":
                     fullScreen($editor[0]);
+                    break;
+                case 'clear':
+
+                    break;
+                case 'saveFile':
+                    break;
+                case 'saveImg':
+                    break;
+                case 'code':
+                    this.currentPanel.setMode(Panel.EDIT_MODE.CIRCLE);
+                    break;
+                default:
+                    console.warn('unregistered function');
                     break;
             }
         },
@@ -221,8 +321,12 @@ $(function(){
                 $(this).addClass('active');
                 that.type = this.id || 'unknow';
                 $container.find('.panel').attr('class', 'panel ' + that.type);
+                SVGTool.currentPanel.setMode(this.type);
             });
             $menu.on('click', '.menu-item', function(){
+                if ($(this).hasClass('disabled')) {
+                    return false;
+                }
                 that.menuHandler(this.id);
             });
             $panel.on('mousedown mousemove', '.panel', function(e){
@@ -231,6 +335,10 @@ $(function(){
                     offset = $(this).offset();
                 panelMouse.x = cx + (window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft) - offset.left;
                 panelMouse.y = cy + (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop) - offset.top;
+            });
+            // x,y,w,h control
+            $('#svg_x, #svg_h, #svg_w, #svg_y').bind('change', function(){
+                that.currentPanel && that.currentPanel.updateSvgSizeInfo(+$('#svg_x').val(), +$('#svg_y').val(), +$('#svg_w').val(), +$('#svg_h').val());
             });
         }
     };
