@@ -17,22 +17,49 @@ $(function(){
         $panel.height(height - menuHeight - 2);
     }
     // 画布类
-    function Panel(){
-        this.$el = $('<div class="panel" id="panel_' + (Panel.uuid ++) + '">').appendTo($container);
+    function Panel($container){
+        this.$container = $($container);
+        this.$el = $('<div class="panel" id="panel_' + (Panel.uuid ++) + '">').appendTo(this.$container);
         //this.$el = $('<div class="panel-content"></div>').appendTo(this.$panel);
-        this.$svg = $('<svg xmlns="http://www.w3.org/2000/svg">').appendTo(this.$el);
-        this.operaStack = [], /* 操作栈 记录所有操作 {x,y,w,h,innerHTML}*/
-        this.revertQueue = [], /* 重做队列 记录被撤销的 */
+        this.$svg = $(document.createElementNS(Panel.SVG_XML, 'svg')).attr({
+            'xmlns:link': 'http://www.w3.org/1999/xlink',
+            'xmlns': Panel.SVG_XML
+        }).appendTo(this.$el);
+        this.operaStack = []; /* 操作栈 记录所有操作 {x,y,w,h,innerHTML}*/
+        this.restoreStack = []; /* 重做队列 记录被撤销的 , 再次保存时丢弃 */
+        this.garbageFrames = []; /* 垃圾桶，回收被丢弃的快照 */
         this.events = {};
         this.clientRect = {};
         this.resizeListener = [];
+        this.isShowGridGuides = false;
+        this.isShowDrawGuides = false;
         this.init();
     };
+    Panel.SVG_XML = 'http://www.w3.org/2000/svg';
     Panel.EDIT_MODE = {
         MOUSE: 'mouse',
         LINE: 'line',
         PEN: 'pen',
-        CIRCLE: 'circle'
+        CIRCLE: 'circle',
+        RESIZE: 'resize'
+    };
+    Panel.EVENT = {
+        BEFORE_SAVE: 'before_save',
+        SAVE: 'save',
+        BEFORE_RESTORE: 'before_restore',
+        RESTORE: 'restore',
+        BEFORE_REDO: 'before_redo',
+        REDO: 'redo',
+        MOUSE_MOVE: 'mousemove'
+    };
+    Panel.createSVGDom = function(tagName){
+        // xml standard
+        var tagName = tagName.toLowerCase();
+        // TODO 添加所有SVG元素标签名img
+        if (['line','g','path','circle','arc','ellipse','polygon','use','title','desc','defs','symbol','svg','img','a'].indexOf(tagName) > -1) {
+            return document.createElementNS(Panel.SVG_XML, tagName.toLowerCase());
+        }
+        return null;
     };
     Panel.prototype = {
         minWidth : 30,
@@ -45,16 +72,130 @@ $(function(){
                 height: h,
                'viewbox': '0 0 ' + w + ' ' + h
             });
+            this.snapIndex = 0;
             this.clientRect.w = w;
             this.clientRect.h = h;
             this.clientRect.x = this.$el[0].offsetLeft;
             this.clientRect.y = this.$el[0].offsetTop;
             this._addRangeBlock();
             this._addBehavior();
-            this.updateSvgSizeInfo(this.clientRect.x, this.clientRect.y, w, h);
+            this.updateSvgSize(this.clientRect.x, this.clientRect.y, w, h);
             this.editMode = Panel.EDIT_MODE.MOUSE;
+            this.initialSnap  = this.currentSnap = this.snapshot();
+            this.prepareSVGElement = null;
+            this.strokeStyle = '#000';
+            this.fillStyle = '#000';
+            this.strokeWidth = 1;
+            this.resizeAble = false;
+            this.save();
         },
-        updateSvgSizeInfo: function(x, y, w, h){
+        _updateGridGuides: function(){
+            var lineWidth = 0.5,
+                space = 10,
+                w = this.clientRect.w,
+                h = this.clientRect.h,
+                x = 0, y = 0, p = 0;
+            // delete old guides
+            this.$guides && this.$guides.remove();
+            this.$guides = $(Panel.createSVGDom('g')).appendTo(this.$svg);
+            this.$guides.attr('style', 'stroke-dasharray: 2; stroke-width: ' + lineWidth + '; stroke: #ccc').attr('id', 'gridGuides');
+            var guidesHTML = [];
+            // 水平
+            for (p = space; p < h; p += space) {
+                guidesHTML.push('<line x1="0" y1="' + (p + lineWidth) + '" x2="' + w + '" y2="' + (p + lineWidth) + '"></line>');
+            }
+            // vertical
+            for (p = space; p < w; p += space) {
+                guidesHTML.push('<line x1="' + (p + lineWidth) + '" x2="' + (p + lineWidth) + '" y1="0" y2="' + h + '"></line>');
+            }
+            this.$guides.html(guidesHTML.join(''));
+        },
+        // 显示网格辅助线
+        showGridGuides: function(){
+            if (this.isShowGridGuides === true) {
+                this._updateGridGuides();
+            } else {
+                this.closeGirdGuides();
+            }
+        },
+        closeGirdGuides: function(){
+            this.isShowGridGuides = false;
+            this.$guides && this.$guides.remove();
+        },
+        // 显示绘制辅助线
+        _updateDrawGuides: function(relativePoint){
+            if (this.isShowDrawGuides) {
+                var style = 'stroke: #333; stroke-width: 1; stroke-dasharray: 1';
+                this.$lineX = this.$lineX || $(Panel.createSVGDom('line')).appendTo(this.$svg);
+                this.$lineY = this.$lineY || $(Panel.createSVGDom('line')).appendTo(this.$svg);
+                this.$lineY.attr({
+                    x1: 0,
+                    x2: this.clientRect.w,
+                    y1: relativePoint.y,
+                    y2: relativePoint.y,
+                    style: style
+                }).show();
+                this.$lineX.attr({
+                    x1: relativePoint.x,
+                    x2: relativePoint.x,
+                    y1: 0,
+                    y2: this.clientRect.h,
+                    style: style
+                }).show();
+            }
+        },
+        closeDrawGuides: function(){
+            // 清除辅助线
+            this.$lineX = this.$lineX && this.$lineX.remove() && null;
+            this.$lineY = this.$lineY && this.$lineY.remove() && null;
+        },
+        save: function(){
+            this.trigger(Panel.EVENT.BEFORE_SAVE);
+            // merge restoreStack to garbageFrames
+            for (var i = 0, len = this.restoreStack.length; i < len; i++) {
+                this.garbageFrames.push(this.restoreStack[i]);
+            }
+            this.restoreStack = [];
+            this.operaStack.push(this.snapshot());
+            this.trigger(Panel.EVENT.SAVE);
+            return this;
+        },
+        // 撤销
+        restore: function(){
+            this.trigger(Panel.EVENT.BEFORE_RESTORE);
+            this.restoreStack.push(this.operaStack.pop());
+            this.updateSvg(this.operaStack[this.operaStack.length - 1] || this.initialSnap);
+            this.trigger(Panel.EVENT.RESTORE);
+        },
+        // 重做
+        redo: function(){
+           this.trigger(Panel.EVENT.BEFORE_REDO);
+           var snap = this.restoreStack.pop();
+           this.operaStack.push(snap);
+           this.updateSvg(snap);
+           this.trigger(Panel.EVENT.REDO);
+        },
+        // 抓取当前快照
+        snapshot: function(){
+            var cTime = Date.now();
+            return {
+                x: this.clientRect.x,
+                y: this.clientRect.y,
+                w: this.clientRect.w,
+                h: this.clientRect.h,
+                html: this.$svg.html(),
+                createTime: cTime,
+                modifyTime: cTime,
+                index: this.snapIndex++
+            };
+        },
+        updateSvg: function(snap){
+            if (snap) {
+                this.updateSvgSize(snap.x, snap.y, snap.w, snap.h);
+                this.$svg.html(snap.html || '');
+            }
+        },
+        updateSvgSize: function(x, y, w, h){
             if (arguments.length) {
                 var x = (isNaN(x) ? this.clientRect.x : x) | 0,
                     y = (isNaN(y) ? this.clientRect.y : y) | 0,
@@ -89,24 +230,53 @@ $(function(){
                     this.clientRect.y = y;
                     this.clientRect.w = w;
                     this.clientRect.h = h;
+                    // 更新网格
+                    this.isShowGridGuides && this._updateGridGuides();
                 }
             }
             return $.extend({}, this.clientRect);
         },
+        /* 绘图行为 */
         _addBehavior: function(){
             var startPoint = {};
             var endPoint = {};
-            this.$el.bind('mousedown', function(){
-
-            }).bind('mousemove', function(){
-
-            }).bind('mouseup', function(){
-
+            var clickDown = false;
+            var self = this;
+            var tagName = ''; // 选中的元素是什么
+            this.$el.bind('mousedown', function(e){
+                clickDown = true;
+                startPoint = getRelativeSVGPoint(e);
+                // 绘制辅助
+                self._updateDrawGuides(startPoint);
+                // start move
+                self.moveStartHandler(startPoint);
+                return (tagName = e.target.tagName.toUpperCase()) == 'DIV';
+            }).bind('mousemove', function(e){
+                var movePoint = getRelativeSVGPoint(e);
+                if (clickDown) {
+                    self.moveHandler(startPoint, movePoint);
+                    self._updateDrawGuides(movePoint);
+                }
+                self.trigger(Panel.EVENT.MOUSE_MOVE, [movePoint]);
+                return tagName == 'DIV';
+            }).bind('mouseup', function(e){
+                clickDown = false;
+                endPoint = getRelativeSVGPoint(e);
+                self.moveEndHandler(startPoint, endPoint);
+                self.closeDrawGuides();
+                return tagName == 'DIV';
             });
+            function getRelativeSVGPoint(e){
+                return {
+                    clientX : e.clientX | 0,
+                    clientY : e.clientY | 0,
+                    x : ((window.pageXOffset || window.document.body.scrollLeft) + e.clientX - self.$svg.offset().left) | 0,
+                    y : ((window.pageYOffset || window.document.body.scrollTop) + e.clientY - self.$svg.offset().top) | 0
+                }
+            }
         },
         destroy: function(){
             this.$el.remove();
-            $('#panelContainers').off('mousemove', this.events['#panelContainers.mousemove']);
         },
         _addRangeBlock: function(){
             var pos = 'top,left,right,bottom,ne,nw,se,sw'.split(',');
@@ -116,8 +286,27 @@ $(function(){
             this.__addResizeEvent(this.$el);
         },
         // common event listener interface
-        on: function(){
-
+        on: function(type, listener){
+            var listeners = this.events[type];
+            if (listeners == null) {
+                this.events[type] = listeners = [];
+            }
+            if (typeof listener === 'function') {
+                listeners.push(listener);
+            }
+            return this;
+        },
+        /* eventName, [arg1, arg2] */
+        trigger: function(type, args){
+            var listeners = this.events[type];
+            if (listeners) {
+                for (var i = 0, len = listeners.length; i < len; i++) {
+                    // 返回false停止执行监听队列
+                    if (listeners[i].apply(this, args) === false) {
+                        break;
+                    }
+                }
+            }
         },
         addResizeListener: function(fn){
             this.resizeListener.push(fn);
@@ -142,8 +331,12 @@ $(function(){
                 offset.top = rect.top = parseInt($el.css('top'));
             });
             $('#panelContainers').off('mousemove').bind('mousemove', handlerMove);
-            $('body').bind('mouseup', function(e){
-                drag = false;
+            this.$container.bind('mouseup', function(e){
+                if (drag) {
+                    drag = false;
+                    // 调整之后入栈
+                    self.save();
+                }
             });
             this.events['#panelContainers.mousemove'] = handlerMove;
             var $svg = this.$svg;
@@ -203,7 +396,7 @@ $(function(){
                         adjustSize('width', w, rect.left + (nowPosition.x - mouse.x));
                         break;
                     case "ne":
-                        h = rect.height + mouse.y - nowPosition.y
+                        h = rect.height + mouse.y - nowPosition.y;
                         adjustSize('height', h, rect.top + nowPosition.y - mouse.y);
                         w = rect.width + (nowPosition.x - mouse.x);
                         adjustSize('width', w);
@@ -223,12 +416,69 @@ $(function(){
                 }
                 w = Math.max(w, minWidth) | 0;
                 h = Math.max(h, minHeight) | 0;
-                self.updateSvgSizeInfo(offset.left, offset.top, w, h);
+                self.updateSvgSize(offset.left, offset.top, w, h);
+            }
+        },
+        moveStartHandler: function(point){
+            if (this.prepareSVGElement) {
+                this.$svg.append(this.prepareSVGElement);
+                this.drawSimpleElement(point, point);
+            }
+        },
+        moveHandler: function(start, current){
+            this.drawSimpleElement(start, current);
+        },
+        moveEndHandler: function(start, end){
+            // 快照入栈
+            this.prepareSVGElement && this.prepareSVGElement.length && this.save();
+            // add new element
+            this.prepareSVGElement = $(Panel.createSVGDom(this.editMode));
+        },
+        /* line rect circle */
+        drawSimpleElement: function(start, end){
+            var style = 'fill:' + this.fillStyle + ';stroke:' + this.strokeStyle + ';stroke-width:' + this.strokeWidth + ';';
+            switch (this.editMode) {
+                case Panel.EDIT_MODE.LINE:
+                    this.prepareSVGElement.attr({
+                        x1: start.x,
+                        x2: end.x,
+                        y1: start.y,
+                        y2: end.y,
+                        style: style
+                    });
+                    break;
+                default:
+                    // complicated
             }
         },
         setMode: function(mode){
-            if (mode) {
+            // change mode
+            if (mode && this.editMode != mode) {
                 this.editMode = mode;
+                this.setResizeAble(false); /* 取消更改尺寸模式 */
+                switch (this.editMode) {
+                    case Panel.EDIT_MODE.RESIZE:
+                        this.setResizeAble(this.editMode);
+                        break;
+                    case Panel.EDIT_MODE.MOUSE:
+                        this.prepareSVGElement = null;
+                        break;
+                    case Panel.EDIT_MODE.LINE:
+                        this.prepareSVGElement = $(Panel.createSVGDom(Panel.EDIT_MODE.LINE));
+                        break;
+                }
+            }
+        },
+        clear: function(){
+            this.$svg.html('');
+            this.showGridGuides();
+        },
+        setResizeAble: function(resize){
+            this.resizeAble = resize = !!resize;
+            if (resize) {
+                this.$el.addClass('resize').find('.resize-bar').css('display', 'block');
+            } else {
+                this.$el.removeClass('resize').find('.resize-bar').css('display', 'none');
             }
         }
     };
@@ -254,6 +504,8 @@ $(function(){
         }
     }
     var SVGTool = {
+        showGridGuides: false,
+        showDrawGuides: false,
         index : 0,
         currentPanel: null,
         init : function(){
@@ -272,11 +524,32 @@ $(function(){
             }
             function _add(){
                 $('.tool-item').removeClass('active');
-                SVGTool.currentPanel=  new Panel();
+                SVGTool.currentPanel=  new Panel($container);
                 SVGTool.currentPanel.addResizeListener(SVGTool.updateSizeInfo);
-                SVGTool.updateSizeInfo(SVGTool.currentPanel.updateSvgSizeInfo());
-                SVGTool.operaStack = [];
-                SVGTool.revertQueue = [];
+                SVGTool.updateSizeInfo(SVGTool.currentPanel.updateSvgSize());
+                // 监听panel事件, 撤销 重做状态
+                function listener() {
+                    SVGTool.updateSnapCtrlStatus(this.operaStack.length, this.restoreStack.length);
+                }
+                SVGTool.currentPanel.on(Panel.EVENT.SAVE, listener).on(Panel.EVENT.RESTORE, listener).on(Panel.EVENT.REDO, listener).on(Panel.EVENT.MOUSE_MOVE, function(point){
+                    $('#mouse_x').text(point.x);
+                    $('#mouse_y').text(point.y);
+                });
+                SVGTool.updateSnapCtrlStatus(0, 0);
+                SVGTool.currentPanel.isShowGridGuides = SVGTool.showGridGuides;
+                SVGTool.currentPanel.showGridGuides();
+            }
+        },
+        updateSnapCtrlStatus: function(operaLen, restoreLen){
+            if (operaLen > 1) {
+                $('#revert').removeClass('disabled');
+            } else {
+                $('#revert').addClass('disabled');
+            }
+            if (restoreLen > 0) {
+                $('#redo').removeClass('disabled');
+            } else {
+                $('#redo').addClass('disabled');
             }
         },
         updateSizeInfo: function(clientRect){
@@ -294,14 +567,24 @@ $(function(){
                     fullScreen($editor[0]);
                     break;
                 case 'clear':
-
+                    this.currentPanel && this.currentPanel.clear();
                     break;
-                case 'saveFile':
+                case 'toggleGridGuides':
+                    SVGTool.currentPanel.isShowGridGuides = SVGTool.showGridGuides = !SVGTool.showGridGuides;
+                    SVGTool.currentPanel.showGridGuides();
+                    $('#toggleGridGuides').text(SVGTool.showGridGuides ? '关闭坐标线' : '开启坐标线');
                     break;
-                case 'saveImg':
+                case 'toggleDrawGuides':
+                    SVGTool.currentPanel.isShowDrawGuides = SVGTool.showDrawGuides = !SVGTool.showDrawGuides;
+                    $('#toggleDrawGuides').text(SVGTool.showDrawGuides ? '关闭辅助线' : '开启辅助线');
                     break;
                 case 'code':
-                    this.currentPanel.setMode(Panel.EDIT_MODE.CIRCLE);
+                    break;
+                case 'revert':
+                    this.currentPanel.restore();
+                    break;
+                case 'redo':
+                    this.currentPanel.redo();
                     break;
                 default:
                     console.warn('unregistered function');
@@ -319,9 +602,9 @@ $(function(){
                 }
                 $tool.find('.tool-item').removeClass('active');
                 $(this).addClass('active');
-                that.type = this.id || 'unknow';
-                $container.find('.panel').attr('class', 'panel ' + that.type);
-                SVGTool.currentPanel.setMode(this.type);
+                var mod = this.id || 'unknow';
+                $container.find('.panel').attr('class', 'panel ' + mod);
+                SVGTool.currentPanel.setMode(mod);
             });
             $menu.on('click', '.menu-item', function(){
                 if ($(this).hasClass('disabled')) {
@@ -329,7 +612,7 @@ $(function(){
                 }
                 that.menuHandler(this.id);
             });
-            $panel.on('mousedown mousemove', '.panel', function(e){
+            $container.on('mousedown mousemove', '.panel', function(e){
                 var cx = e.clientX,
                     cy = e.clientY,
                     offset = $(this).offset();
@@ -338,7 +621,7 @@ $(function(){
             });
             // x,y,w,h control
             $('#svg_x, #svg_h, #svg_w, #svg_y').bind('change', function(){
-                that.currentPanel && that.currentPanel.updateSvgSizeInfo(+$('#svg_x').val(), +$('#svg_y').val(), +$('#svg_w').val(), +$('#svg_h').val());
+                that.currentPanel && that.currentPanel.updateSvgSize(+$('#svg_x').val(), +$('#svg_y').val(), +$('#svg_w').val(), +$('#svg_h').val());
             });
         }
     };

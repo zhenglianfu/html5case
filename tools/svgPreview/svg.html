@@ -119,8 +119,8 @@
                         <ul class="menu-list clear-fix">
                             <li class="menu-item" id="add">新建</li>
                             <li class="menu-item" id="clear">清空</li>
-                            <li class="menu-item" id="saveFile">保存为svg</li>
-                            <li class="menu-item" id="saveImg">保存为图片</li>
+                            <li class="menu-item" id="toggleGridGuides">开启坐标线</li>
+                            <li class="menu-item" id="toggleDrawGuides">开启辅助线</li>
                             <li class="menu-item" id="code">代码输出</li>
                             <li class="menu-item" id="fullScreen">全屏</li>
                             <!-- 画布信息 -->
@@ -142,15 +142,24 @@
                                     <div class="tool-item-content">
                                         <svg width="38px" height="37px">
                                             <!-- 鼠标工具 -->
-                                            <path d=""></path>
+                                            <g id="mouse_icon">
+                                                <path d="M10,25L10,10L25,10L10,25m5,-5l10,10l5,-5l-10,-10" class="default-stroke"></path>
+                                            </g>
+
                                         </svg>
                                     </div>
                                 </li>
-                                <li class="tool-item even" id="arc">
+                                <li class="tool-item even" id="resize">
                                     <div class="tool-item-content">
-                                        <svg width="38px" height="37px">
-                                            <!-- 曲线 -->
-                                            <path d=""></path>
+                                        <svg width="38px" height="37px" xmlns="http://www.w3.org/2000/svg" xmlns:link="http://www.w3.org/1999/xlink">
+                                            <!-- 更改画布尺寸 -->
+                                            <g id="arrow" class="default-stroke">
+                                                <title>resize arrow</title>
+                                                <path d="M8,15L8,8L15,8M8,8L16,16"></path>
+                                            </g>
+                                            <use xlink:href="#arrow" x="0" y="0" style="transform: translate(37px,37px) scale(-1,-1);"></use>
+                                            <use xlink:href="#arrow" x="0" y="0" style="transform: translate(0px,37px) scale(1,-1);"></use>
+                                            <use xlink:href="#arrow" x="0" y="0" style="transform: translate(37px,0px) scale(-1,1);"></use>
                                         </svg>
                                     </div>
                                 </li>
@@ -181,7 +190,7 @@
                                         </svg>
                                     </div>
                                 </li>
-                                <li class="tool-item" id="pen">
+                                <li class="tool-item even" id="pen">
                                     <div class="tool-item-content">
                                         <svg width="38px" height="37px">
                                             <path d="M24,6L6,24M30,12L12,30M27,9L9,27M24,6L30,12M6,24L12,30L6,32L6,24" class="default-stroke"></path>
@@ -189,6 +198,26 @@
                                     </div>
                                 </li>
                             </ul>
+                        </div>
+                        <div class="svg-background">
+                            <div>画布背景</div>
+                            <div class="text-left">
+                                <div>颜色： </div>
+                                <div>透明度：</div>
+                            </div>
+
+                        </div>
+                        <!-- 鼠标位置 -->
+                        <div class="mouse-info">
+                            <div>鼠标相对位置</div>
+                            <div>
+                                <div>
+                                    X: <span id="mouse_x" class="value">0</span>
+                                </div>
+                                <div>
+                                    Y: <span id="mouse_y" class="value">0</span>
+                                </div>
+                            </div>
                         </div>
                         <!--<div class="more-tool-icon"></div>-->
                     </div>
