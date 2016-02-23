@@ -419,6 +419,8 @@ $(function(){
                 self.updateSvgSize(offset.left, offset.top, w, h);
             }
         },
+        /* TODO 绘制水平垂直线 shift + */
+        /* TODO 绘制折线 <polygon> */
         moveStartHandler: function(point){
             if (this.prepareSVGElement) {
                 this.$svg.append(this.prepareSVGElement);

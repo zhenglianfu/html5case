@@ -131,7 +131,41 @@
     }
     Engine.handler_uuid = 0;
     Engine.event_handler_uuid = 0;
-
+    var manifest = {},
+        resource = {};
+    Engine.RES = {
+        load: function(config, callback){
+            var length = 0,
+                c = 0;
+            manifest = _.extend(manifest, config);
+            for (var i in manifest) {
+                length ++;
+            }
+            for (i in manifest) {
+                if (resource[i]) {
+                    loaded();
+                } else {
+                    var img = new Image;
+                    img.onload = img.onerror = loaded;
+                    img.src = manifest[i].path;
+                }
+            }
+            function loaded(){
+                c ++;
+                c >= length && callback && callback();
+            }
+        },
+        getRes: function(token){
+            return resource[token];
+        },
+        getResByName: function(name, callback){
+            if (resource[name]) {
+                callback(resource[name]);
+            } else {
+                // load resource
+            }
+        }
+    };
     Engine.requestAnimationFrame = function(fn){
         return requestAnimationFrame.call(window, fn);
     };
