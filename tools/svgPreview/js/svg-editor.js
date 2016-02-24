@@ -105,7 +105,7 @@ $(function(){
             // delete old guides
             this.$guides && this.$guides.remove();
             this.$guides = $(Panel.createSVGDom('g')).appendTo(this.$svg);
-            this.$guides.attr('style', 'stroke-dasharray: 2; stroke-width: ' + lineWidth + '; stroke: #ccc').attr('id', 'gridGuides');
+            this.$guides.attr('style', 'stroke-dasharray: 2; stroke-width: ' + lineWidth + '; stroke: #ccc').prop('id', 'gridGuides_' + Date.now()).addClass('guideLines');
             var guidesHTML = [];
             // 水平
             for (p = space; p < h; p += space) {
@@ -133,8 +133,8 @@ $(function(){
         _updateDrawGuides: function(relativePoint){
             if (this.isShowDrawGuides) {
                 var style = 'stroke: #333; stroke-width: 1; stroke-dasharray: 1';
-                this.$lineX = this.$lineX || $(Panel.createSVGDom('line')).appendTo(this.$svg);
-                this.$lineY = this.$lineY || $(Panel.createSVGDom('line')).appendTo(this.$svg);
+                this.$lineX = this.$lineX || $(Panel.createSVGDom('line')).addClass('guideLines').prop('id', 'drawGuides_x_' + Date.now()).appendTo(this.$svg);
+                this.$lineY = this.$lineY || $(Panel.createSVGDom('line')).addClass('guideLines').prop('id', 'drawGuides_y_' + Date.now()).appendTo(this.$svg);
                 this.$lineY.attr({
                     x1: 0,
                     x2: this.clientRect.w,
@@ -280,8 +280,8 @@ $(function(){
             }).bind('mouseup', function(e){
                 clickDown = false;
                 endPoint = getRelativeSVGPoint(e);
-                self.moveEndHandler(startPoint, endPoint);
                 self.closeDrawGuides();
+                self.moveEndHandler(startPoint, endPoint);
                 return tagName == 'DIV';
             }).bind('dblclick', function(e){
                 self.dbClickHandler(startPoint, getRelativeSVGPoint(e));
@@ -515,7 +515,9 @@ $(function(){
             }
         },
         outputSVGHTML: function(){
-            return this.$svg[0].outerHTML;
+            var $copy = this.$svg.clone();
+            $copy.find('.guideLines').remove();
+            return $copy[0].outerHTML;
         }
     };
     Panel.uuid = 0;
@@ -666,11 +668,11 @@ $(function(){
                 text = '',
                 currentTag = '',
                 waitTag = '';
-            while(prefixStack.length || stackIndex < prefixStack.length || suffixStack.length){
+            while((prefixStack.length && stackIndex < prefixStack.length) || suffixStack.length){
                 appendHTML();
             }
             function appendHTML(){
-                fragment = prefixStack[stackIndex];
+                fragment = $.trim(prefixStack[stackIndex]);
                 if (fragment) {
                     text = fragment.substr(fragment.indexOf('>') + 1);
                     fragment = fragment.substring(0, fragment.indexOf('>') + 1);
@@ -688,15 +690,15 @@ $(function(){
                         formatHTML += suffixStack[0] + nextLine;
                         suffixStack.splice(0, 1);
                         prefixStack.splice(stackIndex--, 1);
-
-                        while (suffixStack.length && getTagName(prefixStack[stackIndex++]) == getTagName(suffixStack[0])) {
-                            // 深度递减
+                        while (suffixStack.length && getTagName(prefixStack[stackIndex]) == getTagName(suffixStack[0])) {
+                            // 往根节点向上递减，找父节点
                             deepth--;
-                            formatHTML += getTab(deepth) + suffixStack[0] + nextLine;
+                            formatHTML += getTab(deepth) + $.trim(suffixStack[0]) + nextLine;
                             // 成对移除
                             suffixStack.splice(0, 1);
-                            prefixStack.splice(--stackIndex, 1);
+                            prefixStack.splice(stackIndex--, 1);
                         };
+                        stackIndex ++;
                     } else {
                         deepth ++;
                         stackIndex++;
