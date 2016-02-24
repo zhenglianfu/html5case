@@ -1,4 +1,7 @@
 /* svg editor style */
+.editor-panel{
+    position: relative;
+}
 .svg-editor *{
     box-sizing: border-box;
 }
@@ -132,6 +135,10 @@
 .panel.rect{
     cursor: crosshair;
 }
+.panel.move{
+    cursor: move;
+    border: 1px #333 dotted;
+}
 .menu-bar{
     border-bottom: 1px solid #cccccc;
     height: 35px;
@@ -146,6 +153,10 @@
     padding: 9px 15px;
     border-right: 1px solid #ccc;
     cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 .menu-list .menu-item:hover{
     background: #eee;
@@ -188,6 +199,8 @@
 }
 .tool-list{
     position: relative;
+    border: 1px solid #ccc;
+    border-width: 0 0 1px;
 }
 .tool-list .tool-item{
     float: left;
@@ -195,8 +208,9 @@
     height: 38px;
     border: 1px solid #ccc;
     border-width: 0 1px 1px 0;
+    overflow: hidden;
 }
-.tool-list .tool-item.even{
+.tool-list .tool-item:nth-child(2n) {
     border: 0 none;
     border-bottom: 1px solid #ccc;
 }
@@ -237,7 +251,7 @@
 }
 .mouse-info,
 .svg-background{
-    padding: 3px 0;
+    padding: 3px;
     border-bottom: 1px solid #ccc;
 }
 .mouse-info .value{
@@ -246,4 +260,27 @@
     padding: 2px 3px;
     width: 50px;
     margin: 3px 0;
+}
+.code-container{
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0,.5);
+    width: 100%;
+    height: 100%;
+    z-index: 1991;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.code-container .code-content{
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid #111;
+    background: #fff;
+    text-align: left;
+}
+.code-container code{
+    font-family: "Consolas", "Courier New", Courier, mono, sans-serif, serif;
+    font-size: 14px;
 }

@@ -39,9 +39,15 @@ $(function(){
     Panel.EDIT_MODE = {
         MOUSE: 'mouse',
         LINE: 'line',
-        PEN: 'pen',
+        PEN: 'path',
         CIRCLE: 'circle',
-        RESIZE: 'resize'
+        RESIZE: 'resize',
+        MOVE: 'move',
+        POLYGON: 'polygon',
+        POLYLINE: 'polyline',
+        TEXT: 'text',
+        ELLIPSE : 'ellipse',
+        RECT: 'rect'
     };
     Panel.EVENT = {
         BEFORE_SAVE: 'before_save',
@@ -50,13 +56,14 @@ $(function(){
         RESTORE: 'restore',
         BEFORE_REDO: 'before_redo',
         REDO: 'redo',
-        MOUSE_MOVE: 'mousemove'
+        MOUSE_MOVE: 'mousemove',
+        CHANGE_SIZE_POSITION: 'change_size_position'
     };
     Panel.createSVGDom = function(tagName){
         // xml standard
         var tagName = tagName.toLowerCase();
         // TODO 添加所有SVG元素标签名img
-        if (['line','g','path','circle','arc','ellipse','polygon','use','title','desc','defs','symbol','svg','img','a'].indexOf(tagName) > -1) {
+        if (['line','g','text','tspan','path','circle','arc','ellipse','polygon','use','title','desc','defs','symbol','svg','image','a'].indexOf(tagName) > -1) {
             return document.createElementNS(Panel.SVG_XML, tagName.toLowerCase());
         }
         return null;
@@ -79,7 +86,7 @@ $(function(){
             this.clientRect.y = this.$el[0].offsetTop;
             this._addRangeBlock();
             this._addBehavior();
-            this.updateSvgSize(this.clientRect.x, this.clientRect.y, w, h);
+            this.setSvgSizeAndPosition(this.clientRect.x, this.clientRect.y, w, h);
             this.editMode = Panel.EDIT_MODE.MOUSE;
             this.initialSnap  = this.currentSnap = this.snapshot();
             this.prepareSVGElement = null;
@@ -149,22 +156,34 @@ $(function(){
             this.$lineX = this.$lineX && this.$lineX.remove() && null;
             this.$lineY = this.$lineY && this.$lineY.remove() && null;
         },
-        save: function(){
-            this.trigger(Panel.EVENT.BEFORE_SAVE);
-            // merge restoreStack to garbageFrames
-            for (var i = 0, len = this.restoreStack.length; i < len; i++) {
-                this.garbageFrames.push(this.restoreStack[i]);
+        isSameSnapshot: function(shot_1, shot_2){
+            if (shot_1 && shot_2) {
+                return shot_1.html == shot_2.html && shot_1.x == shot_2.x && shot_1.y == shot_2.y && shot_1.w == shot_2.w && shot_1.h == shot_2.h;
             }
-            this.restoreStack = [];
-            this.operaStack.push(this.snapshot());
-            this.trigger(Panel.EVENT.SAVE);
+            return false;
+        },
+        save: function(){
+            var snapshot = this.snapshot();
+            if (this.isSameSnapshot(snapshot, this.operaStack[this.operaStack.length - 1])) {
+                // no change
+                console.log('has no any change');
+            } else {
+                this.trigger(Panel.EVENT.BEFORE_SAVE);
+                // merge restoreStack to garbageFrames
+                for (var i = 0, len = this.restoreStack.length; i < len; i++) {
+                    this.garbageFrames.push(this.restoreStack[i]);
+                }
+                this.restoreStack = [];
+                this.operaStack.push(snapshot);
+                this.trigger(Panel.EVENT.SAVE);
+            }
             return this;
         },
         // 撤销
         restore: function(){
             this.trigger(Panel.EVENT.BEFORE_RESTORE);
             this.restoreStack.push(this.operaStack.pop());
-            this.updateSvg(this.operaStack[this.operaStack.length - 1] || this.initialSnap);
+            this._updateSvgToSnapshot(this.operaStack[this.operaStack.length - 1] || this.initialSnap);
             this.trigger(Panel.EVENT.RESTORE);
         },
         // 重做
@@ -172,7 +191,7 @@ $(function(){
            this.trigger(Panel.EVENT.BEFORE_REDO);
            var snap = this.restoreStack.pop();
            this.operaStack.push(snap);
-           this.updateSvg(snap);
+           this._updateSvgToSnapshot(snap);
            this.trigger(Panel.EVENT.REDO);
         },
         // 抓取当前快照
@@ -189,13 +208,13 @@ $(function(){
                 index: this.snapIndex++
             };
         },
-        updateSvg: function(snap){
+        _updateSvgToSnapshot: function(snap){
             if (snap) {
-                this.updateSvgSize(snap.x, snap.y, snap.w, snap.h);
+                this.setSvgSizeAndPosition(snap.x, snap.y, snap.w, snap.h);
                 this.$svg.html(snap.html || '');
             }
         },
-        updateSvgSize: function(x, y, w, h){
+        setSvgSizeAndPosition: function(x, y, w, h){
             if (arguments.length) {
                 var x = (isNaN(x) ? this.clientRect.x : x) | 0,
                     y = (isNaN(y) ? this.clientRect.y : y) | 0,
@@ -214,18 +233,17 @@ $(function(){
                         top: y,
                         left: x
                     });
-                    for (var i = 0, len = this.resizeListener.length; i < len; i++) {
-                        this.resizeListener[i].call(this, {
-                            x: x,
-                            y: y,
-                            w: w,
-                            h: h,
-                            oldX: this.clientRect.x,
-                            oldY: this.clientRect.y,
-                            oldW: this.clientRect.w,
-                            oldH: this.clientRect.h
-                        });
-                    }
+                    // trigger
+                    this.trigger(Panel.EVENT.CHANGE_SIZE_POSITION, [{
+                        x: x,
+                        y: y,
+                        w: w,
+                        h: h,
+                        oldX: this.clientRect.x,
+                        oldY: this.clientRect.y,
+                        oldW: this.clientRect.w,
+                        oldH: this.clientRect.h
+                    }]);
                     this.clientRect.x = x;
                     this.clientRect.y = y;
                     this.clientRect.w = w;
@@ -265,6 +283,8 @@ $(function(){
                 self.moveEndHandler(startPoint, endPoint);
                 self.closeDrawGuides();
                 return tagName == 'DIV';
+            }).bind('dblclick', function(e){
+                self.dbClickHandler(startPoint, getRelativeSVGPoint(e));
             });
             function getRelativeSVGPoint(e){
                 return {
@@ -307,9 +327,6 @@ $(function(){
                     }
                 }
             }
-        },
-        addResizeListener: function(fn){
-            this.resizeListener.push(fn);
         },
         __addResizeEvent: function(){
             var self = this;
@@ -416,7 +433,7 @@ $(function(){
                 }
                 w = Math.max(w, minWidth) | 0;
                 h = Math.max(h, minHeight) | 0;
-                self.updateSvgSize(offset.left, offset.top, w, h);
+                self.setSvgSizeAndPosition(offset.left, offset.top, w, h);
             }
         },
         /* TODO 绘制水平垂直线 shift + */
@@ -432,14 +449,21 @@ $(function(){
         },
         moveEndHandler: function(start, end){
             // 快照入栈
-            this.prepareSVGElement && this.prepareSVGElement.length && this.save();
+            this.save();
             // add new element
             this.prepareSVGElement = $(Panel.createSVGDom(this.editMode));
+        },
+        // 双击才能结束
+        dbClickHandler: function(){
+
         },
         /* line rect circle */
         drawSimpleElement: function(start, end){
             var style = 'fill:' + this.fillStyle + ';stroke:' + this.strokeStyle + ';stroke-width:' + this.strokeWidth + ';';
             switch (this.editMode) {
+                case Panel.EDIT_MODE.MOVE:
+                    this.setSvgSizeAndPosition(this.clientRect.x + (end.x - start.x), this.clientRect.y + (end.y - start.y), this.clientRect.w, this.clientRect.h);
+                    break;
                 case Panel.EDIT_MODE.LINE:
                     this.prepareSVGElement.attr({
                         x1: start.x,
@@ -461,13 +485,20 @@ $(function(){
                 switch (this.editMode) {
                     case Panel.EDIT_MODE.RESIZE:
                         this.setResizeAble(this.editMode);
-                        break;
                     case Panel.EDIT_MODE.MOUSE:
+                    case Panel.EDIT_MODE.MOVE:
                         this.prepareSVGElement = null;
                         break;
                     case Panel.EDIT_MODE.LINE:
                         this.prepareSVGElement = $(Panel.createSVGDom(Panel.EDIT_MODE.LINE));
                         break;
+                    case Panel.EDIT_MODE.CIRCLE:
+                        this.prepareSVGElement = $(Panel.createSVGDom(Panel.EDIT_MODE.CIRCLE));
+                        break;
+                    case Panel.EDIT_MODE.ELLIPSE:
+                        this.prepareSVGElement = $(Panel.createSVGDom(Panel.EDIT_MODE.ELLIPSE));
+                        break;
+
                 }
             }
         },
@@ -482,9 +513,25 @@ $(function(){
             } else {
                 this.$el.removeClass('resize').find('.resize-bar').css('display', 'none');
             }
+        },
+        outputSVGHTML: function(){
+            return this.$svg[0].outerHTML;
         }
     };
     Panel.uuid = 0;
+    /* SVG DOM */
+    function SVGDomEntity(svgElement) {
+        if (typeof svgElement === 'string') {
+            svgElement = Panel.createSVGDom(svgElement);
+        }
+        this.$svgElement = $(svgElement);
+        this.tagName = this.$svgElement.length ? this.$svgElement[0].tagName.toLowerCase() : 'unknown';
+    }
+    SVGDomEntity.prototype = {
+        update: function(){
+
+        }
+    };
     // 全屏
     function fullScreen(ele){
         if (ele.webkitRequestFullScreen) {
@@ -506,6 +553,7 @@ $(function(){
         }
     }
     var SVGTool = {
+        $container: $('.editor-panel'),
         showGridGuides: false,
         showDrawGuides: false,
         index : 0,
@@ -527,8 +575,7 @@ $(function(){
             function _add(){
                 $('.tool-item').removeClass('active');
                 SVGTool.currentPanel=  new Panel($container);
-                SVGTool.currentPanel.addResizeListener(SVGTool.updateSizeInfo);
-                SVGTool.updateSizeInfo(SVGTool.currentPanel.updateSvgSize());
+                SVGTool.updateSizeInfo(SVGTool.currentPanel.setSvgSizeAndPosition());
                 // 监听panel事件, 撤销 重做状态
                 function listener() {
                     SVGTool.updateSnapCtrlStatus(this.operaStack.length, this.restoreStack.length);
@@ -536,7 +583,7 @@ $(function(){
                 SVGTool.currentPanel.on(Panel.EVENT.SAVE, listener).on(Panel.EVENT.RESTORE, listener).on(Panel.EVENT.REDO, listener).on(Panel.EVENT.MOUSE_MOVE, function(point){
                     $('#mouse_x').text(point.x);
                     $('#mouse_y').text(point.y);
-                });
+                }).on(Panel.EVENT.CHANGE_SIZE_POSITION, SVGTool.updateSizeInfo);
                 SVGTool.updateSnapCtrlStatus(0, 0);
                 SVGTool.currentPanel.isShowGridGuides = SVGTool.showGridGuides;
                 SVGTool.currentPanel.showGridGuides();
@@ -581,6 +628,7 @@ $(function(){
                     $('#toggleDrawGuides').text(SVGTool.showDrawGuides ? '关闭辅助线' : '开启辅助线');
                     break;
                 case 'code':
+                    SVGTool.showCode(SVGTool.currentPanel.outputSVGHTML());
                     break;
                 case 'revert':
                     this.currentPanel.restore();
@@ -592,6 +640,86 @@ $(function(){
                     console.warn('unregistered function');
                     break;
             }
+        },
+        showCode: function(html){
+            var $codeDisplay = $('<div>').addClass('code-container').html('<div><button type="button" class="btn">关闭</button>></div><div class="code-content"><pre><code class="lang-html code"></code></pre></div>');
+            $codeDisplay.find('code').text(this.formatHTML(html));
+            $codeDisplay.find('button').bind('click', function(){
+                $codeDisplay.remove();
+            });
+            $codeDisplay.appendTo(this.$container);
+        },
+        /* 格式化代码 */
+        formatHTML: function(html){
+            var tab = '    ',
+                tabs = '',
+                formatHTML = '',
+                nextLine = '\n',
+                regPrefix = /<[a-z0-9]+.*?>[^<]*/g,
+                regSuffix = /<\/[a-z0-9]+>/g,
+                regTag = /<\/?([a-z0-9]+)[^>]*\/?>/,
+                prefixStack = html.match(regPrefix),
+                suffixStack = html.match(regSuffix),
+                deepth = 0,
+                stackIndex = 0,
+                fragment = '',
+                text = '',
+                currentTag = '',
+                waitTag = '';
+            while(prefixStack.length || stackIndex < prefixStack.length || suffixStack.length){
+                appendHTML();
+            }
+            function appendHTML(){
+                fragment = prefixStack[stackIndex];
+                if (fragment) {
+                    text = fragment.substr(fragment.indexOf('>') + 1);
+                    fragment = fragment.substring(0, fragment.indexOf('>') + 1);
+                    currentTag = getTagName(fragment);
+                    waitTag = getTagName(suffixStack[0]);
+                    // append html
+                    formatHTML += getTab(deepth) + fragment + (text ? nextLine + getTab(deepth + 1) + text + nextLine + getTab(deepth): '');
+                    // 自结束
+                    if (fragment.indexOf('/>') > -1) {
+                        prefixStack.splice(stackIndex, 1);
+                        deepth--;
+                    } else if (currentTag == waitTag) {
+                        // match
+                        // do
+                        formatHTML += suffixStack[0] + nextLine;
+                        suffixStack.splice(0, 1);
+                        prefixStack.splice(stackIndex--, 1);
+
+                        while (suffixStack.length && getTagName(prefixStack[stackIndex++]) == getTagName(suffixStack[0])) {
+                            // 深度递减
+                            deepth--;
+                            formatHTML += getTab(deepth) + suffixStack[0] + nextLine;
+                            // 成对移除
+                            suffixStack.splice(0, 1);
+                            prefixStack.splice(--stackIndex, 1);
+                        };
+                    } else {
+                        deepth ++;
+                        stackIndex++;
+                        formatHTML += (text ? '' : nextLine);
+                    }
+                } else {
+                    // 只剩后缀
+                    formatHTML += getTab(deepth--) + suffixStack[0] + nextLine;
+                    suffixStack.splice(0, 1);
+                }
+            }
+            function getTab(deepth){
+                var tabs = [];
+                tabs.length = Math.max(deepth + 1, 0);
+                return tabs.join(tab);
+            }
+            function getTagName(tag){
+                if (tag) {
+                    return tag.match(regTag)[1];
+                }
+                return '';
+            }
+            return formatHTML;
         },
         bindEvent : function(){
             var that = this;
@@ -623,7 +751,7 @@ $(function(){
             });
             // x,y,w,h control
             $('#svg_x, #svg_h, #svg_w, #svg_y').bind('change', function(){
-                that.currentPanel && that.currentPanel.updateSvgSize(+$('#svg_x').val(), +$('#svg_y').val(), +$('#svg_w').val(), +$('#svg_h').val());
+                that.currentPanel && that.currentPanel.setSvgSizeAndPosition(+$('#svg_x').val(), +$('#svg_y').val(), +$('#svg_w').val(), +$('#svg_h').val());
             });
         }
     };
