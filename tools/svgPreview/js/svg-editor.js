@@ -17,9 +17,13 @@ $(function(){
         $panel.height(height - menuHeight - 2);
     }
     /* SVG DOM */
-    function SVGDomEntity(svgElement) {
-        this.elements = [];
+    function SVGDomEntity(svgElement, properties) {
+        this.element = null;
         this.length = 0;
+        this.guideArea = null;
+        this.showGuideLines = false;
+        // 首先检索此处
+        this._super_proto_ = properties || {};
         if (typeof svgElement === 'string') {
             svgElement = SVGDomEntity.createSVGDom(svgElement);
         }
@@ -31,18 +35,29 @@ $(function(){
             this.valid = false;
         }
     }
-    SVGDomEntity.createSVGDom = function(tagName){
+    SVGDomEntity.createSVGDom = function(tagName, properties){
         if (tagName) {
             // xml standard
             var tagName = tagName.toLowerCase();
             // TODO 添加所有SVG元素标签名img
-            if (['line','g','text','tspan','path','circle','arc','ellipse','polygon','use','title','desc','defs','symbol','svg','image','a'].indexOf(tagName) > -1) {
+            if (['line','g','text','tspan','path','clipPath','circle','arc','ellipse','polygon','use','title','desc','defs','symbol','svg','image'].indexOf(tagName) > -1) {
                 return document.createElementNS(Panel.SVG_XML, tagName);
             }
         }
         return null;
     };
     SVGDomEntity.prototype = {
+        // 绘制显示区域的矩形
+        showGuideArea: function(start, end){
+            if (this.element) {
+                var miniRect = this.element.getBBox();
+
+            }
+        },
+        removeGuideArea: function(){
+            $(this.guideArea).remove();
+            this.guideArea = null;
+        },
         update: function(){},
         render: function(){},
         next: function(){},
@@ -64,7 +79,7 @@ $(function(){
         var proto = new SVGDomEntity(),
             CustomSVG = function(){
                 // super
-                SVGDomEntity.apply(this, tagName);
+                SVGDomEntity.apply(this, [tagName, properties]);
             };
         CustomSVG.prototype = $.extend(proto, properties);
         return CustomSVG;
@@ -108,7 +123,9 @@ $(function(){
         POLYLINE: 'polyline',
         TEXT: 'text',
         ELLIPSE : 'ellipse',
-        RECT: 'rect'
+        RECT: 'rect',
+        CLIP_PATH: 'clipPath',
+        GROUP: 'g'
     };
     Panel.SVG_DOM_NAME_REFER = {
         'line': 'line',
@@ -122,7 +139,8 @@ $(function(){
         'polyline': 'polyline',
         'g': 'g',
         'maker': 'maker',
-        'defs': 'defs'
+        'defs': 'defs',
+        'clipPath': 'clipPath'
     };
     Panel.EVENT = {
         BEFORE_SAVE: 'before_save',
@@ -145,6 +163,9 @@ $(function(){
                 height: h,
                'viewbox': '0 0 ' + w + ' ' + h
             });
+            this.canvasId = 'canvas_' + Date.now();
+            this.$canvas = $(SVGDomEntity.createSVGDom('g')).attr('id', this.canvasId).appendTo(this.$svg);
+            this.$defs = null;
             this.snapIndex = 0;
             this.clientRect.w = w;
             this.clientRect.h = h;
@@ -507,7 +528,7 @@ $(function(){
         /* TODO 绘制折线 <polygon> */
         moveStartHandler: function(point){
             if (this.prepareSVGElement) {
-                this.$svg.append(this.prepareSVGElement);
+                this.$canvas.append(this.prepareSVGElement);
                 this.drawSimpleElement(point, point);
             }
         },
@@ -806,6 +827,9 @@ $(function(){
                     offset = $(this).offset();
                 panelMouse.x = cx + (window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft) - offset.left;
                 panelMouse.y = cy + (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop) - offset.top;
+            });
+            $('.color').bind('click', function(){
+
             });
             // x,y,w,h control
             $('#svg_x, #svg_h, #svg_w, #svg_y').bind('change', function(){
