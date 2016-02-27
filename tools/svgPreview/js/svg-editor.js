@@ -94,6 +94,8 @@ $(function(){
         this.resizeListener = [];
         this.isShowGridGuides = false;
         this.isShowDrawGuides = false;
+        this.$select = null;
+        this.focus = false;
         this.init();
     };
     Panel.SVG_XML = 'http://www.w3.org/2000/svg';
@@ -261,6 +263,22 @@ $(function(){
            this._updateSvgToSnapshot(snap);
            this.trigger(Panel.EVENT.REDO);
         },
+        clear: function(){
+            this.$svg.html('');
+            this.showGridGuides();
+            // 清空后入栈
+            this.save();
+        },
+        delete: function(svgDom){
+            if (this.$select) {
+                // TODO 从缓存对象中移除该dom指向的js对象
+                this.$select.remove();
+                this.save();
+            }
+        },
+        add: function(mySvgDom){
+
+        },
         // 抓取当前快照
         snapshot: function(){
             var cTime = Date.now();
@@ -270,6 +288,7 @@ $(function(){
                 w: this.clientRect.w,
                 h: this.clientRect.h,
                 html: this.$svg.html(),
+                nodes: this.$svg.children(),
                 createTime: cTime,
                 modifyTime: cTime,
                 index: this.snapIndex++
@@ -278,7 +297,7 @@ $(function(){
         _updateSvgToSnapshot: function(snap){
             if (snap) {
                 this.setSvgSizeAndPosition(snap.x, snap.y, snap.w, snap.h);
-                this.$svg.html(snap.html || '');
+                this.$svg.html('').append(snap.nodes);
             }
         },
         setSvgSizeAndPosition: function(x, y, w, h){
@@ -328,7 +347,9 @@ $(function(){
             var clickDown = false;
             var self = this;
             var tagName = ''; // 选中的元素是什么
+            var focus = false;
             this.$el.bind('mousedown', function(e){
+                focus = true;
                 clickDown = true;
                 startPoint = self.getRelativeSVGPoint(e);
                 // 绘制辅助
@@ -522,7 +543,14 @@ $(function(){
         },
         // 多点路径元素 双击才能结束
         dbClickHandler: function(){
-
+        },
+        // 按起按键
+        keyUpHandler: function(){
+        },
+        // 按下按键
+        keyDownHandler: function(e){
+        },
+        keyPressHandler: function(){
         },
         /* line rect circle */
         drawSimpleElement: function(start, end){
@@ -568,12 +596,6 @@ $(function(){
 
                 }
             }
-        },
-        clear: function(){
-            this.$svg.html('');
-            this.showGridGuides();
-            // 清空后入栈
-            this.save();
         },
         setResizeAble: function(resize){
             this.resizeAble = resize = !!resize;
@@ -636,6 +658,7 @@ $(function(){
                 SVGTool.updateSizeInfo(SVGTool.currentPanel.setSvgSizeAndPosition());
                 // 监听panel事件, 撤销 重做状态
                 function listener() {
+                    console.log(this.operaStack, this.restoreStack);
                     SVGTool.updateSnapCtrlStatus(this.operaStack.length, this.restoreStack.length);
                 }
                 SVGTool.currentPanel.on(Panel.EVENT.SAVE, listener).on(Panel.EVENT.RESTORE, listener).on(Panel.EVENT.REDO, listener).on(Panel.EVENT.MOUSE_MOVE, function(point){
@@ -781,6 +804,7 @@ $(function(){
         },
         bindEvent : function(){
             var that = this;
+            // 工具栏
             $tool.on('click', 'li.tool-item', function(){
                 if ($container.find('.panel').length == 0) {
                     return false;
@@ -794,6 +818,15 @@ $(function(){
                 $container.find('.panel').attr('class', 'panel ' + mod);
                 SVGTool.currentPanel.setMode(mod);
             });
+            // 键盘事件
+            $(window).bind('keydown', function(e){
+                SVGTool.currentPanel.keyDownHandler(e);
+            }).bind('keyup', function(e){
+                SVGTool.currentPanel.keyUpHandler(e);
+            }).bind('keypress', function(e){
+                SVGTool.currentPanel.keyPressHandler(e);
+            });
+            // 顶部菜单
             $menu.on('click', '.menu-item', function(){
                 if ($(this).hasClass('disabled')) {
                     return false;
