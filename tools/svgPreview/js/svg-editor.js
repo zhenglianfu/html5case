@@ -1039,7 +1039,6 @@ $(function(){
                 SVGTool.updateSizeInfo(SVGTool.currentPanel.setSvgSizeAndPosition());
                 // 监听panel事件, 撤销 重做状态
                 function listener() {
-                    console.log(this.operaStack, this.restoreStack);
                     SVGTool.updateSnapCtrlStatus(this.operaStack.length, this.restoreStack.length);
                 }
                 SVGTool.currentPanel.on(Panel.EVENT.SAVE, listener).on(Panel.EVENT.RESTORE, listener).on(Panel.EVENT.REDO, listener).on(Panel.EVENT.MOUSE_MOVE, function(point){
