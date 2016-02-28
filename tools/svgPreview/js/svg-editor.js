@@ -20,6 +20,8 @@ $(function(){
     function SVGDomEntity(svgElement, defaultStyle) {
         this.id = SVGDomEntity.uuid ++;
         this.points = []; // 路径点
+        this.snapshots = []; // 快照栈
+        this.restoreSnapshots = [];
         this.element = null;
         this.length = 0;
         this.guideArea = null;
@@ -67,7 +69,10 @@ $(function(){
         },
         update: function(){},
         render: function(start, end){
-            $(this.element).attr('style', this._stylesheet2str());
+            if (this.element) {
+                $(this.element).attr('style', this._stylesheet2str());
+                this.element.parentElement == null && this.panel.$canvas.append(this.element);
+            }
         },
         _stylesheet2str: function(){
             var kvs =  [],
@@ -87,6 +92,62 @@ $(function(){
                 this.stylesheet[name] = typeof value === 'function' ? value() : value;
             }
         },
+        getSnapshot: function(){
+            if (this.element) {
+                var snap = {
+                    outerHTML: this.element.outerHTML,
+                    points: this.points.slice(0),
+                    htmlMD5: $.md5(this.element.outerHTML)
+                };
+                var attributes = this.element.attributes,
+                    attrMap = {};
+                for (var i = 0, len = attributes.length; i < len; i += 1) {
+                    attrMap[attributes[i].nodeName] = attributes[i].nodeValue;
+                }
+                snap.attrs = attrMap;
+                return snap;
+            }
+            return null;
+        },
+        cacheFromSnapshots: function(snap){
+            if (this.element.parentElement == null) {
+                this.panel.$canvas.append(this.element);
+            }
+            this.points = snap.points;
+            $(this.element).attr(snap.attrs);
+        },
+        save: function(){
+            console.log('save');
+            // 保存当前状态
+            var snapshot = this.getSnapshot();
+            if (snapshot && this._hasChanged(snapshot, this.snapshots[this.snapshots.length - 1])) {
+                this.snapshots.push(snapshot);
+                this.restoreSnapshots = [];
+            } else {
+                console.log('the same');
+            }
+        },
+        restore: function(){
+            if (this.snapshots.length) {
+                var snap = this.snapshots.pop();
+                this.cacheFromSnapshots(this.snapshots[this.snapshots.length - 1] || {points: [], attrs: {}});
+                this.restoreSnapshots.push(snap);
+            }
+        },
+        redo: function(){
+            if (this.restoreSnapshots.length) {
+                var snap = this.restoreSnapshots.pop();
+                this.cacheFromSnapshots(snap);
+                this.snapshots.push(snap);
+            }
+        },
+        redraw: function(){},
+        _hasChanged: function(current, last){
+            if (current && last) {
+                return current.htmlMD5 !== last.htmlMD5;
+            }
+            return current && last == null;
+        },
         next: function(start, end){
             // 保存路径点
             if (this.currentPoint == null) {
@@ -100,6 +161,7 @@ $(function(){
                 this.points.push(end);
             }
             this.currentPoint = end;
+            this.save(); // 保存
             return this;
         },
         // 多点路径使用该方法结束
@@ -122,7 +184,6 @@ $(function(){
         _bindEvent: function(){
             var self = this;
             $(this.element).bind('click', function(){
-                alert(this.tagName);
                 self.focus = true;
                 self.panel.$select = self;
                 SVGDomEntity.EVENT_HANDLERS.CLICK_HANDLER.apply(self, arguments);
@@ -155,7 +216,7 @@ $(function(){
         }
     };
     SVGDomEntity.DEFAULT_STYLE = {
-        fill: '#000',
+        fill: 'none',
         stroke: '#000',
         'stroke-width': 1,
         'stroke-opacity': 1,
@@ -165,14 +226,22 @@ $(function(){
      * 扩展SVGDomEntity, 自定义SVG绘制类型
      * */
     SVGDomEntity.extend = function(tagName, properties, defaultStyle){
+        var Factory = this;
         defaultStyle = $.extend({}, SVGDomEntity.DEFAULT_STYLE, defaultStyle);
-        var instance = new SVGDomEntity(tagName, defaultStyle),
-            ParticularSVGDomEntity = function(style){
+        var instance = new Factory(tagName, defaultStyle),
+            ParticularSVGDomEntity = function(tag, style){
+                tag = tag || tagName;
+                if (typeof tag == 'object') {
+                    style = tag;
+                    tag = tagName;
+                }
                 // super constructor
-                SVGDomEntity.apply(this, [tagName, $.extend(defaultStyle, style)]);
+                Factory.apply(this, [tag, $.extend({}, defaultStyle, style)]); /* 拷贝样式表 */
             },
             proto = function(){
-                var p = {};
+                var p = {
+                    _super: instance
+                };
                 for (var i in instance) {
                     // 只继承原型链
                     if (instance.hasOwnProperty(i)) {
@@ -197,12 +266,14 @@ $(function(){
             }();
         proto.constructor = ParticularSVGDomEntity;
         ParticularSVGDomEntity.prototype = proto;
+        ParticularSVGDomEntity.extend = Factory.extend;
         return ParticularSVGDomEntity;
     };
     SVGDomEntity.uuid = 0;
     SVGDomEntity.EXTENDS = {
         LINE: SVGDomEntity.extend('line', {
             render: function(start, end, clickDown) {
+                this._super.render(start, end, clickDown);
                 $(this.element).attr({
                     'x1': start.x,
                     'x2': end.x,
@@ -219,49 +290,21 @@ $(function(){
                 return new SVGDomEntity.EXTENDS.LINE(this.stylesheet);
             }
         }),
-        ARROW_LINE: SVGDomEntity.extend('line', {
-            onAddToPanelOnce: function(panel){
-                if (panel.$defs == null) {
-                    panel.$defs = $(SVGDomEntity.createSVGDom('defs')).appendTo(panel.$svg);
-                }
-                var makerId = this.markerId  = 'arrow_marker_' + Date.now();
-                var $marker = this.$marker = $(SVGDomEntity.createSVGDom('marker', {
-                    id: makerId,
-                    markerWidth: 4,
-                    markerHeight: 8,
-                    orient: 'auto',
-                    refX: 4,
-                    refY: 4
-                })).html('<path d="M0,0 4,4 0,8" style="fill:none; stroke:' + this.stylesheet.stroke + '"></path>');
-                panel.$defs.append($marker);
-            },
-            render: function(start, end){
-                if (this.element) {
-                    $(this.element).attr({
-                        x1: start.x,
-                        y1: start.y,
-                        x2: end.x,
-                        y2: end.y
-                    });
-                }
-            },
-            next: function(){
-                var rect = this.element.getBBox();
-                if (rect.width == 0 && rect.height == 0) {
-                    $(this.element).remove();
-                } else {
-                    $(this.element).attr('style', $(this.element).attr('style') + ';marker-end: url(#' + this.markerId + ')');
-                }
-                return new SVGDomEntity.EXTENDS.ARROW_LINE(this.style);
-            }
-        }),
         RECT: SVGDomEntity.extend('rect', {
             render: function(start, end){
                 var x = Math.min(start.x, end.x),
-                    y = Math.min(start.y, end.y);
+                    y = Math.min(start.y, end.y),
+                    strokeWidth = +this.stylesheet['stroke-width'],
+                    offsetX = 0,
+                    offsetY = 0;
+                // 描边保持像素完整，不出现虚影
+                if (!isNaN(strokeWidth) && strokeWidth % 2 != 0) {
+                    offsetX = 0.5;
+                    offsetY = 0.5;
+                };
                 $(this.element).attr({
-                    x: x,
-                    y: y,
+                    x: x + offsetX,
+                    y: y + offsetY,
                     width: Math.abs(end.x - start.x),
                     height: Math.abs(end.y - start.y)
                 });
@@ -270,7 +313,7 @@ $(function(){
                 return new SVGDomEntity.EXTENDS.RECT(this.stylesheet);
             }
         }),
-        POLYLINE: SVGDomEntity.extend('polyline', {
+        POLYGON: SVGDomEntity.extend('polygon', {
             render: function(start, end){
                 var tempPoints = this.points.length ? this.points.concat(end) : this.points.concat([start, end]),
                     points = [];
@@ -289,10 +332,8 @@ $(function(){
                     points[2 * i + 1] = this.points[i].y;
                 }
                 $(this.element).attr('points', points.join(' '));
-                return new SVGDomEntity.EXTENDS.POLYLINE(this.stylesheet);
+                return new SVGDomEntity.EXTENDS.POLYGON(this.stylesheet);
             }
-        }, {
-            fill: 'none'
         }),
         CIRCLE: SVGDomEntity.extend('circle', {
            render: function(start, end){
@@ -308,8 +349,70 @@ $(function(){
            next: function(start, end){
                return new SVGDomEntity.EXTENDS.CIRCLE(this.stylesheet);
            }
+        }),
+        ELLIPSE: SVGDomEntity.extend('ellipse', {
+            render: function(start, end){
+                var rx = Math.abs(start.x - end.x) / 2;
+                var ry = Math.abs(start.y - end.y) / 2;
+                var x = end.x > start.x ? start.x + rx : end.x + rx,
+                    y = end.y > start.y ? start.y + ry : end.y + ry;
+                $(this.element).attr({
+                    cx: x,
+                    cy: y,
+                    rx: rx,
+                    ry: ry
+                });
+            },
+            next: function(){
+                return new SVGDomEntity.EXTENDS.ELLIPSE(this.stylesheet);
+            }
+        }),
+        TEXT: SVGDomEntity.extend('text', {
+            onAddToPanelOnce: function(panel, point){
+                // 文本域
+            },
+            render: function(){
+
+            }
+        }),
+        /* 绘制曲线 something complicated */
+        PEN: SVGDomEntity.extend('path', {
+
         })
     };
+    // 二次扩展
+    SVGDomEntity.EXTENDS.ARROW_LINE = SVGDomEntity.EXTENDS.LINE.extend('line', {
+        onAddToPanelOnce: function(panel){
+            if (panel.$defs == null) {
+                panel.$defs = $(SVGDomEntity.createSVGDom('defs')).appendTo(panel.$svg);
+            }
+            var makerId = this.markerId  = 'arrow_marker_' + Date.now();
+            var $marker = this.$marker = $(SVGDomEntity.createSVGDom('marker', {
+                id: makerId,
+                markerWidth: 4,
+                markerHeight: 8,
+                orient: 'auto',
+                refX: 4,
+                refY: 4
+            })).html('<path d="M0,0 4,4 0,8" style="fill:none; stroke:' + this.stylesheet.stroke + '"></path>');
+            panel.$defs.append($marker);
+        },
+        next: function(){
+            var rect = this.element.getBBox();
+            if (rect.width != 0 && rect.height != 0) {
+                $(this.element).attr('style', $(this.element).attr('style') + ';marker-end: url(#' + this.markerId + ')');
+            }
+            return new SVGDomEntity.EXTENDS.ARROW_LINE(this.style);
+        }
+    });
+    SVGDomEntity.EXTENDS.POLYLINE = SVGDomEntity.EXTENDS.POLYGON.extend('polyline', {
+        next: function(){
+            return this;
+        },
+        finish: function(){
+            return new SVGDomEntity.EXTENDS.POLYLINE(this.stylesheet);
+        }
+    }, {fill: 'none'});
     if (location.host.indexOf('localhost') > -1) {
         // 测试用
         window.SVGDOM = SVGDomEntity;
@@ -333,13 +436,14 @@ $(function(){
         this.isShowDrawGuides = false;
         this.$select = null;
         this.focus = false;
+        this.shiftKey = false;
         this.init();
     };
     Panel.SVG_XML = 'http://www.w3.org/2000/svg';
     Panel.EDIT_MODE = {
         MOUSE: 'mouse',
         LINE: 'line',
-        PEN: 'path',
+        PEN: 'pen',
         CIRCLE: 'circle',
         RESIZE: 'resize',
         MOVE: 'move',
@@ -356,14 +460,12 @@ $(function(){
         'arrowLine': SVGDomEntity.EXTENDS.ARROW_LINE,
         'path': SVGDomEntity.EXTENDS.LINE,
         'rect': SVGDomEntity.EXTENDS.RECT,
-        'text': SVGDomEntity.EXTENDS.LINE,
+        'text': SVGDomEntity.EXTENDS.TEXT,
         'circle': SVGDomEntity.EXTENDS.CIRCLE,
-        'ellipse': SVGDomEntity.EXTENDS.LINE,
-        'polygon': SVGDomEntity.EXTENDS.LINE,
+        'ellipse': SVGDomEntity.EXTENDS.ELLIPSE,
+        'polygon': SVGDomEntity.EXTENDS.POLYGON,
         'polyline': SVGDomEntity.EXTENDS.POLYLINE,
-        'g': SVGDomEntity.EXTENDS.LINE,
-        'maker': SVGDomEntity.EXTENDS.LINE,
-        'defs': SVGDomEntity.EXTENDS.LINE,
+        'pen': SVGDomEntity.EXTENDS.PEN,
         'clipPath': SVGDomEntity.EXTENDS.LINE
     };
     Panel.EVENT = {
@@ -401,9 +503,6 @@ $(function(){
             this.editMode = Panel.EDIT_MODE.MOUSE;
             this.initialSnap  = this.currentSnap = this.snapshot();
             this.currentDomEntity = null;
-            // svg global style
-            this.strokeStyle = '#000';
-            this.fillStyle = '#000';
             this.strokeWidth = 1;
             this.resizeAble = false;
             this.save();
@@ -470,15 +569,15 @@ $(function(){
         },
         isSameSnapshot: function(shot_1, shot_2){
             if (shot_1 && shot_2) {
-                return shot_1.htmlMD5 == shot_2.htmlMD5 && shot_1.x == shot_2.x && shot_1.y == shot_2.y && shot_1.w == shot_2.w && shot_1.h == shot_2.h;
+                console.log('html change', shot_1.htmlMD5 == shot_2.htmlMD5, shot_1.htmlMD5, shot_2.htmlMD5);
+                return (shot_1.htmlMD5 == shot_2.htmlMD5 || (shot_1.svgDOMEntity && shot_2.svgDOMEntity &&shot_1.svgDOMEntity.id === shot_2.svgDOMEntity.id)) && shot_1.x == shot_2.x && shot_1.y == shot_2.y && shot_1.w == shot_2.w && shot_1.h == shot_2.h;
             }
             return false;
         },
         save: function(){
             var snapshot = this.snapshot();
             if (this.isSameSnapshot(snapshot, this.operaStack[this.operaStack.length - 1])) {
-                // no change
-                console.log('has no any change');
+                // no change or the same dom
             } else {
                 this.trigger(Panel.EVENT.BEFORE_SAVE);
                 // merge restoreStack to garbageFrames
@@ -493,18 +592,32 @@ $(function(){
         },
         // 撤销
         restore: function(){
-            this.trigger(Panel.EVENT.BEFORE_RESTORE);
-            this.restoreStack.push(this.operaStack.pop());
-            this._updateSvgToSnapshot(this.operaStack[this.operaStack.length - 1] || this.initialSnap);
-            this.trigger(Panel.EVENT.RESTORE);
+            var snap = this.operaStack[this.operaStack.length - 1];
+            if (snap) {
+                this.trigger(Panel.EVENT.BEFORE_RESTORE);
+                if (snap.svgDOMEntity && snap.svgDOMEntity.snapshots.length) {
+                    snap.svgDOMEntity.restore();
+                }
+                if (snap.svgDOMEntity == null || snap.svgDOMEntity.snapshots.length < 1) {
+                    this.restoreStack.push(this.operaStack.pop());
+                    this._updateSvgToSnapshot(this.operaStack[this.operaStack.length - 1] || this.initialSnap);
+                }
+                this.trigger(Panel.EVENT.RESTORE);
+            }
         },
         // 重做
         redo: function(){
-           this.trigger(Panel.EVENT.BEFORE_REDO);
-           var snap = this.restoreStack.pop();
-           this.operaStack.push(snap);
-           this._updateSvgToSnapshot(snap);
-           this.trigger(Panel.EVENT.REDO);
+            var resnap = this.restoreStack[this.restoreStack.length - 1],
+                opsnap = this.operaStack[this.operaStack.length - 1];
+            this.trigger(Panel.EVENT.BEFORE_REDO);
+            if (opsnap.svgDOMEntity && opsnap.svgDOMEntity.restoreSnapshots.length) {
+                opsnap.svgDOMEntity.redo();
+            }
+            if (opsnap.svgDOMEntity == null || opsnap.svgDOMEntity.restoreSnapshots.length < 1) {
+                this.operaStack.push(this.restoreStack.pop());
+                this._updateSvgToSnapshot(resnap);
+            }
+            this.trigger(Panel.EVENT.REDO);
         },
         clear: function(){
             this.$canvas.html('');
@@ -549,14 +662,18 @@ $(function(){
             var tagName = ''; // 选中的元素是什么
             var focus = false;
             var lastMouseUpTime = Date.now();
+            var lastMouseEnd = {x: -1, y: -1};
             this.$el.bind('mousedown', function(e){
-                focus = true;
-                clickDown = true;
-                startPoint = self.getRelativeSVGPoint(e);
-                // 绘制辅助
-                self._updateDrawGuides(startPoint);
-                // start move
-                self.moveStartHandler(startPoint);
+                // 鼠标左键
+                if (e.which == 1) {
+                    focus = true;
+                    clickDown = true;
+                    startPoint = self.getRelativeSVGPoint(e);
+                    // 绘制辅助
+                    self._updateDrawGuides(startPoint);
+                    // start move
+                    self.moveStartHandler(startPoint);
+                }
                 return (tagName = e.target.tagName.toUpperCase()) == 'DIV';
             }).bind('mousemove', function(e){
                 var currentPoint = self.getRelativeSVGPoint(e);
@@ -569,14 +686,19 @@ $(function(){
                 self.closeDrawGuides();
                 var now = Date.now();
                 // 300ms内算双击
-                if (now - lastMouseUpTime < 300) {
+                if (now - lastMouseUpTime < 300 && lastMouseEnd.x == endPoint.x && lastMouseEnd.y == endPoint.y) {
                     // double click
                     self.dbClickHandler(startPoint, endPoint);
                 } else {
                     self.moveEndHandler(startPoint, endPoint);
                 }
                 lastMouseUpTime = now;
+                lastMouseEnd = endPoint;
                 return tagName == 'DIV';
+            }).bind('contextmenu', function(e){
+                // 右键
+                self.rightClickHandler(self.getRelativeSVGPoint(e), lastMouseEnd);
+                return false;
             });
         },
         getRelativeSVGPoint: function(e){
@@ -728,12 +850,10 @@ $(function(){
                 self.setSvgSizeAndPosition(offset.left, offset.top, w, h);
             }
         },
-        /* TODO 绘制水平垂直线 shift + */
-        /* TODO 绘制折线 <polygon> */
         moveStartHandler: function(point){
             if (this.currentDomEntity) {
                 this.currentDomEntity.create();
-                this.currentDomEntity.onAddToPanelOnce(this);
+                this.currentDomEntity.onAddToPanelOnce(this, point);
                 this.$canvas.append(this.currentDomEntity.getElement());
                 this.currentDomEntity.render(point, point);
             }
@@ -742,12 +862,12 @@ $(function(){
             if (clickDown) {
                 this._updateDrawGuides(current);
             }
-            this.currentDomEntity ? this.currentDomEntity.render(start, current, clickDown) : this.driftPanel(start, current, clickDown);
+            this.currentDomEntity ? this.currentDomEntity.render(start, current, clickDown, this.shiftKey) : this.driftPanel(start, current, clickDown);
         },
         moveEndHandler: function(start, end){
             if (this.currentDomEntity) {
                 this.currentDomEntity.render(start, end);
-                this.currentDomEntity = this.currentDomEntity.next(start, end);
+                this.currentDomEntity = this.currentDomEntity.next(start, end) || this.currentDomEntity;
             }
             // 快照入栈
             this.save();
@@ -759,13 +879,22 @@ $(function(){
             }
             this.save();
         },
+        rightClickHandler: function(clickPoint, lastPoint){
+            if (this.currentDomEntity) {
+                this.currentDomEntity = this.currentDomEntity.finish(lastPoint, lastPoint);
+            }
+            // 右键菜单
+
+        },
         // 按起按键
-        keyUpHandler: function(){
+        keyUpHandler: function(e){
+            this.shiftKey = e.shiftKey;
         },
         // 按下按键
         keyDownHandler: function(e){
+            this.shiftKey = e.shiftKey;
         },
-        keyPressHandler: function(){
+        keyPressHandler: function(e){
         },
         /* 位移画布 */
         driftPanel: function(start, end, clickDown){
@@ -831,12 +960,16 @@ $(function(){
                     case Panel.EDIT_MODE.MOVE:
                         this.currentDomEntity = null;
                         break;
+                    case Panel.EDIT_MODE.CLIP_PATH:
+                    case Panel.EDIT_MODE.TEXT:
+                    case Panel.EDIT_MODE.PEN:
+                        alert('开发中');
+                        break;
                     case Panel.EDIT_MODE.LINE:
                     case Panel.EDIT_MODE.RECT:
                     case Panel.EDIT_MODE.CIRCLE:
                     case Panel.EDIT_MODE.POLYLINE:
                     case Panel.EDIT_MODE.POLYGON:
-                    case Panel.EDIT_MODE.CLIP_PATH:
                     case Panel.EDIT_MODE.ELLIPSE:
                     case Panel.EDIT_MODE.ARROW_LINE:
                     default:
@@ -906,6 +1039,7 @@ $(function(){
                 SVGTool.updateSizeInfo(SVGTool.currentPanel.setSvgSizeAndPosition());
                 // 监听panel事件, 撤销 重做状态
                 function listener() {
+                    console.log(this.operaStack, this.restoreStack);
                     SVGTool.updateSnapCtrlStatus(this.operaStack.length, this.restoreStack.length);
                 }
                 SVGTool.currentPanel.on(Panel.EVENT.SAVE, listener).on(Panel.EVENT.RESTORE, listener).on(Panel.EVENT.REDO, listener).on(Panel.EVENT.MOUSE_MOVE, function(point){

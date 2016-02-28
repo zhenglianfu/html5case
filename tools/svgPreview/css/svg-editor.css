@@ -134,7 +134,8 @@
 .panel.circle,
 .panel.rect,
 .panel.clipPath,
-.panel.polyline{
+.panel.polyline,
+.panel.ellipse{
     cursor: crosshair;
 }
 .panel.text{
@@ -233,6 +234,9 @@
     width: 20px;
     display: inline-block;
     background: #000;
+}
+.color.transparent{
+    background: url(./imgs/bg.png) center repeat;
 }
 .more-tool-icon{
     position: absolute;
