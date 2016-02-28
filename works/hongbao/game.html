@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, target-densityDpi=device-dpi" />
+        <!-- reset css -->
+        <style>
+            body{
+                padding: 0;
+                margin: 0;
+                background-color: #D2EEF9;
+                background-image: url("./resource/assets/bg.png");
+                background-size: 100% 100%;
+                background-repeat: no-repeat;
+            }
+            #stage,
+            #background{
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+            .popup,
+            #loadingView{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,.8);
+                z-index: 3;
+            }
+            #loadingView:after{
+                position: absolute;
+                display: block;
+                top: 50%;
+                width: 100%;
+                text-align: center;
+                content: attr(data-text);
+                font-size: 24px;
+                color: #fee;
+            }
+            #banner{
+                z-index: 5; /*top*/
+                position: absolute;
+                width: 100%;
+                top: 0;
+                left: 0;
+            }
+            #banner img{
+                display: block;
+                width: 100%;  
+            }
+            #btnStart{
+                position: absolute;
+                top: 80%;
+                width: 50%;
+                height: 12%;
+                left: 27%;
+                display: block;
+                background-color: transparent;
+                opacity: 0;
+            }
+            .popup{
+                display: none;
+            }
+            .popup .pop_container{
+                position: absolute;
+                width: 90%;
+                left: 5%;
+                top: 40%;
+                transform: translateY(-50%);
+                -webkit-transform: translateY(-50%);
+            }
+            #phoneNumberContainer{
+                width: 100%;
+                padding-top: 72.66%;
+                position: relative;
+                background-image: url("./resource/assets/bg_popup.png");
+                background-repeat: no-repeat;
+                background-size: 100%;
+            }
+            #phoneNumberContainer input{
+                position: absolute;
+                height: 20%;
+                border: 0 none;
+                border-radius: 10px;
+                box-shadow: 0 5px 0 #dbdbdb inset;
+                font-size: 16px;
+                padding: 0 6px;
+                outline: 0 none;
+                -webkit-outline: 0 none;
+            }
+            #phoneNumberContainer button{
+                display: block;
+                position: absolute;
+                background-color: transparent;
+                border: 0 none;
+                background-repeat: no-repeat;
+                background-size: 100%;
+            }
+            #iptPhone{
+                top: 16%;
+                width: 75%;
+                left: 9%;
+            }
+            #iptCode{
+                width: 40%;
+                left: 9%;
+                top: 42%;
+            }
+            #btnSubmit{
+                width: 50%;
+                background-image: url("./resource/assets/btn_bind_mobile.png");
+                padding-top: 14%;
+                top: 68%;
+                left: 23%;
+            }
+            #btnCode{
+                width: 33%;
+                background-image: url("./resource/assets/btn_get_code.png");
+                padding-top: 15%;
+                top: 42%;
+                left: 55%;
+            }
+            #btnClose{
+                width: 20%;
+                height: 20%;
+                top: 0%;
+                left: 82%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="banner">
+           <img src="./resource/assets/banner.jpg">
+           <button id="btnStart"></button>
+        </div>
+        <div id="loadingView" data-text="loading..."></div>
+        <canvas id="background" width="640" height="1136"></canvas>
+        <canvas id="stage" width="640" height="1136"></canvas>
+        <!-- bind phone number -->
+        <div class="popup">
+            <div class="pop_container">
+                <div id="phoneNumberContainer">
+                    <input type="text" id="iptPhone" name="phone" placeholder="请输入手机号"/>
+                    <input type="text" id="iptCode" name="code" placeholder="请输入验证码"/>
+                    <button type="submit" name="" id="btnSubmit"></button>
+                    <button type="button" name="" id="btnCode"></button>
+                    <button type="button" name="close" id="btnClose"></button>
+                </div>
+            </div>
+        </div>
+        <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>        
+        <script type="text/javascript" src="./engine.js"></script>
+        <script type="text/javascript" src="./game.js"></script>
+    </body>
+</html>
+        
