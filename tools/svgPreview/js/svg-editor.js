@@ -23,6 +23,7 @@ $(function(){
         this.snapshots = []; // 快照栈
         this.restoreSnapshots = [];
         this.element = null;
+        this.$element = $(this.element);
         this.length = 0;
         this.guideArea = null;
         this.showGuideLines = false;
@@ -44,7 +45,6 @@ $(function(){
     SVGDomEntity.createSVGDom = function(tagName, attr){
         if (tagName) {
             // xml standard
-            var tagName = tagName.toLowerCase();
             // TODO 添加所有SVG元素标签名
             if (['line','rect', 'g','text','tspan','path','clipPath','circle','arc','ellipse','polygon','polyline','use','marker','title','desc','defs','symbol','svg','image'].indexOf(tagName) > -1) {
                 var dom = document.createElementNS(Panel.SVG_XML, tagName);
@@ -55,6 +55,14 @@ $(function(){
             }
         }
         return null;
+    };
+    SVGDomEntity.getDomAttributes = function(dom){
+        var attrs = {},
+            domAttrs = dom.attributes;
+        for (var i = 0, len = domAttrs.length; i < len; i += 1) {
+            attrs[domAttrs[i].nodeName] = domAttrs[i].nodeValue;
+        }
+        return attrs;
     };
     SVGDomEntity.prototype = {
         // 绘制显示区域的矩形
@@ -97,14 +105,9 @@ $(function(){
                 var snap = {
                     outerHTML: this.element.outerHTML,
                     points: this.points.slice(0),
-                    htmlMD5: $.md5(this.element.outerHTML)
+                    htmlMD5: $.md5(this.element.outerHTML),
+                    attrs: SVGDomEntity.getDomAttributes(this.element)
                 };
-                var attributes = this.element.attributes,
-                    attrMap = {};
-                for (var i = 0, len = attributes.length; i < len; i += 1) {
-                    attrMap[attributes[i].nodeName] = attributes[i].nodeValue;
-                }
-                snap.attrs = attrMap;
                 return snap;
             }
             return null;
@@ -114,7 +117,12 @@ $(function(){
                 this.panel.$canvas.append(this.element);
             }
             this.points = snap.points;
-            $(this.element).attr(snap.attrs);
+            var currentAttrs = SVGDomEntity.getDomAttributes(this.element);
+            // remove all current attributes
+            for (var attr in currentAttrs) {
+                this.$element.removeAttr(snap.attrs[attr]);
+            }
+            this.$element.attr(snap.attrs);
         },
         save: function(){
             console.log('save');
@@ -165,7 +173,7 @@ $(function(){
             return this;
         },
         // 多点路径使用该方法结束
-        finish: function(start, lastPoint){
+        finish: function(start, lastPoint, e, type){
             if (this.element) {
                 // 显示区域为空则移除
                 var rect = this.element.getBBox();
@@ -179,6 +187,7 @@ $(function(){
             // only create once
             if (this.valid && this.element == null) {
                 this.element = SVGDomEntity.createSVGDom(this.tagName);
+                this.$element = $(this.element);
             }
         },
         _bindEvent: function(){
@@ -251,7 +260,8 @@ $(function(){
                         if (typeof properties[i] === 'function') {
                             p[i] = function(super_fn, c_fn){
                                 return function(){
-                                    super_fn.apply(this, arguments); // super
+                                    // 属性callSuper = false时不调用父类方法，都需要你自己实现哦，按需使用
+                                    this.callSuper !== false && super_fn.apply(this, arguments); // super
                                     return c_fn.apply(this, arguments);
                                 };
                             }(instance[i], properties[i])
@@ -273,13 +283,16 @@ $(function(){
     SVGDomEntity.EXTENDS = {
         LINE: SVGDomEntity.extend('line', {
             render: function(start, end, clickDown) {
-                this._super.render(start, end, clickDown);
-                $(this.element).attr({
-                    'x1': start.x,
-                    'x2': end.x,
-                    'y1': start.y,
-                    'y2': end.y
-                });
+                if (clickDown) {
+                    this._super.render(start, end, clickDown);
+                    $(this.element).attr({
+                        'x1': start.x,
+                        'x2': end.x,
+                        'y1': start.y,
+                        'y2': end.y
+                    });
+                    console.log(start, end);
+                }
             },
             next: function(start, end){
                 var rect = this.element.getBBox();
@@ -369,7 +382,7 @@ $(function(){
         }),
         TEXT: SVGDomEntity.extend('text', {
             onAddToPanelOnce: function(panel, point){
-                // 文本域
+                // 文本域 输入域定位到当前位置 设置字体大小
             },
             render: function(){
 
@@ -413,6 +426,43 @@ $(function(){
             return new SVGDomEntity.EXTENDS.POLYLINE(this.stylesheet);
         }
     }, {fill: 'none'});
+    // -- 新增CLIP PATH
+    SVGDomEntity.EXTENDS.CLIP_PATH = SVGDomEntity.EXTENDS.RECT.extend('rect', {
+        onAddToPanelOnce: function(panel, point){
+            if (panel.$defs == null) {
+                panel.$defs = $(SVGDomEntity.createSVGDom('defs')).appendTo(panel.$svg);
+            }
+            this.finished = false;
+            this.clipId = 'clip_path_' + Date.now();
+            this.$clip = $(SVGDomEntity.createSVGDom('clipPath', {id: this.clipId})).appendTo(panel.$defs);
+            this.$clipRect = $(SVGDomEntity.createSVGDom('rect')).appendTo(this.$clip);
+        },
+        render: function(start, end){
+            if (this.finished == false && this.$clipRect) {
+                // 同步修改clipRect
+                this.$clipRect.attr({
+                    x: this.element.getAttribute('x'),
+                    y: this.element.getAttribute('y'),
+                    width: this.element.getAttribute('width'),
+                    height: this.element.getAttribute('height')
+                });
+            };
+        },
+        next: function(){
+            this.callSuper = false;
+            this.finished = true;
+        },
+        finish: function(start, end, e, eventType){
+            this.$element.remove().attr('visibility', 'hidden'); // 剪裁区域设置不可见
+            // 双击应用，右键取消
+            if (eventType.type == 'dblclick') {
+                // 修改画布信息 裁剪大小
+                this.panel.applyClip(this.clipId, +this.$element.attr('x'), +this.$element.attr('y'), +this.$element.attr('width'), +this.$element.attr('height'));
+            }
+            return null;
+        }
+    }, {fill: 'none', 'stroke-dasharray': '4', 'stroke-width': '1'});
+    // --
     if (location.host.indexOf('localhost') > -1) {
         // 测试用
         window.SVGDOM = SVGDomEntity;
@@ -466,7 +516,7 @@ $(function(){
         'polygon': SVGDomEntity.EXTENDS.POLYGON,
         'polyline': SVGDomEntity.EXTENDS.POLYLINE,
         'pen': SVGDomEntity.EXTENDS.PEN,
-        'clipPath': SVGDomEntity.EXTENDS.LINE
+        'clipPath': SVGDomEntity.EXTENDS.CLIP_PATH
     };
     Panel.EVENT = {
         BEFORE_SAVE: 'before_save',
@@ -487,12 +537,14 @@ $(function(){
             this.$svg.attr({
                 width:  w,
                 height: h,
-               'viewbox': '0 0 ' + w + ' ' + h
+               'viewBox': '0 0 ' + w + ' ' + h
             });
             this.canvasId = 'canvas_' + Date.now();
             this.$canvas = $(SVGDomEntity.createSVGDom('g')).attr('id', this.canvasId).appendTo(this.$svg);
             this.$defs = null;
             this.snapIndex = 0;
+            this.offsetX = 0;
+            this.offsetY = 0;
             this.clientRect.w = w;
             this.clientRect.h = h;
             this.clientRect.x = this.$el[0].offsetLeft;
@@ -639,8 +691,12 @@ $(function(){
                 y: this.clientRect.y,
                 w: this.clientRect.w,
                 h: this.clientRect.h,
-                htmlMD5: $.md5(this.$canvas.html()), // keep it short
+                offsetX: this.offsetX,
+                offsetY: this.offsetY,
+                htmlMD5: $.md5(this.$canvas[0].outerHTML), // keep it short
+                attrs: SVGDomEntity.getDomAttributes(this.$canvas[0]),
                 nodes: this.$canvas.children(),
+                defs: this.$defs ? this.$defs.children() : [],
                 createTime: cTime,
                 modifyTime: cTime,
                 index: this.snapIndex++,
@@ -649,8 +705,17 @@ $(function(){
         },
         _updateSvgToSnapshot: function(snap){
             if (snap) {
-                this.setSvgSizeAndPosition(snap.x, snap.y, snap.w, snap.h);
+                this.setSvgSizeAndPosition(snap.x, snap.y, snap.w, snap.h, snap.offsetX, snap.offsetY);
                 this.$canvas.html('').append(snap.nodes);
+                var currentAttrs = SVGDomEntity.getDomAttributes(this.$canvas[0]);
+                // remove attributes
+                for (var p in currentAttrs) {
+                    if (!snap.attrs[p]) {
+                        this.$canvas.removeAttr(p);
+                    }
+                }
+                // add attributes
+                this.$canvas.attr(snap.attrs);
             }
         },
         /* 响应鼠标事件 */
@@ -672,12 +737,12 @@ $(function(){
                     // 绘制辅助
                     self._updateDrawGuides(startPoint);
                     // start move
-                    self.moveStartHandler(startPoint);
+                    self.moveStartHandler(startPoint, e);
                 }
                 return (tagName = e.target.tagName.toUpperCase()) == 'DIV';
             }).bind('mousemove', function(e){
                 var currentPoint = self.getRelativeSVGPoint(e);
-                self.moveHandler(startPoint, currentPoint, clickDown);
+                self.moveHandler(startPoint, currentPoint, clickDown, e);
                 self.trigger(Panel.EVENT.MOUSE_MOVE, [currentPoint]);
                 return tagName == 'DIV';
             }).bind('mouseup', function(e){
@@ -688,16 +753,16 @@ $(function(){
                 // 300ms内算双击
                 if (now - lastMouseUpTime < 300 && lastMouseEnd.x == endPoint.x && lastMouseEnd.y == endPoint.y) {
                     // double click
-                    self.dbClickHandler(startPoint, endPoint);
+                    self.dbClickHandler(startPoint, endPoint, e);
                 } else {
-                    self.moveEndHandler(startPoint, endPoint);
+                    self.moveEndHandler(startPoint, endPoint, e);
                 }
                 lastMouseUpTime = now;
                 lastMouseEnd = endPoint;
                 return tagName == 'DIV';
             }).bind('contextmenu', function(e){
                 // 右键
-                self.rightClickHandler(self.getRelativeSVGPoint(e), lastMouseEnd);
+                self.rightClickHandler(self.getRelativeSVGPoint(e), lastMouseEnd, e);
                 return false;
             });
         },
@@ -705,8 +770,8 @@ $(function(){
             return {
                 clinetX: e.clientX | 0,
                 clientY: e.clientY | 0,
-                x: ((window.pageXOffset || window.document.body.scrollLeft) + e.clientX - this.$svg.offset().left) | 0,
-                y: ((window.pageYOffset || window.document.body.scrollTop) + e.clientY - this.$svg.offset().top) | 0
+                x: (((window.pageXOffset || window.document.body.scrollLeft) + e.clientX - this.$svg.offset().left) | 0) + this.offsetX,
+                y: (((window.pageYOffset || window.document.body.scrollTop) + e.clientY - this.$svg.offset().top) | 0) + this.offsetY
             };
         },
         destroy: function(){
@@ -850,19 +915,19 @@ $(function(){
                 self.setSvgSizeAndPosition(offset.left, offset.top, w, h);
             }
         },
-        moveStartHandler: function(point){
+        moveStartHandler: function(point, e){
             if (this.currentDomEntity) {
                 this.currentDomEntity.create();
                 this.currentDomEntity.onAddToPanelOnce(this, point);
                 this.$canvas.append(this.currentDomEntity.getElement());
-                this.currentDomEntity.render(point, point);
+                this.currentDomEntity.render(point, point, false, e);
             }
         },
-        moveHandler: function(start, current, clickDown){
+        moveHandler: function(start, current, clickDown, e){
             if (clickDown) {
                 this._updateDrawGuides(current);
             }
-            this.currentDomEntity ? this.currentDomEntity.render(start, current, clickDown, this.shiftKey) : this.driftPanel(start, current, clickDown);
+            this.currentDomEntity ? this.currentDomEntity.render(start, current, clickDown, e) : this.driftPanel(start, current, clickDown, e);
         },
         moveEndHandler: function(start, end){
             if (this.currentDomEntity) {
@@ -873,15 +938,15 @@ $(function(){
             this.save();
         },
         // 多点路径元素 双击才能结束
-        dbClickHandler: function(start, lastPoint){
+        dbClickHandler: function(start, lastPoint, event){
             if (this.currentDomEntity) {
-                this.currentDomEntity = this.currentDomEntity.finish(start, lastPoint);
+                this.currentDomEntity = this.currentDomEntity.finish(start, lastPoint, event, {type: 'dblclick'});
             }
             this.save();
         },
-        rightClickHandler: function(clickPoint, lastPoint){
+        rightClickHandler: function(clickPoint, lastPoint, event){
             if (this.currentDomEntity) {
-                this.currentDomEntity = this.currentDomEntity.finish(lastPoint, lastPoint);
+                this.currentDomEntity = this.currentDomEntity.finish(lastPoint, lastPoint, event, {type: 'rightclick'});
             }
             // 右键菜单
 
@@ -897,7 +962,7 @@ $(function(){
         keyPressHandler: function(e){
         },
         /* 位移画布 */
-        driftPanel: function(start, end, clickDown){
+        driftPanel: function(start, end, clickDown, e){
             if (clickDown) {
                 switch (this.editMode) {
                     case Panel.EDIT_MODE.MOVE:
@@ -908,7 +973,7 @@ $(function(){
                 }
             }
         },
-        setSvgSizeAndPosition: function(x, y, w, h){
+        setSvgSizeAndPosition: function(x, y, w, h, offsetX, offsetY){
             if (arguments.length) {
                 var x = (isNaN(x) ? this.clientRect.x : x) | 0,
                     y = (isNaN(y) ? this.clientRect.y : y) | 0,
@@ -919,7 +984,7 @@ $(function(){
                     this.$svg.attr({
                         width: w,
                         height: h,
-                        viewbox: '0 0 ' + w + ' ' + h
+                        viewBox: '0 0 ' + w + ' ' + h
                     });
                     this.$el.css({
                         width: w,
@@ -942,6 +1007,8 @@ $(function(){
                     this.clientRect.y = y;
                     this.clientRect.w = w;
                     this.clientRect.h = h;
+                    this.offsetX = isNaN(offsetX) ? this.offsetX : offsetX;
+                    this.offsetY = isNaN(offsetY) ? this.offsetY : offsetY;
                     // 更新网格
                     this.isShowGridGuides && this._updateGridGuides();
                 }
@@ -960,7 +1027,6 @@ $(function(){
                     case Panel.EDIT_MODE.MOVE:
                         this.currentDomEntity = null;
                         break;
-                    case Panel.EDIT_MODE.CLIP_PATH:
                     case Panel.EDIT_MODE.TEXT:
                     case Panel.EDIT_MODE.PEN:
                         alert('开发中');
@@ -972,6 +1038,7 @@ $(function(){
                     case Panel.EDIT_MODE.POLYGON:
                     case Panel.EDIT_MODE.ELLIPSE:
                     case Panel.EDIT_MODE.ARROW_LINE:
+                    case Panel.EDIT_MODE.CLIP_PATH:
                     default:
                         this.currentDomEntity = new Panel.SVG_DOM_NAME_REFER[mode](this.styles);
                         break;
@@ -990,6 +1057,17 @@ $(function(){
             var $copy = this.$svg.clone();
             $copy.find('.guideLines').remove();
             return $copy[0].outerHTML;
+        },
+        applyClip: function(clipId, x, y, w, h){
+            x = (x + 0.5) | 0;
+            y = (y + 0.5) | 0;
+            // 调整位置尺寸
+            this.setSvgSizeAndPosition(this.clientRect.x + x, this.clientRect.y + y, w, h, x, y);
+            // 调整canvas位置在svg的位置 px
+            this.offsetX = x;
+            this.offsetY = y;
+            this.$canvas.attr('transform', 'translate(' + (-x) + ' ' + (-y) + ')').attr('clip-path', 'url(#' + clipId + ')');
+            this.save();
         }
     };
     Panel.uuid = 0;
