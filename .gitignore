@@ -17,3 +17,4 @@ target
 /unstrack
 /node_modules
 /projectFilesBackup
+**/node_modules
