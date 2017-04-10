@@ -1,0 +1,20 @@
+{
+  "name": "html5case",
+  "description": "discover modren web develop possiblity",
+  "main": "",
+  "license": "MIT",
+  "moduleType": [
+    "amd"
+  ],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "requirejs": "~2.1.22"
+  }
+}

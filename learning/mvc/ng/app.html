@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AngularJS</title>
+    <script type="text/javascript" src="/bower_components/requirejs/require.js"></script>
+    <script type="text/javascript" src="/bower_components/angular/angular.js"></script>
+    <script type="text/javascript" src="app.js"></script>
+    <style>
+        input.ng-invalid{
+            border: 1px solid crimson;
+            outline: 1px solid crimson;
+        }
+    </style>
+</head>
+<body ng-app="app">
+    <input ng-model="name" type="text" placeholder="input">
+    {{name}}
+    <div ng-controller="RootController">
+        <div ng-controller="ChildController">
+            {{person.name}}
+        </div>
+    </div>
+    <div ng-controller="TopController">{{}}</div>
+    <div ng-controller="FormController">
+        <form name="signup_form" ng-submit="submit()">
+            <input type="text" name="name" ng-maxlength="10" ng-minlength="2" ng-model="user.name">
+            <input type="text" name="age" ng-model="user.age" ng-pattern="/^niubi[a-z]/">
+            <input type="text" name="username" ng-model="user.loginName" ensure-unique="username">
+            <div ng-show="signup_form.username.$error.unique">loginName must be unique</div>
+            <button type="submit" value="submit" class="button">submit</button>
+        </form>
+    </div>
+    <div ng-controller="IncludeController">
+        <div ng-include="templateUri"></div>
+    </div>
+</body>
+</html>
