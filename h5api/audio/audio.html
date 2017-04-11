@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Audio API</title>
+    <style>
+        #audio_display{
+            height: 400px;
+            width: 600px;
+            border: 1px solid #ccc;
+            background: #333;
+        }
+        .player-title{
+
+        }
+        .player-title .audio-name{
+            color: #36f;
+        }
+    </style>
+</head>
+<body>
+    <div class="player-title">
+        正在播放: <span class="audio-name">火车经过南岳衡山.mp3</span>
+    </div>
+    <div id="audio_display">
+        <canvas id="audio_display_canvas" width="600" height="400"></canvas>
+    </div>
+    <script type="text/javascript">
+        // 音频接口对web端实现，js音频接口开放
+        var AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext || function(){
+                    alert('你的浏览器不支持音频接口');
+                };
+        var audioContext = new AudioContext;
+        // TODO 绘制声音波形时序图
+    </script>
+</body>
+</html>
