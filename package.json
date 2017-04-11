@@ -1,0 +1,9 @@
+{
+  "name": "html5case",
+  "version": "0.0.1",
+  "description": "discover modren web develop possiblity",
+  "devDependencies": {
+    "eslint": "^3.4.0",
+    "gulp": "^3.9.1"
+  }
+}

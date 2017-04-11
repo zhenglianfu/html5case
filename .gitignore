@@ -18,3 +18,4 @@ target
 /node_modules
 /projectFilesBackup
 **/node_modules
+/bower_components

@@ -1,0 +1,20 @@
+{
+  "name": "angular_mvc",
+  "version": "1.0.0",
+  "description": "use angular build mvc website",
+  "main": "run.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "angular"
+  ],
+  "author": "zhenglianfu",
+  "license": "ISC",
+  "dependencies": {
+
+  },
+  "devDependencies": {
+    "bower": "*"
+  }
+}
