@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="">
+        <canvas id="canvas" width="800" height="200"></canvas>
+    </div>
+</body>
+<script>
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    var ctxHeight = canvas.height;
+    var ctxWidth = canvas.width;
+    var baseLine = ctxHeight / 2;
+    var lineWidth = 1;
+    var swing = 90; // 360 / 4
+    var point = {
+        x: 0,
+        y: baseLine
+    }
+    function drawLine(start, end){
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(start.x, start.y);
+        ctx.lineTo(end.x, end.y);
+        ctx.stroke(); // 每次都需要描边。需要merge描边操作
+        ctx.closePath();
+        ctx.restore();
+    }
+    function drawWave(offset){
+        offset = offset || 0;
+        var start = {};
+        var end = {};
+        ctx.clearRect(0, 0, ctxWidth, ctxHeight);
+        for (var i = 0; i < ctxWidth; i ++) {
+            var x = i + offset;
+            end = {
+                x: i,
+                y: baseLine + (swing * Math.sin(x / 180 * Math.PI))
+            };
+            if (i > 0) {
+                drawLine(start, end);
+            }
+            start = end;
+        }
+    }
+    var offset = 0;
+    (function nextTick(){
+        requestAnimationFrame(nextTick, canvas);
+        offset += 3;
+        offset %= 360;
+        drawWave(offset);
+    }());
+</script>
+</html>
