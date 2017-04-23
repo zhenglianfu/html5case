@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clock</title>
+</head>
+<body>
+<canvas id="canvas" width="400" height="400"></canvas>
+<script>
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    var FONT_HEIGHT = 15;
+    var MARGIN = 35;
+    var HAND_TRUNCATION = canvas.width / 25;
+    var HOUR_HAND_TRUNCATION = canvas.width / 10;
+    var NUMERAL_SPACING = 20;
+    var RADIUS = canvas.width / 2 - MARGIN;
+    var HAND_RADIUS = RADIUS + NUMERAL_SPACING;
+    var MARK_WIDTH = 5;
+    function drawCircle(){
+        context.beginPath();
+        context.arc(canvas.width / 2, canvas.height / 2, RADIUS, 0, Math.PI * 2, true);
+        context.stroke();
+        context.closePath();
+    }
+    function drawNumerals(){
+        var numerals = [1,2,3,4,5,6,7,8,9,10,11,12];
+        var angle = 0;
+        var numeralWidth = 0;
+        numerals.forEach(function(numeral){
+            angle = Math.PI / 6 * (numeral - 3); // 机智，向右转动90deg,水平应该为0，但是是3，-3
+            numeralWidth = context.measureText(numeral).width;
+            context.fillText(numeral, canvas.width / 2 + Math.cos(angle) * HAND_RADIUS - numeralWidth / 2, canvas.height / 2 + Math.sin(angle) * HAND_RADIUS + FONT_HEIGHT / 3);
+        })
+    }
+    function drawCenter(){
+        context.beginPath();
+        context.arc(canvas.width / 2, canvas.height / 2, 5, 0, Math.PI * 2, true);
+        context.fill();
+        context.closePath();
+    }
+    // 绘制刻度
+    function drawHandScale(){
+        context.save();
+        context.translate(canvas.width / 2, canvas.height / 2);
+        // 刻度等分60份
+        var pieces = 60;
+        var angle = (Math.PI / (pieces / 2));
+        for (var i = 0; i < pieces; i++) {
+            context.rotate(angle);
+            context.beginPath();
+            context.moveTo(0, RADIUS);
+//            var markWidth = (i + 1) % 5 == 0 ? MARK_WIDTH * 2 : MARK_WIDTH;
+            context.lineTo(0, RADIUS - MARK_WIDTH);
+            context.stroke();
+            context.closePath();
+        }
+        context.restore();
+    }
+    function drawClock(){
+        drawCircle();
+        drawNumerals();
+        drawCenter();
+        drawHandScale();
+    }
+    drawClock();
+</script>
+</body>
+</html>
