@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MAP</title>
+    <script src="http://api.map.baidu.com/api?v=2.0&ak=V9b6IDOnHO30twKc9RUaAGE1d9Qj5XPb"></script>
+    <style>
+        #map{
+            width: 100%;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        var slice = Array.prototype.slice;
+        var mapExample = {
+            _map: null,
+            _mapId: 'map',
+            getMap: function(){
+                return this._map ? this._map : (this._map = new BMap.Map(this._mapId));
+            },
+            _geocoder: null,
+            getGeocoder: function(){
+                return this._geocoder ? this._geocoder: (this._geocoder = new BMap.Geocoder());
+            },
+            initialize: function(){
+                this.center(121.491, 31.233);
+                this.localCity();
+            },
+            currentCity: '',
+            zoom: 11,
+            centerPoint: null,
+            center: function(lng, lat){
+                if (typeof lng === 'number') {
+                    this.centerPoint = new BMap.Point(lng, lat);
+                } else if (lng instanceof BMap.Point) {
+                    this.centerPoint = lng;
+                } else {
+                    return false;
+                }
+                this.invoke('centerAndZoom', this.centerPoint, this.zoom);
+            },
+            setZoom: function(level){
+                this.zoom = level;
+                this.getMap().setZoom(level);
+            },
+            getLocalCity: function(){
+                var local = new BMap.LocalCity();
+                return new Promise(function(resolve, reject){
+                    local.get(function(result){
+                        if (result) {
+                            resolve(result);
+                        } else {
+                            reject();
+                        }
+                    })
+                });
+            },
+            localCity: function(callback){
+                return this.getLocalCity().then(function (result) {
+                    var cityName = result.name;
+                    this.getMap().setCenter(cityName);
+                    return callback ? callback(result): result;
+                }.bind(this));
+            },
+            invoke: function(methodName){
+                var map = this.getMap();
+                var method = map[methodName];
+                if (typeof method === 'function') {
+                    return method.apply(map, slice.call(arguments, 1));
+                } else {
+                    throw TypeError(methodName + ' is not a method of BMap');
+                }
+            },
+            getPointByName: function(name, callback){
+                var geocoder = this.getGeocoder();
+                if (typeof callback === 'function') {
+                    geocoder.getPoint(name, callback)
+                } else {
+                    return new Promise(function(resolve, reject){
+                        geocoder.getPoint(name, resolve);
+                    });
+                }
+            },
+            locationByName: function(name, callback){
+                var that = this;
+                this.getPointByName(name, '杭州').then(function(point){
+                    if (point) {
+                        that.setZoom(18);
+                        that.center(point);
+                    }
+                    return point
+                }).then(callback);
+            }
+        };
+        mapExample.getPointByName('杭州市税友大厦').then(function(point){
+            mapExample.zoom = 18;
+            mapExample.center(point);
+            mapExample.getMap().addOverlay(new BMap.Marker(point));
+        });
+    </script>
+</body>
+</html>

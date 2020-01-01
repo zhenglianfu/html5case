@@ -1,0 +1,361 @@
+body.overhide{
+	overflow: hidden;
+}
+.wrapper{
+	-webkit-animation-iteration-count: infinite;
+	animation-iteration-count: infinite;
+	-webkit-animation-timing-function: ease-in-out;
+	animation-timing-function: ease-in-out;
+	animation-duration: 1s;
+	-webkit-animation-duration: 1s;
+	transform-origin: bottom;
+	-webkit-transform-origin: bottom;
+	background-image: url("./img/default_head.jpg");
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    background-color: #fff;
+}
+.canvasWrapper{
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	background-repeat: no-repeat;
+	background-size: 100%;
+	background-position: center;
+	margin: 0 auto;
+}
+.produceWrapper .canvasWrapper{
+	background-color: #1c1c20;
+	position: relative;
+}
+.wrapper.loading:after{
+	content: "";
+	display: block;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	border-radius: 50%;
+	background-color: rgba(255,255,255,.4);
+	background-image: url("./img/5-121204193933-51.gif");
+	background-repeat: no-repeat;
+	background-position: center;
+}
+.wrapper canvas{
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	overflow: hidden;
+	display: block;
+}
+.ctrl{
+	position: absolute;
+    width: 80%;
+    left: 10%;
+    font-size: 14px;
+    background-color: rgba(255,255,255,.85);
+    display: none;
+}
+.ctrl .one>div{
+	padding: 12px 0;
+	font-size: 14px;
+	text-decoration: underline;
+}
+.hair{
+	background-size: 100% auto;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 110%;
+    height: 120%;
+    position: absolute;
+    left: -5%;
+    top: -40%;
+    pointer-events: none;
+}
+.animation{
+	-webkit-animation-name: shake;
+	animation-name: shake;
+	animation: shake 1s ease-in-out infinite;
+    -webkit-animation: shake 1s ease-in-out infinite;
+}
+@keyframes shake{
+	0, 100%{
+		-webkit-transform: rotate(0);
+		transform: rotate(0);
+	}
+	25%{
+		-webkit-transform: rotate(-10deg);
+		transform: rotate(-10deg);
+	}
+	75%{
+		-webkit-transform: rotate(10deg);
+		transform: rotate(10deg);
+	}
+}
+@-webkit-keyframes shake{
+	0, 100%{
+		-webkit-transform: rotate(0);
+		transform: rotate(0);
+	}
+	25%{
+		-webkit-transform: rotate(-10deg);
+		transform: rotate(-10deg);
+	}
+	75%{
+		-webkit-transform: rotate(10deg);
+		transform: rotate(10deg);
+	}
+}
+#list{
+	display: block;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+}
+#btn-produce{
+	position: absolute;
+    display: block;
+    background-color: transparent;
+    width: 40%;
+    left: 30%;
+    top: 63%;
+}
+#btn-made,
+#btn-share{
+	position: absolute;
+    display: block;
+    background-color: transparent;
+    width: 40%;
+    left: 30%;
+    top: 63%;
+    z-index: 3;
+}
+#btn-share{
+	display: none;
+}
+.mami_alert{
+	background-color: #fff;	
+}
+.mami_alert .title{
+	padding: 10px;
+}
+.mami_alert .buttons{
+	text-align: center;
+	padding: 10px 0;
+}
+body.ny-loading:after{
+	content: "";
+	background-color: #eee;
+	background-image: url("./img/5-121204193933-51.gif");
+	background-repeat: no-repeat;
+	background-position: center;
+	z-index: 33;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+#head{
+	display: block;
+    position: absolute;
+    width: 45%;
+    top: 35%;
+    left: 12%;
+    animation: shake 1s ease-in-out infinite;
+    -webkit-animation: shake 1s ease-in-out infinite;
+    transform-origin: bottom;
+    -webkit-transform-origin: bottom;
+}
+.scale-out:before,
+.scale-in:before,
+.rotate:before,
+.done:before{
+	width: 1.5em;
+	height: 1.2em;
+	content: "";
+	display: inline-block;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+.done{
+	color: #0B8900;	
+}
+.scale-out:before{
+	background-image: url("./img/icon-zoom-in.png");
+}
+.scale-in:before{
+	background-image: url("./img/icon-zoom-out.png");
+}
+.rotate:before{
+	background-image: url("./img/icon-rotate.png");
+}
+.done:before{
+	background-image: url("./img/icon-complete.png");
+}
+.tip-box{
+	z-index: 1992;
+}
+.share-mask{
+	z-index: 1993;
+}
+.produceWrapper{
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 55;
+	background-color: #1c1c20;
+}
+@keyframes scaleIn{
+	from{
+		transform: scale(.85);
+	}
+	to{
+		transform: scale(1);
+	}
+}
+@-webkit-keyframes scaleIn{
+	from{
+		-webkit-transform: scale(.85);
+		transform: scale(.85);
+	}
+	to{
+		-webkit-transform: scale(1);
+		transform: scale(1);
+	}
+}
+@keyframes scaleInOut{
+	from{
+		transform: scale(1);
+	}
+	to{
+		transform: scale(.35);
+	}
+}
+@-webkit-keyframes scaleInOut{
+	from{
+		-webkit-transform: scale(1);
+		transform: scale(1);
+	}
+	to{
+		-webkit-transform: scale(.35);
+		transform: scale(.35);
+	}
+}
+.produceOutterWrapper{
+	padding: 30px 0;
+	background-color: #26262a;
+}
+.produceInnerWrapper{
+	animation: scaleIn .2s both;
+	-webkit-animation: scaleIn .2s both;
+	margin: 0 auto;
+	position: relative;
+}
+.produceInnerWrapper.loading:after{
+	content: "";
+	display: block;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background-image: url("./img/5-121204193933-51.gif");
+	background-repeat: no-repeat;
+	background-position: center;
+}
+.produceInnerWrapper.scaleOut{
+	animation: scaleInOut .3s both;
+	-webkit-animation: scaleInOut .3s both;
+}
+.produceWrapper .ctrl{
+	position: static;
+	width: 100%;
+	display: block;
+	margin: 0 auto;
+	background-color: transparent;
+}
+.produceWrapper .ctrl button{
+	display: block;
+	width: 100%;
+	height: 40px;
+	background-color: #1e2026;
+	color: #fff;
+	line-height: 40px;
+	font-size: 15px;
+	background-repeat: no-repeat;
+	background-size: 20px;
+	background-position: center;
+}
+.produceWrapper .ctrl .btn-complete{
+	background-color: #ff4236;
+}
+.produceWrapper .ctrl .btn-import{
+	background-size: 47px 16px;
+	background-image: url("./img/icon-import-text.png");
+}
+.produceWrapper .ctrl .btn-rotate{
+	background-size: 58px 20px;
+	background-image: url("./img/icon-rotate-text.png");
+}
+.eye-line{
+	position: absolute;
+    color: #fff;
+    width: 100%;
+    text-align: left;
+    padding: 2px 5px;
+    border-bottom: 1px #fff dashed;
+    pointer-events: none;
+}
+.dialog-mask{
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	background-color: rgba(0,0,0,.9);
+	z-index: 4;
+}
+.dialog{
+	position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    width: 85%;
+    z-index: 5;
+}
+.dialog button{
+	position: absolute;
+	background-color: transparent;
+}
+.dialog .btn-close{
+	width: 10%;
+    padding-top: 10%;
+    left: 87%;
+    top: 5%;
+}
+.dialog .btn-button{
+	width: 35%;
+    top: 70%;
+    padding-top: 15%;
+    left: 35%;
+}
+.share-mask{
+	background-color: rgba(0,0,0,.9);
+}
+.share-content{
+	position: absolute;
+    top: 15%;
+    width: 90%;
+    margin: 0;
+    font-size: 20px;
+    left: 5%;
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="200"></canvas>
+    <script type="text/javascript">
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var cHeight = canvas.height;
+        var cWidth = canvas.width;
+        var baseline = cHeight / 2;
+        var swing = 90;
+        var start, end;
+        var count = 0;
+        (function nextTick(){
+            requestAnimationFrame(nextTick, canvas);
+            count ++ ;
+            start = {
+                x: 0,
+                y: baseline
+            };
+            ctx.clearRect(0, 0, cWidth, cHeight);
+            for (var i = 0; i < cWidth; i ++) {
+                end = {
+                    x: i,
+                    y: baseline + Math.sin(deg2rad(count)) * swing * Math.sin(deg2rad(i))
+                };
+                drawLine(start, end);
+                start = end;
+            }
+        })();
+
+        function drawLine(start, end){
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(start.x, start.y);
+            ctx.lineTo(end.x, end.y);
+            ctx.stroke(); // 每次都需要描边。需要merge描边操作
+            ctx.closePath();
+            ctx.restore();
+        }
+        function deg2rad(deg){
+            return  (Math.PI / 180) * (deg % 360);
+        }
+    </script>
+</body>
+</html>

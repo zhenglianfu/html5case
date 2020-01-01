@@ -20,7 +20,7 @@
     var point = {
         x: 0,
         y: baseLine
-    }
+    };
     function drawLine(start, end){
         ctx.save();
         ctx.beginPath();
@@ -50,7 +50,7 @@
     var offset = 0;
     (function nextTick(){
         requestAnimationFrame(nextTick, canvas);
-        offset += 3;
+        offset += 1;
         offset %= 360;
         drawWave(offset);
     }());
